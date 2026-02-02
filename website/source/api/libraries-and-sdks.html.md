@@ -3,8 +3,8 @@ layout: api
 page_title: Libraries and SDKs - HTTP API
 sidebar_current: api-libraries-and-sdks
 description: |-
-  There are many third-party libraries for interacting with Consul's HTTP API.
-  This page lists the HashiCorp and community-maintained Consul HTTP API client
+  There are many third-party libraries for interacting with OpenGyoza's HTTP API.
+  This page lists the OpenGyoza and community-maintained HTTP API client
   libraries.
 ---
 
@@ -13,10 +13,12 @@ description: |-
 The programming libraries listed on this page can be used to consume the API
 more conveniently. Some are officially maintained while others are provided by
 the community.
+OpenGyoza is API-compatible with Consul 1.6.x, so most Consul client libraries
+work unchanged.
 
 <ul>
   <li>
-    <a href="https://github.com/hashicorp/consul/tree/master/api">api</a> - Official Go client for the Consul HTTP API
+    <a href="https://github.com/opengyoza/opengyoza/tree/main/api">api</a> - Official Go client for the OpenGyoza HTTP API
   </li>
   <li>
     <a href="https://github.com/gmr/consulate">consulate</a> - Python client for the Consul HTTP API

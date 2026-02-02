@@ -29,7 +29,7 @@ structure initialization.
 
 The
 Go library exposes a `*tls.Config` that _automatically_ communicates with
-Consul to load certificates and authorize inbound connections during the
+OpenGyoza to load certificates and authorize inbound connections during the
 TLS handshake. This also automatically starts goroutines to update any
 changing certs.
 
@@ -39,12 +39,12 @@ Example, followed by more details:
 import(
   "net/http"
 
-  "github.com/hashicorp/consul/api"
-  "github.com/hashicorp/consul/connect"
+  "github.com/opengyoza/opengyoza/api"
+  "github.com/opengyoza/opengyoza/connect"
 )
 
 func main() {
-  // Create a Consul API client
+  // Create an OpenGyoza API client
   client, _ := api.NewClient(api.DefaultConfig())
 
   // Create an instance representing this service. "my-service" is the
@@ -64,7 +64,7 @@ func main() {
 }
 ```
 
-The first step is to create a Consul API client. This is almost always the
+The first step is to create an OpenGyoza API client. This is almost always the
 default configuration with an ACL token set, since you want to communicate
 to the local agent. The default configuration will also read the ACL token
 from environment variables if set. The Go library will use this client to request certificates,
@@ -90,12 +90,12 @@ Another example is shown below with just a plain TLS listener:
 import(
   "crypto/tls"
 
-  "github.com/hashicorp/consul/api"
-  "github.com/hashicorp/consul/connect"
+  "github.com/opengyoza/opengyoza/api"
+  "github.com/opengyoza/opengyoza/connect"
 )
 
 func main() {
-  // Create a Consul API client
+  // Create an OpenGyoza API client
   client, _ := api.NewClient(api.DefaultConfig())
 
   // Create an instance representing this service. "my-service" is the
@@ -116,18 +116,18 @@ func main() {
 
 For Go applications that need to Connect to HTTP-based upstream dependencies,
 the Go library can construct an `*http.Client` that automatically establishes
-Connect-based connections as long as Consul-based service discovery is used.
+Connect-based connections as long as OpenGyoza-based service discovery is used.
 
 Example, followed by more details:
 
 ```go
 import(
-  "github.com/hashicorp/consul/api"
-  "github.com/hashicorp/consul/connect"
+  "github.com/opengyoza/opengyoza/api"
+  "github.com/opengyoza/opengyoza/connect"
 )
 
 func main() {
-  // Create a Consul API client
+  // Create an OpenGyoza API client
   client, _ := api.NewClient(api.DefaultConfig())
 
   // Create an instance representing this service. "my-service" is the
@@ -143,14 +143,14 @@ func main() {
 }
 ```
 
-The first step is to create a Consul API client and service. These are the
+The first step is to create an OpenGyoza API client and service. These are the
 same steps as accepting connections and are explained in detail in the
 section above. If your application is both a client and server, both the
 API client and service structure can be shared and reused.
 
 Next, we call `svc.HTTPClient()` to return a specially configured
 `*http.Client`. This client will automatically established Connect-based
-connections using Consul service discovery.
+connections using OpenGyoza service discovery.
 
 Finally, we perform an HTTP `GET` request to a hypothetical userinfo service.
 The HTTP client configuration automatically sends the correct client
@@ -165,11 +165,11 @@ the `svc.HTTPDialTLS` function can be used to configure the
 
 The hostname used in the request URL is used to identify the logical service
 discovery mechanism for the target. **It's not actually resolved via DNS** but
-used as a logical identifier for a Consul service discovery mechanism. It has
+used as a logical identifier for the OpenGyoza (Consul-compatible) service discovery mechanism. It has
 the following specific limitations:
 
  * The scheme must be `https://`.
- * It must be a Consul DNS name in one of the following forms:
+ * It must be a Consul DNS name (compatibility) in one of the following forms:
    * `<name>.service[.<datacenter>].consul` to discover a healthy service
      instance for a given service.
    * `<name>.query[.<datacenter>].consul` to discover an instance via
@@ -196,12 +196,12 @@ Example:
 import(
   "context"
 
-  "github.com/hashicorp/consul/api"
-  "github.com/hashicorp/consul/connect"
+  "github.com/opengyoza/opengyoza/api"
+  "github.com/opengyoza/opengyoza/connect"
 )
 
 func main() {
-  // Create a Consul API client
+  // Create an OpenGyoza API client
   client, _ := api.NewClient(api.DefaultConfig())
 
   // Create an instance representing this service. "my-service" is the
@@ -209,7 +209,7 @@ func main() {
   svc, _ := connect.NewService("my-service", client)
   defer svc.Close()
 
-  // Connect to the "userinfo" Consul service.
+  // Connect to the "userinfo" OpenGyoza service.
   conn, _ := svc.Dial(context.Background(), &connect.ConsulResolver{
     Client: client,
     Name:   "userinfo",
@@ -220,7 +220,7 @@ func main() {
 This uses a familiar `Dial`-like function to establish raw `net.Conn` values.
 The second parameter to dial is an implementation of the `connect.Resolver`
 interface. The example above uses the `*connect.ConsulResolver` implementation
-to perform Consul-based service discovery. This also automatically determines
+to perform OpenGyoza-based service discovery. This also automatically determines
 the correct certificate metadata we expect the remote service to serve.
 
 ## Static Addresses, Custom Resolvers
@@ -237,5 +237,5 @@ The Go library provides two built-in resolvers:
     manually specified.
 
   * `*connect.ConsulResolver` which resolves services and prepared queries
-    via the Consul API. This also automatically determines the expected
+    via the OpenGyoza API. This also automatically determines the expected
     cert URI SAN.

@@ -26,7 +26,7 @@ configuration](#advanced-configuration) in the [proxy service
 definition](/docs/connect/registration/service-registration.html) allowing you
 to use the more powerful features of Envoy.
 
-~> **Note:** When using Envoy with Consul and not using the [`consul connect envoy` command](/docs/commands/connect/envoy.html)
+~> **Note:** When using Envoy with Consul and not using the [`gyoza connect envoy` command](/docs/commands/connect/envoy.html)
    Envoy must be run with the `--max-obj-name-len` option set to `256` or greater.
 
 ## Supported Versions
@@ -88,7 +88,7 @@ responsibility for correctly configuring Envoy and ensuring version support etc.
 ## Bootstrap Configuration
 
 Envoy requires an initial bootstrap configuration file. The easiest way to
-create this is using the [`consul connect envoy`
+create this is using the [`gyoza connect envoy`
 command](/docs/commands/connect/envoy.html). The command can either output the
 bootstrap configuration directly to stdout or can generate it and then `exec`
 the Envoy binary as a convenience wrapper.
@@ -114,7 +114,7 @@ configuration entry](/docs/agent/config-entries/proxy-defaults.html) for conveni
     to the way Envoy is setup for StatsD.
 
     Users can also specify the whole parameter in the form `$ENV_VAR_NAME`, which
-    will cause the `consul connect envoy` command to resolve the actual URL from
+    will cause the `gyoza connect envoy` command to resolve the actual URL from
     the named environment variable when it runs. This, for example, allows each
     pod in a Kubernetes cluster to learn of a pod-specific IP address for StatsD
     when the Envoy instance is bootstrapped while still allowing global
@@ -364,13 +364,13 @@ definition](/docs/connect/registration/service-registration.html) or
 
 - `envoy_bootstrap_json_tpl` - Specifies a template in Go template syntax that
   is used in place of [the default
-  template](https://github.com/hashicorp/consul/blob/b64bda880843afaaf44591c3200f921626716849/command/connect/envoy/bootstrap_tpl.go#L87)
-  when generating bootstrap via [`consul connect envoy`
+  template](https://github.com/opengyoza/opengyoza/blob/main/command/connect/envoy/bootstrap_tpl.go#L87)
+  when generating bootstrap via [`gyoza connect envoy`
   command](/docs/commands/connect/envoy.html). The variables that are available
   to be interpolated are [documented
-  here](https://github.com/hashicorp/consul/blob/b64bda880843afaaf44591c3200f921626716849/command/connect/envoy/bootstrap_tpl.go#L5).
+  here](https://github.com/opengyoza/opengyoza/blob/main/command/connect/envoy/bootstrap_tpl.go#L5).
   This offers complete control of the proxy's bootstrap although major
-  deviations from the default template may break Consul's ability to correctly
+  deviations from the default template may break OpenGyoza's ability to correctly
   manage the proxy or enforce it's security model.
 - `envoy_public_listener_json` - Specifies a complete
   [Listener](https://www.envoyproxy.io/docs/envoy/v1.10.0/api-v2/api/v2/lds.proto)

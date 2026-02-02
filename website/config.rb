@@ -3,7 +3,7 @@ set :base_url, "https://www.consul.io/"
 activate :hashicorp do |h|
   h.name        = "consul"
   h.version     = "1.6.4"
-  h.github_slug = "hashicorp/consul"
+  h.github_slug = "opengyoza/opengyoza"
 end
 
 # Netlify redirects/headers
@@ -36,10 +36,10 @@ helpers do
   # @return [String]
   def title_for(page)
     if page && page.data.page_title
-      return "#{page.data.page_title} - Consul by HashiCorp"
+      return "#{page.data.page_title} - OpenGyoza"
     end
 
-     "Consul by HashiCorp"
+     "OpenGyoza"
    end
 
   # Get the description for the page
@@ -48,7 +48,7 @@ helpers do
   #
   # @return [String]
   def description_for(page)
-    description = (page.data.description || "Consul by HashiCorp")
+    description = (page.data.description || "OpenGyoza")
       .gsub('"', '')
       .gsub(/\n+/, ' ')
       .squeeze(' ')

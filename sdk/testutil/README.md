@@ -1,17 +1,18 @@
-Consul Testing Utilities
-========================
+OpenGyoza Testing Utilities
+===========================
 
-This package provides some generic helpers to facilitate testing in Consul.
+This package provides some generic helpers to facilitate testing in OpenGyoza.
 
 TestServer
 ==========
 
-TestServer is a harness for managing Consul agents and initializing them with
+TestServer is a harness for managing OpenGyoza agents and initializing them with
 test data. Using it, you can form test clusters, create services, add health
 checks, manipulate the K/V store, etc. This test harness is completely decoupled
-from Consul's core and API client, meaning it can be easily imported and used in
-external unit tests for various applications. It works by invoking the Consul
-CLI, which means it is a requirement to have Consul installed in the `$PATH`.
+from OpenGyoza's core and API client, meaning it can be easily imported and used in
+external unit tests for various applications. It works by invoking the OpenGyoza
+CLI (`gyoza`, or the `consul` shim), which means it is a requirement to have
+OpenGyoza installed in the `$PATH`.
 
 Following is an example usage:
 
@@ -21,12 +22,12 @@ package my_program
 import (
 	"testing"
 
-	"github.com/hashicorp/consul/consul/structs"
-	"github.com/hashicorp/consul/sdk/testutil"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/sdk/testutil"
 )
 
 func TestFoo_bar(t *testing.T) {
-	// Create a test Consul server
+	// Create a test OpenGyoza server
 	srv1, err := testutil.NewTestServerT(t)
 	if err != nil {
 		t.Fatal(err)
@@ -67,7 +68,7 @@ func TestFoo_bar(t *testing.T) {
 	// Create a node check
 	srv1.AddCheck(t, "mem", "", structs.HealthCritical)
 
-	// The HTTPAddr field contains the address of the Consul
+	// The HTTPAddr field contains the address of the OpenGyoza
 	// API on the new test server instance.
 	println(srv1.HTTPAddr)
 

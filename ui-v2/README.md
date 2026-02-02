@@ -1,4 +1,4 @@
-# consul-ui
+# opengyoza-ui
 
 
 ## Prerequisites
@@ -13,15 +13,15 @@ You will need the following things properly installed on your computer.
 
 ## Installation
 
-* `git clone https://github.com/hashicorp/consul.git` this repository
+* `git clone https://github.com/opengyoza/opengyoza.git` this repository
 * `cd ui-v2`
 * `yarn install`
 
 ## Running / Development
 
-The source code comes with a small server that runs enough of the consul API
+The source code comes with a small server that runs enough of the OpenGyoza API
 as a set of mocks/fixtures to be able to run the UI without having to run
-consul.
+OpenGyoza.
 
 * `make start-api` or `yarn start:api` (this starts a Consul API double running
 on http://localhost:3000)
@@ -56,7 +56,7 @@ Make use of the many generators for code, try `ember help generate` for more det
 
 ### Running Tests
 
-Please note: You do not need to run `make start-api`/`yarn run start:api` to run the tests, but the same mock consul API is used.
+Please note: You do not need to run `make start-api`/`yarn run start:api` to run the tests, but the same mock OpenGyoza API is used.
 
 * `make test` or `yarn run test`
 * `make test-view` or `yarn run test:view` to view the tests running in Chrome

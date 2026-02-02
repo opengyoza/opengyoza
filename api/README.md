@@ -1,25 +1,25 @@
-Consul API client
-=================
+OpenGyoza API client
+====================
 
 This package provides the `api` package which attempts to
-provide programmatic access to the full Consul API.
+provide programmatic access to the full OpenGyoza API.
 
-Currently, all of the Consul APIs included in version 0.6.0 are supported.
+Currently, all of the OpenGyoza APIs included in the 1.6.4 base are supported.
 
 Documentation
 =============
 
-The full documentation is available on [Godoc](https://godoc.org/github.com/hashicorp/consul/api)
+The full documentation is available on [pkg.go.dev](https://pkg.go.dev/github.com/opengyoza/opengyoza/api)
 
 Usage
 =====
 
-Below is an example of using the Consul client:
+Below is an example of using the OpenGyoza client:
 
 ```go
 package main
 
-import "github.com/hashicorp/consul/api"
+import "github.com/opengyoza/opengyoza/api"
 import "fmt"
 
 func main() {
@@ -48,10 +48,10 @@ func main() {
 }
 ```
 
-To run this example, start a Consul server:
+To run this example, start an OpenGyoza agent:
 
 ```bash
-consul agent -dev
+gyoza agent -dev
 ```
 
 Copy the code above into a file such as `main.go`.
@@ -64,4 +64,4 @@ $ go run main.go
 KV: REDIS_MAXCLIENTS 1000
 ```
 
-After running the code, you can also view the values in the Consul UI on your local machine at http://localhost:8500/ui/dc1/kv
+After running the code, you can also view the values in the OpenGyoza UI on your local machine at http://localhost:8500/ui/dc1/kv
