@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  go-test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        module:
+          - .
+          - api
+          - sdk
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.24.0
+          cache: true
+          cache-dependency-path: |
+            go.sum
+            api/go.sum
+            sdk/go.sum
+      - name: Go test
+        working-directory: ${{ matrix.module }}
+        run: go test ./...
+
+  build-artifacts:
+    runs-on: ubuntu-latest
+    needs: go-test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.24.0
+          cache: true
+      - name: Build gyoza + consul
+        env:
+          NOGOX: 1
+        run: make dev-build
+      - name: Upload binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: opengyoza-linux-amd64
+          path: |
+            bin/gyoza
+            bin/consul

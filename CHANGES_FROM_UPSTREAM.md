@@ -44,3 +44,5 @@ Base: HashiCorp Consul v1.6.4 (tag), commit a13102a08250d7f5564f4f18e22182da23fe
   publish tooling to use the GitHub CLI.
 - 2026-02-02: Nomad integration jobs now clone OpenWonton (`openwonton/openwonton`)
   for compatibility testing.
+- 2026-02-02: Added GitHub Actions workflows for tests, build artifacts, and
+  release uploads to GitHub releases.

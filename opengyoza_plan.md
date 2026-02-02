@@ -185,6 +185,7 @@ Match OpenWonton:
       - CircleCI cache keys and author metadata updated; release-site messaging and docker build tags aligned to OpenGyoza.
 - [x] Switch download references to GitHub releases.
       - Website downloads, demo Vagrantfile, and benchmark templates now pull from GitHub release assets; publish tooling uses GitHub CLI.
+- [x] Add GitHub Actions workflows for build/test and release artifacts.
 - [x] Update README, docs, website branding, legal + migration guide.
       - README updated; migration guide added; docs index/guides index and site layout links updated.
       - CLI examples updated to `gyoza` across commands/guides/install/platform docs. Branding sweep complete; legal page added under docs; remaining: any non-docs legal updates if required.
