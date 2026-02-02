@@ -1,6 +1,8 @@
-module github.com/hashicorp/consul/sdk
+module github.com/opengyoza/opengyoza/sdk
 
-go 1.12
+go 1.24.0
+
+toolchain go1.24.0
 
 require (
 	github.com/hashicorp/go-cleanhttp v0.5.1
