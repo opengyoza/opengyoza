@@ -169,11 +169,12 @@ Match OpenWonton:
 
 - [x] Pin upstream v1.6.4 tag + SHA; record in `LEGAL.md` and
       `CHANGES_FROM_UPSTREAM.md`.
-- [ ] Remove enterprise/BSL code + docs; document removals.
-      - Docs cleanup mostly complete; Sentinel hooks removed; operator
-        area/segment/license API stubs removed; enterprise delegate/client/server
-        stubs removed. Autopilot enterprise fields removed. Non-voting server and
-        network segment config/flags/CLI outputs removed; docs updated accordingly.
+- [x] Remove enterprise/BSL code + docs; document removals.
+      - Sentinel hooks removed; operator area/segment/license API stubs removed;
+        enterprise delegate/client/server stubs removed; autopilot enterprise
+        fields removed. Non-voting server and network segment config/flags/CLI
+        outputs removed; docs updated accordingly. Residual "enterprise" mentions
+        are limited to comments/compatibility notes.
 - [x] Set module path to `github.com/opengyoza/opengyoza` and update imports.
 - [x] Implement `gyoza` CLI + `consul` shim.
       - Root `main.go` moved to `cmd/gyoza`; `cmd/consul` shim resolves `gyoza` and warns by default.
