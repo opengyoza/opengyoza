@@ -5,10 +5,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/sdk/testutil/retry"
-	"github.com/hashicorp/consul/testrpc"
 	"github.com/hashicorp/raft"
 	"github.com/hashicorp/serf/serf"
+	"github.com/opengyoza/opengyoza/sdk/testutil/retry"
+	"github.com/opengyoza/opengyoza/testrpc"
 )
 
 func TestAutopilot_IdempotentShutdown(t *testing.T) {
@@ -26,7 +26,6 @@ func TestAutopilot_IdempotentShutdown(t *testing.T) {
 }
 
 func TestAutopilot_CleanupDeadServer(t *testing.T) {
-	t.Parallel()
 	for i := 1; i <= 3; i++ {
 		testCleanupDeadServer(t, i)
 	}
@@ -117,7 +116,6 @@ func TestAutopilot_CleanupDeadNonvoter(t *testing.T) {
 }
 
 func TestAutopilot_CleanupDeadServerPeriodic(t *testing.T) {
-	t.Parallel()
 	dir1, s1 := testServerWithConfig(t, func(c *Config) {
 		c.Datacenter = "dc1"
 		c.Bootstrap = true
@@ -425,7 +423,6 @@ func TestAutopilot_BootstrapExpect(t *testing.T) {
 			}
 		}
 
-		t.Fatalf("no members set")
 		return nil
 	}
 
@@ -436,10 +433,16 @@ func TestAutopilot_BootstrapExpect(t *testing.T) {
 
 	// Have autopilot take one into left
 	dead := findStatus(false)
+	if dead == nil {
+		t.Fatal("no members set")
+	}
 	dead.Shutdown()
 	<-closeMap[dead.config.NodeName]
 	retry.Run(t, func(r *retry.R) {
 		leader := findStatus(true)
+		if leader == nil {
+			r.Fatalf("no members set")
+		}
 		for _, m := range leader.LANMembers() {
 			if m.Name == dead.config.NodeName && m.Status != serf.StatusLeft {
 				r.Fatalf("%v should be left, got %v", m.Name, m.Status.String())
@@ -449,12 +452,21 @@ func TestAutopilot_BootstrapExpect(t *testing.T) {
 
 	delete(servers, dead.config.NodeName)
 	//Autopilot should not take this one into left
-	dead = findStatus(false)
+	dead = nil
+	retry.Run(t, func(r *retry.R) {
+		dead = findStatus(false)
+		if dead == nil {
+			r.Fatal("no members set")
+		}
+	})
 	dead.Shutdown()
 	<-closeMap[dead.config.NodeName]
 
 	retry.Run(t, func(r *retry.R) {
 		leader := findStatus(true)
+		if leader == nil {
+			r.Fatal("no members set")
+		}
 		for _, m := range leader.LANMembers() {
 			if m.Name == dead.config.NodeName && m.Status != serf.StatusFailed {
 				r.Fatalf("%v should be failed, got %v", m.Name, m.Status.String())

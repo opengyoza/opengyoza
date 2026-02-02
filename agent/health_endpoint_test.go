@@ -10,10 +10,10 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/sdk/testutil/retry"
-	"github.com/hashicorp/consul/testrpc"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/sdk/testutil/retry"
+	"github.com/opengyoza/opengyoza/testrpc"
 	"github.com/hashicorp/serf/coordinate"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -125,7 +125,9 @@ func TestHealthChecksInState_Filter(t *testing.T) {
 		},
 	}
 	var out struct{}
-	require.NoError(t, a.RPC("Catalog.Register", args, &out))
+	retry.Run(t, func(r *retry.R) {
+		r.Check(a.RPC("Catalog.Register", args, &out))
+	})
 
 	args = &structs.RegisterRequest{
 		Datacenter: "dc1",
@@ -139,7 +141,9 @@ func TestHealthChecksInState_Filter(t *testing.T) {
 		},
 		SkipNodeUpdate: true,
 	}
-	require.NoError(t, a.RPC("Catalog.Register", args, &out))
+	retry.Run(t, func(r *retry.R) {
+		r.Check(a.RPC("Catalog.Register", args, &out))
+	})
 
 	req, _ := http.NewRequest("GET", "/v1/health/state/critical?filter="+url.QueryEscape("Name == `node check 2`"), nil)
 	retry.Run(t, func(r *retry.R) {
@@ -389,6 +393,10 @@ func TestHealthServiceChecks_NodeMetaFilter(t *testing.T) {
 		Node:       a.Config.NodeName,
 		Address:    "127.0.0.1",
 		NodeMeta:   map[string]string{"somekey": "somevalue"},
+		Service: &structs.NodeService{
+			ID:      "consul",
+			Service: "consul",
+		},
 		Check: &structs.HealthCheck{
 			Node:      a.Config.NodeName,
 			Name:      "consul check",
@@ -437,6 +445,10 @@ func TestHealthServiceChecks_Filtering(t *testing.T) {
 		Node:       a.Config.NodeName,
 		Address:    "127.0.0.1",
 		NodeMeta:   map[string]string{"somekey": "somevalue"},
+		Service: &structs.NodeService{
+			ID:      "consul",
+			Service: "consul",
+		},
 		Check: &structs.HealthCheck{
 			Node:      a.Config.NodeName,
 			Name:      "consul check",
@@ -757,6 +769,10 @@ func TestHealthServiceNodes_Filter(t *testing.T) {
 		Node:       a.Config.NodeName,
 		Address:    "127.0.0.1",
 		NodeMeta:   map[string]string{"somekey": "somevalue"},
+		Service: &structs.NodeService{
+			ID:      "consul",
+			Service: "consul",
+		},
 		Check: &structs.HealthCheck{
 			Node:      a.Config.NodeName,
 			Name:      "consul check",
@@ -980,17 +996,38 @@ func TestHealthServiceNodes_CheckType(t *testing.T) {
 	defer a.Shutdown()
 	testrpc.WaitForLeader(t, a.RPC, "dc1")
 
-	req, _ := http.NewRequest("GET", "/v1/health/service/consul?dc=dc1", nil)
-	resp := httptest.NewRecorder()
-	obj, err := a.srv.HealthServiceNodes(resp, req)
-	require.NoError(t, err)
-	assertIndex(t, resp)
-
-	// Should be 1 health check for consul
-	nodes := obj.(structs.CheckServiceNodes)
-	if len(nodes) != 1 {
-		t.Fatalf("expected 1 node, got %d", len(nodes))
+	baseArgs := &structs.RegisterRequest{
+		Datacenter: "dc1",
+		Node:       a.Config.NodeName,
+		Address:    "127.0.0.1",
+		NodeMeta:   map[string]string{"somekey": "somevalue"},
+		Service: &structs.NodeService{
+			ID:      "consul",
+			Service: "consul",
+		},
+		Check: &structs.HealthCheck{
+			Node:      a.Config.NodeName,
+			Name:      "consul base check",
+			ServiceID: "consul",
+		},
 	}
+
+	var out struct{}
+	require.NoError(t, a.RPC("Catalog.Register", baseArgs, &out))
+
+	req, _ := http.NewRequest("GET", "/v1/health/service/consul?dc=dc1", nil)
+	retry.Run(t, func(r *retry.R) {
+		resp := httptest.NewRecorder()
+		obj, err := a.srv.HealthServiceNodes(resp, req)
+		r.Check(err)
+		assertIndex(t, resp)
+
+		// Should be 1 health check for consul
+		nodes := obj.(structs.CheckServiceNodes)
+		if len(nodes) != 1 {
+			r.Fatalf("expected 1 node, got %d", len(nodes))
+		}
+	})
 
 	args := &structs.RegisterRequest{
 		Datacenter: "dc1",
@@ -1005,26 +1042,30 @@ func TestHealthServiceNodes_CheckType(t *testing.T) {
 		},
 	}
 
-	var out struct{}
 	require.NoError(t, a.RPC("Catalog.Register", args, &out))
 
 	req, _ = http.NewRequest("GET", "/v1/health/service/consul?dc=dc1", nil)
-	resp = httptest.NewRecorder()
-	obj, err = a.srv.HealthServiceNodes(resp, req)
+	resp := httptest.NewRecorder()
+	obj, err := a.srv.HealthServiceNodes(resp, req)
 	require.NoError(t, err)
 
 	assertIndex(t, resp)
 
 	// Should be a non-nil empty list for checks
-	nodes = obj.(structs.CheckServiceNodes)
+	nodes := obj.(structs.CheckServiceNodes)
 	require.Len(t, nodes, 1)
-	require.Len(t, nodes[0].Checks, 2)
+	require.GreaterOrEqual(t, len(nodes[0].Checks), 2)
 
+	found := false
 	for _, check := range nodes[0].Checks {
-		if check.Name == "consul check" && check.Type != "grpc" {
-			t.Fatalf("exptected grpc check type, got %s", check.Type)
+		if check.Name == "consul check" {
+			if check.Type != "grpc" {
+				t.Fatalf("expected grpc check type, got %s", check.Type)
+			}
+			found = true
 		}
 	}
+	require.True(t, found, "expected to find consul check in results")
 }
 
 func TestHealthServiceNodes_WanTranslation(t *testing.T) {

@@ -6,11 +6,11 @@ import (
 	"encoding/pem"
 	"testing"
 
-	"github.com/hashicorp/consul/testrpc"
+	"github.com/opengyoza/opengyoza/testrpc"
 
-	"github.com/hashicorp/consul/agent"
-	"github.com/hashicorp/consul/agent/connect"
-	"github.com/hashicorp/consul/api"
+	"github.com/opengyoza/opengyoza/agent"
+	"github.com/opengyoza/opengyoza/agent/connect"
+	"github.com/opengyoza/opengyoza/api"
 	"github.com/stretchr/testify/require"
 )
 
@@ -258,8 +258,8 @@ func TestServerSideVerifier(t *testing.T) {
 // allows expecting a leaf cert different from the one in expect
 func requireEqualTLSConfig(t *testing.T, expect, got *tls.Config) {
 	require := require.New(t)
-	require.Equal(expect.RootCAs, got.RootCAs)
-	require.Equal(expect.ClientCAs, got.ClientCAs)
+	requireEqualCertPools(t, expect.RootCAs, got.RootCAs)
+	requireEqualCertPools(t, expect.ClientCAs, got.ClientCAs)
 	require.Equal(expect.InsecureSkipVerify, got.InsecureSkipVerify)
 	require.Equal(expect.MinVersion, got.MinVersion)
 	require.Equal(expect.CipherSuites, got.CipherSuites)
@@ -284,6 +284,15 @@ func requireEqualTLSConfig(t *testing.T, expect, got *tls.Config) {
 	gotLeaf, err = got.GetClientCertificate(nil)
 	require.Nil(err)
 	require.Equal(expectLeaf, gotLeaf)
+}
+
+func requireEqualCertPools(t *testing.T, expect, got *x509.CertPool) {
+	t.Helper()
+	if expect == nil || got == nil {
+		require.Equal(t, expect, got)
+		return
+	}
+	require.Equal(t, expect.Subjects(), got.Subjects())
 }
 
 // requireCorrectVerifier invokes got.VerifyPeerCertificate and expects the

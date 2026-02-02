@@ -11,11 +11,11 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/hashicorp/consul/agent/connect"
-	ca "github.com/hashicorp/consul/agent/connect/ca"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/sdk/testutil/retry"
-	"github.com/hashicorp/consul/testrpc"
+	"github.com/opengyoza/opengyoza/agent/connect"
+	ca "github.com/opengyoza/opengyoza/agent/connect/ca"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/sdk/testutil/retry"
+	"github.com/opengyoza/opengyoza/testrpc"
 	msgpackrpc "github.com/hashicorp/net-rpc-msgpackrpc"
 	"github.com/stretchr/testify/assert"
 )
@@ -190,7 +190,12 @@ func TestConnectCAConfig_TriggerRotation(t *testing.T) {
 			Datacenter: "dc1",
 		}
 		var reply structs.IndexedCARoots
-		require.Nil(msgpackrpc.CallWithCodec(codec, "ConnectCA.Roots", args, &reply))
+		retry.Run(t, func(r *retry.R) {
+			r.Check(msgpackrpc.CallWithCodec(codec, "ConnectCA.Roots", args, &reply))
+			if len(reply.Roots) != 2 {
+				r.Fatalf("expected 2 roots, got %d", len(reply.Roots))
+			}
+		})
 		assert.Len(reply.Roots, 2)
 
 		for _, r := range reply.Roots {

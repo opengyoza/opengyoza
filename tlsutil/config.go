@@ -3,6 +3,7 @@ package tlsutil
 import (
 	"crypto/tls"
 	"crypto/x509"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -329,14 +330,14 @@ func (c *Configurator) check(config Config, pool *x509.CertPool, cert *tls.Certi
 			if config.AutoEncryptTLS {
 				errMsg += autoEncryptMsg
 			}
-			return fmt.Errorf(errMsg)
+			return errors.New(errMsg)
 		}
 		if cert == nil {
 			errMsg := "VerifyIncoming set, and no Cert/Key pair provided!"
 			if config.AutoEncryptTLS {
 				errMsg += autoEncryptMsg
 			}
-			return fmt.Errorf(errMsg)
+			return errors.New(errMsg)
 		}
 	}
 	return nil

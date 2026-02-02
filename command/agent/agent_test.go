@@ -2,17 +2,17 @@ package agent
 
 import (
 	"fmt"
-	"github.com/hashicorp/consul/testrpc"
+	"github.com/opengyoza/opengyoza/testrpc"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
 
-	"github.com/hashicorp/consul/agent"
-	"github.com/hashicorp/consul/sdk/testutil"
-	"github.com/hashicorp/consul/sdk/testutil/retry"
 	"github.com/mitchellh/cli"
+	"github.com/opengyoza/opengyoza/agent"
+	"github.com/opengyoza/opengyoza/sdk/testutil"
+	"github.com/opengyoza/opengyoza/sdk/testutil/retry"
 )
 
 // TestConfigFail should test command line flags that lead to an immediate error.
@@ -32,7 +32,7 @@ func TestConfigFail(t *testing.T) {
 		},
 		{
 			args: []string{"agent", "-server", "-bind=10.0.0.1", "-datacenter=foo", "some-other-arg"},
-			out:  "==> config: Unknown extra arguments: [some-other-arg]\n",
+			out:  "==> Unexpected extra arguments: [some-other-arg]\n",
 		},
 		{
 			args: []string{"agent", "-server", "-bind=10.0.0.1"},

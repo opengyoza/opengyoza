@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/tls"
 	"crypto/x509"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -137,8 +138,7 @@ func TestConfigurator_outgoingWrapper_BadDC(t *testing.T) {
 	require.NoError(t, err)
 
 	err = tlsClient.(*tls.Conn).Handshake()
-	_, ok := err.(x509.HostnameError)
-	require.True(t, ok)
+	requireHostnameError(t, err)
 	tlsClient.Close()
 
 	<-errc
@@ -167,9 +167,7 @@ func TestConfigurator_outgoingWrapper_BadCert(t *testing.T) {
 	require.NoError(t, err)
 
 	err = tlsClient.(*tls.Conn).Handshake()
-	if _, ok := err.(x509.HostnameError); !ok {
-		t.Fatalf("should get hostname err: %v", err)
-	}
+	requireHostnameError(t, err)
 	tlsClient.Close()
 
 	<-errc
@@ -223,6 +221,22 @@ func TestConfigurator_wrapTLS_BadCert(t *testing.T) {
 
 	err = <-errc
 	require.NoError(t, err)
+}
+
+func requireHostnameError(t *testing.T, err error) {
+	t.Helper()
+	if err == nil {
+		t.Fatal("expected hostname error, got nil")
+	}
+	var hnErr x509.HostnameError
+	if errors.As(err, &hnErr) {
+		return
+	}
+	var certErr x509.CertificateInvalidError
+	if errors.As(err, &certErr) && certErr.Reason == x509.NameMismatch {
+		return
+	}
+	t.Fatalf("should get hostname err: %v", err)
 }
 
 func TestConfig_ParseCiphers(t *testing.T) {

@@ -19,20 +19,20 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/acl"
-	"github.com/hashicorp/consul/agent/config"
-	"github.com/hashicorp/consul/agent/connect"
-	"github.com/hashicorp/consul/agent/debug"
-	"github.com/hashicorp/consul/agent/local"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/agent/token"
-	tokenStore "github.com/hashicorp/consul/agent/token"
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/lib"
-	"github.com/hashicorp/consul/logger"
-	"github.com/hashicorp/consul/sdk/testutil/retry"
-	"github.com/hashicorp/consul/testrpc"
-	"github.com/hashicorp/consul/types"
+	"github.com/opengyoza/opengyoza/acl"
+	"github.com/opengyoza/opengyoza/agent/config"
+	"github.com/opengyoza/opengyoza/agent/connect"
+	"github.com/opengyoza/opengyoza/agent/debug"
+	"github.com/opengyoza/opengyoza/agent/local"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/token"
+	tokenStore "github.com/opengyoza/opengyoza/agent/token"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/lib"
+	"github.com/opengyoza/opengyoza/logger"
+	"github.com/opengyoza/opengyoza/sdk/testutil/retry"
+	"github.com/opengyoza/opengyoza/testrpc"
+	"github.com/opengyoza/opengyoza/types"
 	"github.com/hashicorp/go-uuid"
 	"github.com/hashicorp/serf/serf"
 	"github.com/stretchr/testify/assert"
@@ -275,8 +275,6 @@ func TestAgent_Services_ACLFilter(t *testing.T) {
 }
 
 func TestAgent_Service(t *testing.T) {
-	t.Parallel()
-
 	a := NewTestAgent(t, t.Name(), TestACLConfig()+`
 	services {
 		name = "web"
@@ -1201,7 +1199,7 @@ func TestAgent_Self(t *testing.T) {
 	if err != nil {
 		t.Fatalf("err: %v", err)
 	}
-	if c := cs[a.config.SegmentName]; !reflect.DeepEqual(c, val.Coord) {
+	if c := cs[""]; !reflect.DeepEqual(c, val.Coord) {
 		t.Fatalf("coordinates are not equal: %v != %v", c, val.Coord)
 	}
 	delete(val.Meta, structs.MetaSegmentKey) // Added later, not in config.
@@ -1798,7 +1796,7 @@ func TestAgent_RegisterCheck(t *testing.T) {
 }
 
 // This verifies all the forms of the new args-style check that we need to
-// support as a result of https://github.com/hashicorp/consul/issues/3587.
+// support as a result of https://github.com/opengyoza/opengyoza/issues/3587.
 func TestAgent_RegisterCheck_Scripts(t *testing.T) {
 	t.Parallel()
 	a := NewTestAgent(t, t.Name(), `
@@ -3624,7 +3622,12 @@ func testAgent_RegisterServiceDeregisterService_Sidecar(t *testing.T, extraHCL s
 				if tt.wantSidecarIDLeftAfterDereg {
 					require.True(ok, "removed non-sidecar service at "+tt.wantNS.ID)
 				} else {
-					require.False(ok, "sidecar not deregistered with service "+svcID)
+					retry.Run(t, func(r *retry.R) {
+						svcs := a.State.Services()
+						if _, ok := svcs[tt.wantNS.ID]; ok {
+							r.Fatalf("sidecar not deregistered with service %s", svcID)
+						}
+					})
 				}
 			}
 		})
@@ -4752,10 +4755,16 @@ func TestAgentConnectCALeafCert_aclDefaultDeny(t *testing.T) {
 	}
 
 	req, _ := http.NewRequest("GET", "/v1/agent/connect/ca/leaf/test", nil)
-	resp := httptest.NewRecorder()
-	_, err := a.srv.AgentConnectCALeafCert(resp, req)
-	require.Error(err)
-	require.True(acl.IsErrPermissionDenied(err))
+	retry.Run(t, func(r *retry.R) {
+		resp := httptest.NewRecorder()
+		_, err := a.srv.AgentConnectCALeafCert(resp, req)
+		if err == nil {
+			r.Fatalf("expected permission denied error")
+		}
+		if !acl.IsErrPermissionDenied(err) {
+			r.Fatalf("expected permission denied error, got: %v", err)
+		}
+	})
 }
 
 func TestAgentConnectCALeafCert_aclServiceWrite(t *testing.T) {
@@ -5033,7 +5042,7 @@ func TestAgentConnectCALeafCert_goodNotLocal(t *testing.T) {
 		require.Equal("HIT", resp.Header().Get("X-Cache"))
 	}
 
-	// Test Blocking - see https://github.com/hashicorp/consul/issues/4462
+	// Test Blocking - see https://github.com/opengyoza/opengyoza/issues/4462
 	{
 		// Fetch it again
 		resp := httptest.NewRecorder()

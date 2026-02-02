@@ -14,7 +14,7 @@ import (
 	"net"
 	"time"
 
-	"github.com/hashicorp/consul/agent/connect"
+	"github.com/opengyoza/opengyoza/agent/connect"
 )
 
 // GenerateSerialNumber returns random bigint generated with crypto/rand
@@ -191,7 +191,7 @@ func Verify(caString, certString, dns string) error {
 	}
 
 	opts := x509.VerifyOptions{
-		DNSName: fmt.Sprintf(dns),
+		DNSName: dns,
 		Roots:   roots,
 	}
 

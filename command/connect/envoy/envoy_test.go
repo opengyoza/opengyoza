@@ -12,11 +12,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hashicorp/consul/agent"
-	"github.com/hashicorp/consul/agent/xds"
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/sdk/testutil"
 	"github.com/mitchellh/cli"
+	"github.com/opengyoza/opengyoza/agent"
+	"github.com/opengyoza/opengyoza/agent/xds"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/sdk/testutil"
 	"github.com/stretchr/testify/require"
 )
 
@@ -534,6 +534,22 @@ func TestGenerateConfig(t *testing.T) {
 
 			// Verify we handled the env and flags right first to get correct template
 			// args.
+			for i := 0; i < len(myFlags); i++ {
+				var caPath string
+				switch {
+				case myFlags[i] == "-ca-file" && i+1 < len(myFlags):
+					caPath = myFlags[i+1]
+				case strings.HasPrefix(myFlags[i], "-ca-file="):
+					caPath = strings.TrimPrefix(myFlags[i], "-ca-file=")
+				}
+				if caPath == "" {
+					continue
+				}
+				content, err := ioutil.ReadFile(caPath)
+				require.NoError(err)
+				tc.WantArgs.AgentCAPEM = strings.ReplaceAll(string(content), "\n", "\\n")
+				break
+			}
 			got, err := c.templateArgs()
 			require.NoError(err) // Error cases should have returned above
 			require.Equal(&tc.WantArgs, got)

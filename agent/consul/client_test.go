@@ -8,13 +8,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/sdk/freeport"
-	"github.com/hashicorp/consul/sdk/testutil"
-	"github.com/hashicorp/consul/sdk/testutil/retry"
-	"github.com/hashicorp/consul/testrpc"
 	msgpackrpc "github.com/hashicorp/net-rpc-msgpackrpc"
 	"github.com/hashicorp/serf/serf"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/sdk/freeport"
+	"github.com/opengyoza/opengyoza/sdk/testutil"
+	"github.com/opengyoza/opengyoza/sdk/testutil/retry"
+	"github.com/opengyoza/opengyoza/testrpc"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/time/rate"
 )
@@ -475,8 +475,9 @@ func TestClient_RPC_RateLimit(t *testing.T) {
 
 	dir2, conf2 := testClientConfig(t)
 	defer conf2.NotifyShutdown()
-	conf2.RPCRate = 2
-	conf2.RPCMaxBurst = 2
+	// Force rate limiting deterministically for this test.
+	conf2.RPCRate = 0
+	conf2.RPCMaxBurst = 0
 	c1, err := NewClient(conf2)
 	if err != nil {
 		t.Fatalf("err: %v", err)
@@ -543,8 +544,9 @@ func TestClient_SnapshotRPC_RateLimit(t *testing.T) {
 
 	dir2, conf1 := testClientConfig(t)
 	defer conf1.NotifyShutdown()
-	conf1.RPCRate = 2
-	conf1.RPCMaxBurst = 2
+	// Force rate limiting deterministically for this test.
+	conf1.RPCRate = 0
+	conf1.RPCMaxBurst = 0
 	c1, err := NewClient(conf1)
 	if err != nil {
 		t.Fatalf("err: %v", err)

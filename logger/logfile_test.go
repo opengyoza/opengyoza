@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/sdk/testutil"
+	"github.com/opengyoza/opengyoza/sdk/testutil"
 	"github.com/hashicorp/logutils"
 )
 
@@ -122,7 +122,7 @@ func TestLogFile_deleteArchives(t *testing.T) {
 		var err error
 		path := filepath.Join(tempDir, tempFile.Name())
 		if bytes, err = ioutil.ReadFile(path); err != nil {
-			t.Errorf(err.Error())
+			t.Fatalf("read %s: %v", path, err)
 			return
 		}
 		contents := string(bytes)

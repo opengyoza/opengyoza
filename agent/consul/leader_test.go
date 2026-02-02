@@ -9,13 +9,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/sdk/testutil"
-	"github.com/hashicorp/consul/sdk/testutil/retry"
-	"github.com/hashicorp/consul/testrpc"
 	msgpackrpc "github.com/hashicorp/net-rpc-msgpackrpc"
 	"github.com/hashicorp/serf/serf"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/sdk/testutil"
+	"github.com/opengyoza/opengyoza/sdk/testutil/retry"
+	"github.com/opengyoza/opengyoza/testrpc"
 	"github.com/stretchr/testify/require"
 )
 
@@ -659,7 +659,6 @@ func TestLeader_MultiBootstrap(t *testing.T) {
 }
 
 func TestLeader_TombstoneGC_Reset(t *testing.T) {
-	t.Parallel()
 	dir1, s1 := testServer(t)
 	defer os.RemoveAll(dir1)
 	defer s1.Shutdown()
@@ -682,20 +681,21 @@ func TestLeader_TombstoneGC_Reset(t *testing.T) {
 	}
 
 	var leader *Server
-	for _, s := range servers {
-		if s.IsLeader() {
-			leader = s
-			break
+	retry.Run(t, func(r *retry.R) {
+		leader = nil
+		for _, s := range servers {
+			if s.IsLeader() {
+				leader = s
+				break
+			}
 		}
-	}
-	if leader == nil {
-		t.Fatalf("Should have a leader")
-	}
-
-	// Check that the leader has a pending GC expiration
-	if !leader.tombstoneGC.PendingExpiration() {
-		t.Fatalf("should have pending expiration")
-	}
+		if leader == nil {
+			r.Fatal("no leader")
+		}
+		if !leader.tombstoneGC.PendingExpiration() {
+			r.Fatal("leader has no pending GC expiration")
+		}
+	})
 
 	// Kill the leader
 	leader.Shutdown()
@@ -792,7 +792,6 @@ func TestLeader_ReapTombstones(t *testing.T) {
 }
 
 func TestLeader_RollRaftServer(t *testing.T) {
-	t.Parallel()
 	dir1, s1 := testServerWithConfig(t, func(c *Config) {
 		c.Bootstrap = true
 		c.Datacenter = "dc1"
@@ -957,7 +956,6 @@ func TestLeader_ChangeServerID(t *testing.T) {
 }
 
 func TestLeader_ChangeNodeID(t *testing.T) {
-	t.Parallel()
 	dir1, s1 := testServer(t)
 	defer os.RemoveAll(dir1)
 	defer s1.Shutdown()
