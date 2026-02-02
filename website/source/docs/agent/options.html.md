@@ -1727,7 +1727,7 @@ to the old fragment -->
 
 * <a name="tls_cipher_suites"></a><a href="#tls_cipher_suites">`tls_cipher_suites`</a> Added in Consul
   0.8.2, this specifies the list of supported ciphersuites as a comma-separated-list. The list of all
-  supported ciphersuites is available in the [source code](https://github.com/hashicorp/consul/blob/master/tlsutil/config.go#L363).
+  supported ciphersuites is available in the [source code](https://github.com/opengyoza/opengyoza/blob/main/tlsutil/config.go#L363).
 
 * <a name="tls_prefer_server_cipher_suites"></a><a href="#tls_prefer_server_cipher_suites">
   `tls_prefer_server_cipher_suites`</a> Added in Consul 0.8.2, this will cause Consul to prefer the
