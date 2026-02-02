@@ -1,18 +1,21 @@
 ---
 layout: "docs"
-page_title: "Consul Integration Program"
+page_title: "Consul Integration Program (Upstream)"
 sidebar_current: "docs-consul-program"
 description: |-
-  Guide to partnership integrations for Consul.
+  Upstream reference for the HashiCorp Consul integration program.
 ---
 
-# Consul Integration Program
+# Consul Integration Program (Upstream)
+
+~> This program is operated by HashiCorp for Consul. OpenGyoza does not run a
+   certification program; the links below are retained as upstream references.
 
 The HashiCorp Consul Integration Program enables vendors to build integrations with HashiCorp Consul that are tested and approved by HashiCorp. The program is intended to be largely self-service with links to resources, code samples, documentation, and clear integration steps.
 
 ## Types of Consul Integrations
 
-By leveraging Consul’s RESTful HTTP API system, vendors are able to build extensible integrations at the data plane, platform, and the infrastructure layer to extend Consul’s functionalities. These integrations can be performed with the OSS (open source) version of Consul. Integrations with advanced network segmentation, advanced federation, and advanced read scalability need to be tested against Consul Enterprise, since these features are only supported by Consul Enterprise.
+By leveraging Consul’s RESTful HTTP API system, vendors are able to build extensible integrations at the data plane, platform, and the infrastructure layer to extend Consul’s functionalities. These integrations can be performed with the OSS (open source) version of Consul. Validate integrations against the target deployment environment for any advanced features not included in this fork.
 
 <div class="center">
 [![Consul Architecture](/assets/images/consul_ecosystem_diagram.png)](/assets/images/consul_ecosystem_diagram.png)
@@ -54,50 +57,50 @@ Here are links to resources, documentation, examples and best practices to guide
 
 **Proxy**
 
-* [How to Integrate a Sidecar Proxy Documentation](https://www.consul.io/docs/connect/proxies/integrate.html)
-* [Example of Envoy Integration](https://www.consul.io/docs/connect/proxies/envoy.html)
-* [Consul’s source code](https://github.com/hashicorp/consul)
+* [How to Integrate a Sidecar Proxy Documentation](/docs/connect/proxies/integrate.html)
+* [Example of Envoy Integration](/docs/connect/proxies/envoy.html)
+* [OpenGyoza’s source code](https://github.com/opengyoza/opengyoza)
 
 **Firewall**
 
-* [Consul Connect Intentions](https://www.consul.io/docs/connect/intentions.html)
-* [Consul Connect Intentions Command Line](https://www.consul.io/docs/commands/intention.html)
-* [Consul Connect Intentions API](https://www.consul.io/api/connect/intentions.html)
+* [Consul Connect Intentions](/docs/connect/intentions.html)
+* [Consul Connect Intentions Command Line](/docs/commands/intention.html)
+* [Consul Connect Intentions API](/api/connect/intentions.html)
 
 **API Gateway**
 
-* [Ambassador Integration documentation](https://www.consul.io/docs/platform/k8s/ambassador.html)
+* [Ambassador Integration documentation](/docs/platform/k8s/ambassador.html)
 
 #### Platform:
 
 * [Consul-AWS for AWS Cloud Map](https://learn.hashicorp.com/consul/integrations/consul-aws)
-* [Consul Agent Cloud Auto-joining](https://www.consul.io/docs/agent/cloud-auto-join.html)
+* [Consul Agent Cloud Auto-joining](/docs/agent/cloud-auto-join.html)
 
 #### Infrastructure:
 
 **Certificate Authority (CA)**
 
-* [Consul Certificate Management Documentation](https://www.consul.io/docs/connect/ca.html)
+* [Consul Certificate Management Documentation](/docs/connect/ca.html)
 * [Securing RPC Communication with TLS Encryption](https://learn.hashicorp.com/consul/security-networking/certificates)
-* [Consul Connect CA API](https://www.consul.io/api/connect/ca.html)
+* [Consul Connect CA API](/api/connect/ca.html)
 
 **Identity and Access Management (IAM)**
 
-* [ACL Documentation and Guides](https://www.consul.io/docs/acl/index.html)
-* [ACL API Documentation](https://www.consul.io/api/acl/acl.html)
+* [ACL Documentation and Guides](/docs/acl/index.html)
+* [ACL API Documentation](/api/acl/acl.html)
 * [Securing Consul with ACLs](https://learn.hashicorp.com/consul/security-networking/production-acls)
 
 **Application Performance Monitoring (APM)**
 
-* [Consul Telemetry Documentation](https://www.consul.io/docs/agent/telemetry.html)
+* [Consul Telemetry Documentation](/docs/agent/telemetry.html)
 * [Consul Cluster Monitoring and Metrics](https://learn.hashicorp.com/consul/day-2-operations/monitoring)
 * [Monitoring Consul with Telegraf](https://learn.hashicorp.com/consul/integrations/telegraf)
 
 **Logging**
 
-* [Consul Monitor Command Line](https://www.consul.io/docs/commands/monitor.html)
-* [Enable syslog via CLI](https://www.consul.io/docs/agent/options.html#enable_syslog)
-* [Enable syslog via config file](https://www.consul.io/docs/agent/options.html#_syslog)
+* [Consul Monitor Command Line](/docs/commands/monitor.html)
+* [Enable syslog via CLI](/docs/agent/options.html#enable_syslog)
+* [Enable syslog via config file](/docs/agent/options.html#_syslog)
 
 **Information Technology Service Management (ITSM)**
 
