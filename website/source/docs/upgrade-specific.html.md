@@ -3,16 +3,19 @@ layout: "docs"
 page_title: "Upgrading Specific Versions"
 sidebar_current: "docs-upgrading-specific"
 description: |-
-  Specific versions of Consul may have additional information about the upgrade process beyond the standard flow.
+  Specific versions of OpenGyoza may have additional information about the upgrade process beyond the standard flow.
 ---
 
 # Upgrading Specific Versions
 
 The [upgrading page](/docs/upgrading.html) covers the details of doing a
-standard upgrade. However, specific versions of Consul may have more details
+standard upgrade. However, specific versions of OpenGyoza may have more details
 provided for their upgrades as a result of new features or changed behavior.
 This page is used to document those details separately from the standard
 upgrade flow.
+
+~> **Note:** OpenGyoza tracks upstream Consul version numbers. The headings below
+use the upstream Consul version labels as authored in the original release notes.
 
 
 ## Consul 1.6.0
@@ -28,7 +31,7 @@ registrations](/docs/connect/registration/sidecar-service.html).
 
 There are two major features in Consul 1.4.0 that may impact upgrades: a [new
 ACL system](#acl-upgrade) and [multi-datacenter support for
-Connect](#connect-multi-datacenter) in the Enterprise version.
+Connect](#connect-multi-datacenter).
 
 ### ACL Upgrade
 
@@ -110,43 +113,6 @@ with the the new ACL [Token](/api/acl/tokens.html) and
 [Policy](/api/acl/policies.html) APIs.
 
 More complete details on how to upgrade "legacy" tokens is available [here](/docs/acl/acl-migrate-tokens.html).
-
-### Connect Multi-datacenter
-
-This only applies to users upgrading from an older version of Consul Enterprise to Consul Enterprise 1.4.0 (all license types).
-
-In addition, this upgrade will only affect clusters where [Connect is enabled](/docs/connect/configuration.html) on your servers before the migration.
-
-Connect multi-datacenter uses the same primary/secondary approach as ACLs and
-will use the same [primary_datacenter](#primary-datacenter). When a secondary
-datacenter server restarts with 1.4.0 it will detect it is not the primary and
-begin an automatic bootstrap of multi-datacenter CA federation.
-
-Datacenters can be upgraded in either order; secondary datacenters will not
-switch into multi-datacenter mode until all servers in both the secondary and
-primary datacenter are detected to be running at least Consul 1.4.0. Secondary
-datacenters monitor this periodically (every few minutes) and will
-automatically upgrade Connect to use a federated Certificate Authority when
-they do.
-
-In general, migrating a Consul cluster from OSS to Enterprise will update the
-CA to be federated automatically and without impact on Connect traffic. When
-upgrading Consul Enterprise 1.3.x to Consul Enterprise 1.4.0 upgrades the CA
-upgrade is seamless, however depending on the size of the cluster, _new_
-connection attempts in the secondary datacenter might fail for a short window
-(typically seconds) while the update is propagated due to the 1.3.x Beta
-authorization endpoint validating originating cluster in a way that was not
-fully forwards compatible with migrating between cluster trust domains. That
-issue is fixed in 1.4.0 as part of General Availability.
-
-Once migrated (typically a few seconds). Connect will use the primary
-datacenter's Certificate Authority as the root of trust for all other
-datacenters. CA migration or root key changes in the primary will now rotate
-automatically and without loss of connectivity throughout all datacenters and
-workloads.
-
-For more information see [Connect
-Multi-datacenter](/docs/enterprise/connect-multi-datacenter/index.html).
 
 ## Consul 1.3.0
 
@@ -248,8 +214,8 @@ for a description of the required format.
 
 Please note that the Raft protocol is different from Consul's internal protocol
 as described on the [Protocol Compatibility Promise](/docs/compatibility.html)
-page, and as is shown in commands like `consul members` and `consul version`.
-To see the version of the Raft protocol in use on each server, use the `consul
+page, and as is shown in commands like `gyoza members` and `gyoza version`.
+To see the version of the Raft protocol in use on each server, use the `gyoza
 operator raft list-peers` command.
 
 The easiest way to upgrade servers is to have each server leave the cluster,
@@ -297,17 +263,17 @@ upgrading. Here's the complete list of removed options and their equivalents:
 | `-retry-join-gce-tag-name` | [`-retry-join`](/docs/agent/options.html#google-compute-engine) |
 | `-retry-join-gce-zone-pattern` | [`-retry-join`](/docs/agent/options.html#google-compute-engine) |
 | `addresses.rpc` | None, the RPC server for CLI commands is no longer supported. |
-| `advertise_addrs` | [`ports`](/docs/agent/options.html#ports) with [`advertise_addr`](https://www.consul.io/docs/agent/options.html#advertise_addr) and/or [`advertise_addr_wan`](/docs/agent/options.html#advertise_addr_wan) |
+| `advertise_addrs` | [`ports`](/docs/agent/options.html#ports) with [`advertise_addr`](/docs/agent/options.html#advertise_addr) and/or [`advertise_addr_wan`](/docs/agent/options.html#advertise_addr_wan) |
 | `dogstatsd_addr` | [`telemetry.dogstatsd_addr`](/docs/agent/options.html#telemetry-dogstatsd_addr) |
 | `dogstatsd_tags` | [`telemetry.dogstatsd_tags`](/docs/agent/options.html#telemetry-dogstatsd_tags) |
 | `http_api_response_headers` | [`http_config.response_headers`](/docs/agent/options.html#response_headers) |
 | `ports.rpc` | None, the RPC server for CLI commands is no longer supported. |
-| `recursor` | [`recursors`](https://github.com/hashicorp/consul/blob/master/website/source/docs/agent/options.html.md#recursors) |
+| `recursor` | [`recursors`](/docs/agent/options.html#recursors) |
 | `retry_join_azure` | [`-retry-join`](/docs/agent/options.html#microsoft-azure) |
 | `retry_join_ec2` | [`-retry-join`](/docs/agent/options.html#amazon-ec2) |
 | `retry_join_gce` | [`-retry-join`](/docs/agent/options.html#google-compute-engine) |
-| `statsd_addr` | [`telemetry.statsd_address`](https://github.com/hashicorp/consul/blob/master/website/source/docs/agent/options.html.md#telemetry-statsd_address) |
-| `statsite_addr` | [`telemetry.statsite_address`](https://github.com/hashicorp/consul/blob/master/website/source/docs/agent/options.html.md#telemetry-statsite_address) |
+| `statsd_addr` | [`telemetry.statsd_address`](/docs/agent/options.html#telemetry-statsd_address) |
+| `statsite_addr` | [`telemetry.statsite_address`](/docs/agent/options.html#telemetry-statsite_address) |
 | `statsite_prefix` | [`telemetry.metrics_prefix`](/docs/agent/options.html#telemetry-metrics_prefix) |
 | `telemetry.statsite_prefix` | [`telemetry.metrics_prefix`](/docs/agent/options.html#telemetry-metrics_prefix) |
 | (service definitions) `serviceid` | [`service_id`](/docs/agent/services.html) |
@@ -387,8 +353,6 @@ verbs:
 | /v1/session/node | GET |
 | /v1/status/leader | GET |
 | /v1/status/peers | GET |
-| /v1/operator/area/:uuid/members | GET |
-| /v1/operator/area/:uuid/join | PUT |
 
 #### Unauthorized KV Requests Return 403
 
@@ -517,7 +481,7 @@ agents would have to wait to contact a Consul server before learning that.
 The default for
 [`disable_remote_exec`](/docs/agent/options.html#disable_remote_exec) was
 changed to "true", so now operators need to opt-in to having agents support
-running commands remotely via [`consul exec`](/docs/commands/exec.html).
+running commands remotely via [`gyoza exec`](/docs/commands/exec.html).
 
 #### Raft Protocol Version Compatibility
 
@@ -849,7 +813,7 @@ to ensure cluster availability:
   nodes as followers, and once the old servers are removed, one of the
   0.5 nodes will become leader.
 
-* Upgrade the followers first, then the leader last. Using `consul info`,
+* Upgrade the followers first, then the leader last. Using `gyoza info`,
   you can determine which nodes are followers. Do an in-place upgrade
   on them first, and finally upgrade the leader last.
 
