@@ -3,7 +3,7 @@ version: 2
 
 references:
   images:
-    go: &GOLANG_IMAGE circleci/golang:1.12.13
+    go: &GOLANG_IMAGE cimg/go:1.24.0
     middleman: &MIDDLEMAN_IMAGE hashicorp/middleman-hashicorp:0.3.40
     ember: &EMBER_IMAGE circleci/node:8-browsers
 
@@ -11,27 +11,27 @@ references:
     test-results: &TEST_RESULTS_DIR /tmp/test-results
 
   cache:
-    yarn: &YARN_CACHE_KEY consul-ui-v1-{{ checksum "ui-v2/yarn.lock" }}
+    yarn: &YARN_CACHE_KEY opengyoza-ui-v1-{{ checksum "ui-v2/yarn.lock" }}
     rubygem: &RUBYGEM_CACHE_KEY static-site-gems-v1-{{ checksum "Gemfile.lock" }}
 
   environment: &ENVIRONMENT
     TEST_RESULTS_DIR: *TEST_RESULTS_DIR
     GOTESTSUM_RELEASE: 0.3.3
-    EMAIL: noreply@hashicorp.com
-    GIT_AUTHOR_NAME: circleci-consul
-    GIT_COMMITTER_NAME: circleci-consul
-    S3_ARTIFACT_BUCKET: consul-dev-artifacts
+    EMAIL: noreply@opengyoza.org
+    GIT_AUTHOR_NAME: circleci-opengyoza
+    GIT_COMMITTER_NAME: circleci-opengyoza
+    S3_ARTIFACT_BUCKET: opengyoza-dev-artifacts
     BASH_ENV: .circleci/bash_env.sh
     VAULT_BINARY_VERSION: 1.2.2
 
 jobs:
-  # lint consul tests
+  # lint retry tests
   lint-consul-retry:
     docker:
       - image: *GOLANG_IMAGE
     steps:
       - checkout
-      - run: go get -u github.com/hashicorp/lint-consul-retry && lint-consul-retry
+      - run: go install github.com/hashicorp/lint-consul-retry@latest && lint-consul-retry
 
   # Runs go fmt and go vet
   go-fmt-and-vet:
@@ -41,11 +41,11 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - consul-modcache-v1-{{ checksum "go.mod" }}
+            - opengyoza-modcache-v1-{{ checksum "go.mod" }}
       - run:
           command: go mod download
       - save_cache:
-          key: consul-modcache-v1-{{ checksum "go.mod" }}
+          key: opengyoza-modcache-v1-{{ checksum "go.mod" }}
           paths:
             - /go/pkg/mod
       - run:
@@ -72,11 +72,11 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - consul-modcache-v1-{{ checksum "go.mod" }}
+            - opengyoza-modcache-v1-{{ checksum "go.mod" }}
       - run:
           command: make update-vendor
       - save_cache:
-          key: consul-modcache-v1-{{ checksum "go.mod" }}
+          key: opengyoza-modcache-v1-{{ checksum "go.mod" }}
           paths:
             - /go/pkg/mod
       - run: |
@@ -96,7 +96,7 @@ jobs:
       - checkout
       - restore_cache: # restore cache from dev-build job
           keys:
-            - consul-modcache-v1-{{ checksum "go.mod" }}
+            - opengyoza-modcache-v1-{{ checksum "go.mod" }}
       - attach_workspace:
           at: /go/bin
       - run: mkdir -p $TEST_RESULTS_DIR
@@ -126,7 +126,7 @@ jobs:
       - checkout
       - restore_cache: # restore cache from dev-build job
           keys:
-            - consul-modcache-v1-{{ checksum "go.mod" }}
+            - opengyoza-modcache-v1-{{ checksum "go.mod" }}
       - attach_workspace:
           at: /go/bin
       - run: mkdir -p $TEST_RESULTS_DIR
@@ -193,18 +193,24 @@ jobs:
             GOARM: 5
             CC: arm-linux-gnueabi-gcc
             GOARCH: arm
-          command: go build -o ./pkg/bin/linux_armel/consul  -ldflags="${GOLDFLAGS}"
+          command: |
+            go build -o ./pkg/bin/linux_armel/gyoza -ldflags="${GOLDFLAGS}" ./cmd/gyoza
+            go build -o ./pkg/bin/linux_armel/consul -ldflags="${GOLDFLAGS}" ./cmd/consul
       - run:
           environment:
             GOARM: 6
             CC: arm-linux-gnueabihf-gcc
             GOARCH: arm
-          command: go build -o ./pkg/bin/linux_armhf/consul  -ldflags="${GOLDFLAGS}"
+          command: |
+            go build -o ./pkg/bin/linux_armhf/gyoza -ldflags="${GOLDFLAGS}" ./cmd/gyoza
+            go build -o ./pkg/bin/linux_armhf/consul -ldflags="${GOLDFLAGS}" ./cmd/consul
       - run:
           environment:
             CC: aarch64-linux-gnu-gcc
             GOARCH: arm64
-          command: go build -o ./pkg/bin/linux_aarch64/consul  -ldflags="${GOLDFLAGS}"
+          command: |
+            go build -o ./pkg/bin/linux_aarch64/gyoza -ldflags="${GOLDFLAGS}" ./cmd/gyoza
+            go build -o ./pkg/bin/linux_aarch64/consul -ldflags="${GOLDFLAGS}" ./cmd/consul
       - store_artifacts:
           path: ./pkg/bin
 
@@ -218,11 +224,11 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - consul-modcache-v1-{{ checksum "go.mod" }}
+            - opengyoza-modcache-v1-{{ checksum "go.mod" }}
       - run:
           command: make dev
       - save_cache:
-          key: consul-modcache-v1-{{ checksum "go.mod" }}
+          key: opengyoza-modcache-v1-{{ checksum "go.mod" }}
           paths:
             - /go/pkg/mod
 
@@ -231,6 +237,7 @@ jobs:
           root: /go/bin
           paths:
             - consul
+            - gyoza
 
   # upload development build to s3
   dev-upload-s3:
@@ -242,19 +249,19 @@ jobs:
       - run:
           name: Install awscli
           command: sudo pip install awscli
-      # get consul binary
+      # get gyoza + consul binaries
       - attach_workspace:
           at: bin/
       - run:
           name: package binary
-          command: tar -czf consul.tar.gz -C bin/ .
+          command: tar -czf gyoza.tar.gz -C bin/ .
       - run:
           name: Upload to s3
           command: |
             if [ -n "${S3_ARTIFACT_PATH}" ]; then
               aws s3 cp \
               --metadata "CIRCLECI=${CIRCLECI},CIRCLE_BUILD_URL=${CIRCLE_BUILD_URL},CIRCLE_BRANCH=${CIRCLE_BRANCH}" \
-              "consul.tar.gz" "s3://${S3_ARTIFACT_BUCKET}/${S3_ARTIFACT_PATH}/${CIRCLE_SHA1}.tar.gz"
+              "gyoza.tar.gz" "s3://${S3_ARTIFACT_BUCKET}/${S3_ARTIFACT_PATH}/${CIRCLE_SHA1}.tar.gz"
             else
               echo "CircleCI - S3_ARTIFACT_PATH was not set"
               exit 1
@@ -268,24 +275,24 @@ jobs:
       <<: *ENVIRONMENT
     steps:
       - checkout
-      # get consul binary
+      # get gyoza + consul binaries
       - attach_workspace:
           at: bin/
       - setup_remote_docker:
           docker_layer_caching: true
       - run: make ci.dev-docker
 
-  # Nomad 0.8 builds on go0.10
-  # Run integration tests on nomad/v0.8.7
+  # OpenWonton 0.8 builds on go0.10
+  # Run integration tests on openwonton/v0.8.7
   nomad-integration-0_8:
     docker:
       - image: circleci/golang:1.10
     environment:
       <<: *ENVIRONMENT
-      NOMAD_WORKING_DIR: &NOMAD_WORKING_DIR /go/src/github.com/hashicorp/nomad
+      NOMAD_WORKING_DIR: &NOMAD_WORKING_DIR /go/src/github.com/openwonton/openwonton
       NOMAD_VERSION: v0.8.7
     steps: &NOMAD_INTEGRATION_TEST_STEPS
-      - run: git clone https://github.com/hashicorp/nomad.git --branch ${NOMAD_VERSION} ${NOMAD_WORKING_DIR}
+      - run: git clone https://github.com/openwonton/openwonton.git --branch ${NOMAD_VERSION} ${NOMAD_WORKING_DIR}
 
       # get consul binary
       - attach_workspace:
@@ -313,14 +320,14 @@ jobs:
       - store_artifacts:
           path: *TEST_RESULTS_DIR
 
-  # run integration tests on nomad/master
+  # run integration tests on openwonton/main
   nomad-integration-master:
     docker:
       - image: *GOLANG_IMAGE
     environment:
       <<: *ENVIRONMENT
-      NOMAD_WORKING_DIR: /go/src/github.com/hashicorp/nomad
-      NOMAD_VERSION: master
+      NOMAD_WORKING_DIR: /go/src/github.com/openwonton/openwonton
+      NOMAD_VERSION: main
     steps: *NOMAD_INTEGRATION_TEST_STEPS
 
   build-website:
@@ -490,7 +497,7 @@ jobs:
           at: .
       - setup_remote_docker:
           docker_layer_caching: true
-      # Build the consul-dev image from the already built binary
+      # Build the dev image from the already built binaries
       - run: docker build -t consul-dev -f ./build-support/docker/Consul-Dev.dockerfile .
       - run:
           name: Envoy Integration Tests
@@ -556,7 +563,7 @@ workflows:
                 - /^pull\/.*$/ # only push dev builds from non forks
       - dev-upload-docker:
           <<: *dev-upload
-          context: consul-ci
+          context: opengyoza-ci
       - nomad-integration-master:
           requires:
             - dev-build

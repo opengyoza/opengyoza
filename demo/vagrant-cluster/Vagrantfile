@@ -7,19 +7,22 @@ echo "Installing dependencies ..."
 sudo apt-get update
 sudo apt-get install -y unzip curl jq dnsutils
 
-echo "Determining Consul version to install ..."
-CHECKPOINT_URL="https://checkpoint-api.hashicorp.com/v1/check"
-if [ -z "$CONSUL_DEMO_VERSION" ]; then
-    CONSUL_DEMO_VERSION=$(curl -s "${CHECKPOINT_URL}"/consul | jq .current_version | tr -d '"')
+echo "Determining OpenGyoza version to install ..."
+if [ -z "$GYOZA_DEMO_VERSION" ] && [ -n "$CONSUL_DEMO_VERSION" ]; then
+    GYOZA_DEMO_VERSION="$CONSUL_DEMO_VERSION"
+fi
+if [ -z "$GYOZA_DEMO_VERSION" ]; then
+    GYOZA_DEMO_VERSION=$(curl -s https://api.github.com/repos/opengyoza/opengyoza/releases/latest | jq -r .tag_name | sed 's/^v//')
 fi
 
-echo "Fetching Consul version ${CONSUL_DEMO_VERSION} ..."
+echo "Fetching OpenGyoza version ${GYOZA_DEMO_VERSION} ..."
 cd /tmp/
-curl -s https://releases.hashicorp.com/consul/${CONSUL_DEMO_VERSION}/consul_${CONSUL_DEMO_VERSION}_linux_amd64.zip -o consul.zip
+curl -s -L https://github.com/opengyoza/opengyoza/releases/download/v${GYOZA_DEMO_VERSION}/gyoza_${GYOZA_DEMO_VERSION}_linux_amd64.zip -o gyoza.zip
 
-echo "Installing Consul version ${CONSUL_DEMO_VERSION} ..."
-unzip consul.zip
-sudo chmod +x consul
+echo "Installing OpenGyoza version ${GYOZA_DEMO_VERSION} ..."
+unzip gyoza.zip
+sudo chmod +x gyoza consul
+sudo mv gyoza /usr/bin/gyoza
 sudo mv consul /usr/bin/consul
 
 sudo mkdir /etc/consul.d
@@ -27,8 +30,9 @@ sudo chmod a+w /etc/consul.d
 
 SCRIPT
 
-# Specify a Consul version
+# Specify an OpenGyoza version
 CONSUL_DEMO_VERSION = ENV['CONSUL_DEMO_VERSION']
+GYOZA_DEMO_VERSION = ENV['GYOZA_DEMO_VERSION'] || CONSUL_DEMO_VERSION
 
 # Specify a custom Vagrant box for the demo
 DEMO_BOX_NAME = ENV['DEMO_BOX_NAME'] || "debian/stretch64"
@@ -42,7 +46,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.provision "shell",
                           inline: $script,
-                          env: {'CONSUL_DEMO_VERSION' => CONSUL_DEMO_VERSION}
+                          env: {
+                            'CONSUL_DEMO_VERSION' => CONSUL_DEMO_VERSION,
+                            'GYOZA_DEMO_VERSION' => GYOZA_DEMO_VERSION
+                          }
 
   config.vm.define "n1" do |n1|
       n1.vm.hostname = "n1"

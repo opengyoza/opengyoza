@@ -37,3 +37,10 @@ Base: HashiCorp Consul v1.6.4 (tag), commit a13102a08250d7f5564f4f18e22182da23fe
   docs links). Updated upgrade-specific guidance to remove enterprise-only
   sections and align CLI examples with `gyoza`.
 - 2026-02-02: Tests green for full `go test ./...`.
+- 2026-02-02: Updated CI and release metadata defaults for OpenGyoza (CircleCI
+  cache keys, CI author metadata, release-site messaging, and docker build tags).
+- 2026-02-02: Switched download/release URLs to GitHub releases for OpenGyoza
+  (website downloads, demo Vagrantfile, and benchmark templates) and updated
+  publish tooling to use the GitHub CLI.
+- 2026-02-02: Nomad integration jobs now clone OpenWonton (`openwonton/openwonton`)
+  for compatibility testing.

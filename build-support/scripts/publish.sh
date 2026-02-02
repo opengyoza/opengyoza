@@ -18,16 +18,16 @@ Usage: ${SCRIPT_NAME}  [<options ...>]
 
 Description:
 
-   This script will "publish" a Consul release. It expects a prebuilt release in 
+   This script will "publish" an OpenGyoza release. It expects a prebuilt release in 
    pkg/dist matching the version in the repo and a clean git status. It will 
-   prompt you to confirm the consul version and git changes you are going to 
-   publish prior to pushing to git and to releases.hashicorp.com.
+   prompt you to confirm the release version and git changes you are going to 
+   publish prior to pushing to git and to GitHub releases.
 
 Options:                       
    -s | --source     DIR         Path to source to build.
                                  Defaults to "${SOURCE_DIR}"
                                  
-   -w | --website                Publish to releases.hashicorp.com
+   -w | --website                Publish to GitHub releases
    
    -g | --git                    Push release commit and tag to Git
    

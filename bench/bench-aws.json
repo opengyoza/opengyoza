@@ -2,7 +2,8 @@
     "variables": {
         "aws_access_key": "",
         "aws_secret_key": "",
-        "source_ami": "ami-018c9568"
+        "source_ami": "ami-018c9568",
+        "gyoza_version": "1.6.4"
     },
     "builders": [
         {
@@ -53,10 +54,11 @@
             "sudo mkdir /etc/consul.d",
             "sudo apt-get update",
             "sudo apt-get install unzip make",
-            "wget https://releases.hashicorp.com/consul/0.5.2/consul_0.5.2_linux_amd64.zip",
-            "unzip 0.5.2_linux_amd64.zip",
+            "wget https://github.com/opengyoza/opengyoza/releases/download/v{{ user `gyoza_version` }}/gyoza_{{ user `gyoza_version` }}_linux_amd64.zip",
+            "unzip gyoza_{{ user `gyoza_version` }}_linux_amd64.zip",
+            "sudo mv gyoza /usr/local/bin/gyoza",
             "sudo mv consul /usr/local/bin/consul",
-            "chmod +x /usr/local/bin/consul"
+            "chmod +x /usr/local/bin/gyoza /usr/local/bin/consul"
         ]
     },
     {

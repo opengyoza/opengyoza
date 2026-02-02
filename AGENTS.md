@@ -27,6 +27,7 @@
 
 ## Commit & Pull Request Guidelines
 - The repo history is minimal; use short, imperative commit subjects and include a brief scope when helpful (e.g., `docs:`, `agent:`).
+- Before committing, review `git status` and keep commits scoped; avoid `--amend` unless explicitly requested.
 - PRs should include a concise summary, rationale, and test results; include screenshots for UI or docs layout changes.
 
 ## Agent Workflow

@@ -14,7 +14,7 @@ GOFILES ?= $(shell go list $(GOMODULES) | grep -v /vendor/)
 ifeq ($(origin GOTEST_PKGS_EXCLUDE), undefined)
 GOTEST_PKGS ?= $(GOMODULES)
 else
-GOTEST_PKGS=$(shell go list $(GOMODULES) | sed 's/github.com\/hashicorp\/consul/./' | egrep -v "^($(GOTEST_PKGS_EXCLUDE))$$")
+GOTEST_PKGS=$(shell go list $(GOMODULES) | sed 's/github.com\/opengyoza\/opengyoza/./' | egrep -v "^($(GOTEST_PKGS_EXCLUDE))$$")
 endif
 GOOS?=$(shell go env GOOS)
 GOARCH?=$(shell go env GOARCH)
@@ -26,7 +26,7 @@ ASSETFS_PATH?=agent/bindata_assetfs.go
 GIT_COMMIT?=$(shell git rev-parse --short HEAD)
 GIT_DIRTY?=$(shell test -n "`git status --porcelain`" && echo "+CHANGES" || true)
 GIT_DESCRIBE?=$(shell git describe --tags --always --match "v*")
-GIT_IMPORT=github.com/hashicorp/consul/version
+GIT_IMPORT=github.com/opengyoza/opengyoza/version
 GOLDFLAGS=-X $(GIT_IMPORT).GitCommit=$(GIT_COMMIT)$(GIT_DIRTY) -X $(GIT_IMPORT).GitDescribe=$(GIT_DESCRIBE)
 
 ifeq ($(FORCE_REBUILD),1)
@@ -43,16 +43,16 @@ QUIET=
 endif
 
 CONSUL_DEV_IMAGE?=consul-dev
-GO_BUILD_TAG?=consul-build-go
-UI_BUILD_TAG?=consul-build-ui
-BUILD_CONTAINER_NAME?=consul-builder
+GO_BUILD_TAG?=opengyoza-build-go
+UI_BUILD_TAG?=opengyoza-build-ui
+BUILD_CONTAINER_NAME?=opengyoza-builder
 CONSUL_IMAGE_VERSION?=latest
 
 ################
 # CI Variables #
 ################
-CI_DEV_DOCKER_NAMESPACE?=hashicorpdev
-CI_DEV_DOCKER_IMAGE_NAME?=consul
+CI_DEV_DOCKER_NAMESPACE?=opengyoza
+CI_DEV_DOCKER_IMAGE_NAME?=gyoza
 CI_DEV_DOCKER_WORKDIR?=bin/
 ################
 
@@ -159,17 +159,17 @@ dev-build:
 	@$(SHELL) $(CURDIR)/build-support/scripts/build-local.sh -o $(GOOS) -a $(GOARCH)
 
 dev-docker: linux
-	@echo "Pulling consul container image - $(CONSUL_IMAGE_VERSION)"
+	@echo "Pulling upstream consul container image - $(CONSUL_IMAGE_VERSION)"
 	@docker pull consul:$(CONSUL_IMAGE_VERSION) >/dev/null
-	@echo "Building Consul Development container - $(CONSUL_DEV_IMAGE)"
+	@echo "Building OpenGyoza development container - $(CONSUL_DEV_IMAGE)"
 	@docker build $(NOCACHE) $(QUIET) -t '$(CONSUL_DEV_IMAGE)' --build-arg CONSUL_IMAGE_VERSION=$(CONSUL_IMAGE_VERSION) $(CURDIR)/pkg/bin/linux_amd64 -f $(CURDIR)/build-support/docker/Consul-Dev.dockerfile
 
 # In CircleCI, the linux binary will be attached from a previous step at bin/. This make target
 # should only run in CI and not locally.
 ci.dev-docker:
-	@echo "Pulling consul container image - $(CONSUL_IMAGE_VERSION)"
+	@echo "Pulling upstream consul container image - $(CONSUL_IMAGE_VERSION)"
 	@docker pull consul:$(CONSUL_IMAGE_VERSION) >/dev/null
-	@echo "Building Consul Development container - $(CI_DEV_DOCKER_IMAGE_NAME)"
+	@echo "Building OpenGyoza development container - $(CI_DEV_DOCKER_IMAGE_NAME)"
 	@docker build $(NOCACHE) $(QUIET) -t '$(CI_DEV_DOCKER_NAMESPACE)/$(CI_DEV_DOCKER_IMAGE_NAME):$(GIT_COMMIT)' \
 	--build-arg CONSUL_IMAGE_VERSION=$(CONSUL_IMAGE_VERSION) \
 	--label COMMIT_SHA=$(CIRCLE_SHA1) \
@@ -177,7 +177,7 @@ ci.dev-docker:
 	--label CIRCLE_BUILD_URL=$(CIRCLE_BUILD_URL) \
 	$(CI_DEV_DOCKER_WORKDIR) -f $(CURDIR)/build-support/docker/Consul-Dev.dockerfile
 	@echo $(DOCKER_PASS) | docker login -u="$(DOCKER_USER)" --password-stdin
-	@echo "Pushing dev image to: https://cloud.docker.com/u/hashicorpdev/repository/docker/hashicorpdev/consul"
+	@echo "Pushing dev image to: https://cloud.docker.com/u/opengyoza/repository/docker/opengyoza/gyoza"
 	@docker push $(CI_DEV_DOCKER_NAMESPACE)/$(CI_DEV_DOCKER_IMAGE_NAME):$(GIT_COMMIT)
 ifeq ($(CIRCLE_BRANCH), master)
 	@docker tag $(CI_DEV_DOCKER_NAMESPACE)/$(CI_DEV_DOCKER_IMAGE_NAME):$(GIT_COMMIT) $(CI_DEV_DOCKER_NAMESPACE)/$(CI_DEV_DOCKER_IMAGE_NAME):latest
@@ -186,7 +186,7 @@ endif
 
 changelogfmt:
 	@echo "--> Making [GH-xxxx] references clickable..."
-	@sed -E 's|([^\[])\[GH-([0-9]+)\]|\1[[GH-\2](https://github.com/hashicorp/consul/issues/\2)]|g' CHANGELOG.md > changelog.tmp && mv changelog.tmp CHANGELOG.md
+	@sed -E 's|([^\[])\[GH-([0-9]+)\]|\1[[GH-\2](https://github.com/opengyoza/opengyoza/issues/\2)]|g' CHANGELOG.md > changelog.tmp && mv changelog.tmp CHANGELOG.md
 
 # linux builds a linux package independent of the source platform
 linux:
@@ -218,8 +218,8 @@ update-vendor:
 	@echo "--> Running go mod vendor"
 	@go mod vendor
 	@echo "--> Removing vendoring of our own nested modules"
-	@rm -rf vendor/github.com/hashicorp/consul
-	@grep -v "hashicorp/consul/" < vendor/modules.txt > vendor/modules.txt.new
+	@rm -rf vendor/github.com/opengyoza/opengyoza
+	@grep -v "opengyoza/opengyoza/" < vendor/modules.txt > vendor/modules.txt.new
 	@mv vendor/modules.txt.new vendor/modules.txt
 
 test-internal:

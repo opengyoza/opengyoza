@@ -2,8 +2,8 @@
 HASHICORP_GPG_KEY="348FFC4C"
 
 # Default Image Names
-UI_BUILD_CONTAINER_DEFAULT="consul-build-ui"
-GO_BUILD_CONTAINER_DEFAULT="consul-build-go"
+UI_BUILD_CONTAINER_DEFAULT="opengyoza-build-ui"
+GO_BUILD_CONTAINER_DEFAULT="opengyoza-build-go"
 
 # Whether to colorize shell output
 COLORIZE=${COLORIZE-1}
@@ -23,10 +23,12 @@ BUILD_DEBUG=${BUILD_DEBUG-0}
 # default publish host is github.com - only really useful to use something else for testing
 PUBLISH_GIT_HOST="${PUBLISH_GIT_HOST-github.com}"
 
-# default publish repo is hashicorp/consul - useful to override for testing as well as in the enterprise repo
-PUBLISH_GIT_REPO="${PUBLISH_GIT_REPO-hashicorp/consul.git}"
+# default publish repo is opengyoza/opengyoza - useful to override for testing
+PUBLISH_GIT_REPO="${PUBLISH_GIT_REPO-opengyoza/opengyoza.git}"
 
-CONSUL_PKG_NAME="consul"
+# package name defaults to gyoza; allow override via CONSUL_PKG_NAME or GYOZA_PKG_NAME
+GYOZA_PKG_NAME="${GYOZA_PKG_NAME-gyoza}"
+CONSUL_PKG_NAME="${CONSUL_PKG_NAME-${GYOZA_PKG_NAME}}"
 
 if test "$(uname)" == "Darwin"
 then

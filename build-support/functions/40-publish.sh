@@ -1,20 +1,69 @@
-function hashicorp_release {
+function publish_release_site {
    # Arguments:
    #   $1 - Path to directory containing all of the release artifacts
+   #   $2 - Version (without leading v)
    #
    # Returns:
    #   0 - success
    #   * - failure
    #
    # Notes:
-   #   Requires the AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables
-   #   to be set
+   #   Requires GitHub CLI auth (gh auth login) or GH_TOKEN.
    
-   status "Uploading files"
-   hc-releases upload "${1}" || return 1
+   local dist_dir="$1"
+   local vers="$2"
    
-   status "Publishing the release"
-   hc-releases publish || return 1
+   if test -z "${dist_dir}"
+   then
+      err "ERROR: publish_release_site requires a path to release artifacts"
+      return 1
+   fi
+   
+   if test -z "${vers}"
+   then
+      err "ERROR: publish_release_site requires a version"
+      return 1
+   fi
+   
+   if ! command -v gh >/dev/null 2>&1
+   then
+      err "ERROR: gh CLI not found. Install GitHub CLI and authenticate (gh auth login)."
+      return 1
+   fi
+   
+   if ! gh auth status -h github.com >/dev/null 2>&1
+   then
+      err "ERROR: gh CLI is not authenticated. Run 'gh auth login' or set GH_TOKEN."
+      return 1
+   fi
+   
+   if ! test -d "${dist_dir}"
+   then
+      err "ERROR: '${dist_dir}' is not a directory."
+      return 1
+   fi
+   
+   local tag="v${vers}"
+   if ! gh release view "${tag}" >/dev/null 2>&1
+   then
+      status "Creating GitHub release ${tag}"
+      gh release create "${tag}" --title "OpenGyoza ${vers}" --notes "OpenGyoza ${vers}" || return 1
+   fi
+   
+   local files=()
+   while IFS= read -r -d '' file
+   do
+      files+=("${file}")
+   done < <(find "${dist_dir}" -maxdepth 1 -type f -print0)
+   
+   if test "${#files[@]}" -eq 0
+   then
+      err "ERROR: No release artifacts found in ${dist_dir}"
+      return 1
+   fi
+   
+   status "Uploading release artifacts to GitHub"
+   gh release upload "${tag}" "${files[@]}" --clobber || return 1
    
    return 0
 }
@@ -132,15 +181,19 @@ function extract_consul_local {
    
    local ret=0
    local tfile="$(mktemp) -t "${CONSUL_PKG_NAME}_")"
-   
-   unzip -p "${zfile}" "consul" > "${tfile}"
-   if test $? -eq 0
+
+   if unzip -p "${zfile}" "gyoza" > "${tfile}"
+   then
+      chmod +x "${tfile}"
+      echo "${tfile}"
+      return 0
+   elif unzip -p "${zfile}" "consul" > "${tfile}"
    then
       chmod +x "${tfile}"
       echo "${tfile}"
       return 0
    else
-      err "ERROR: Failed to extract consul binary from the zip file"
+      err "ERROR: Failed to extract gyoza or consul binary from the zip file"
       return 1
    fi
 }
@@ -181,7 +234,7 @@ function confirm_consul_version {
             break
             ;;
          * )
-            read -p "Is this Consul version correct? [y/n]: " answer
+            read -p "Is this ${CONSUL_PKG_NAME} version correct? [y/n]: " answer
             ;;
       esac
    done
@@ -196,7 +249,7 @@ function confirm_consul_info {
    #   * - error
    
    local consul_exe="$1"
-   local log_file="$(mktemp) -t "consul_log_")"
+   local log_file="$(mktemp) -t "${CONSUL_PKG_NAME}_log_")"
    "${consul_exe}" agent -dev > "${log_file}" 2>&1 &
    local consul_pid=$!
    sleep 1
@@ -211,23 +264,23 @@ function confirm_consul_info {
    do
       case "${answer}" in
          [yY]* )
-            status "Consul Agent Output Accepted"
+            status "${CONSUL_PKG_NAME} agent output accepted"
             break
             ;;
          [nN]* )
-            err "Consul Agent Output Rejected"
+            err "${CONSUL_PKG_NAME} agent output rejected"
             ret=1
             break
             ;;
          * )
-            read -p "Is this Consul Agent Output correct? [y/n]: " answer
+            read -p "Is this ${CONSUL_PKG_NAME} agent output correct? [y/n]: " answer
             ;;
       esac
    done
    
    if test "${ret}" -eq 0
    then
-      status "Consul Info Output"
+      status "${CONSUL_PKG_NAME} info output"
       "${consul_exe}" info
       echo ""
       local answer=""
@@ -236,16 +289,16 @@ function confirm_consul_info {
       do
          case "${answer}" in
             [yY]* )
-               status "Consul Info Output Accepted"
+               status "${CONSUL_PKG_NAME} info output accepted"
                break
                ;;
             [nN]* )
-               err "Consul Info Output Rejected"
+               err "${CONSUL_PKG_NAME} info output rejected"
                return 1
                break
                ;;
             * )
-               read -p "Is this Consul Info Output correct? [y/n]: " answer
+               read -p "Is this ${CONSUL_PKG_NAME} info output correct? [y/n]: " answer
                ;;
          esac
       done
@@ -282,16 +335,16 @@ function confirm_consul_info {
       do
          case "${answer}" in
             [yY]* )
-               status "Consul UI/Logo Version Accepted"
+               status "${CONSUL_PKG_NAME} UI/logo version accepted"
                break
                ;;
             [nN]* )
-               err "Consul UI/Logo Version Rejected"
+               err "${CONSUL_PKG_NAME} UI/logo version rejected"
                return 1
                break
                ;;
             * )
-               read -p "Is this Consul UI/Logo Version correct? [y/n]: " answer
+               read -p "Is this ${CONSUL_PKG_NAME} UI/logo version correct? [y/n]: " answer
                ;;
          esac
       done
@@ -299,7 +352,7 @@ function confirm_consul_info {
    
 
    
-   status "Requesting Consul to leave the cluster / shutdown"
+   status "Requesting ${CONSUL_PKG_NAME} to leave the cluster / shutdown"
    "${consul_exe}" leave
    wait ${consul_pid} > /dev/null 2>&1
    
@@ -342,15 +395,15 @@ function verify_release_build {
    status_stage "==> Verifying release files"
    check_release "${sdir}/pkg/dist" "${vers}" true || return 1
    
-   status_stage "==> Extracting Consul version for local system"
+   status_stage "==> Extracting ${CONSUL_PKG_NAME} version for local system"
    local consul_exe=$(extract_consul "${sdir}/pkg/dist" "${vers}") || return 1
    # make sure to remove the temp file
    trap "rm '${consul_exe}'" EXIT
    
-   status_stage "==> Confirming Consul Version"
+   status_stage "==> Confirming ${CONSUL_PKG_NAME} version"
    confirm_consul_version "${consul_exe}" || return 1
    
-   status_stage "==> Confirming Consul Agent Info"
+   status_stage "==> Confirming ${CONSUL_PKG_NAME} agent info"
    confirm_consul_info "${consul_exe}" || return 1
 }
 
@@ -358,7 +411,7 @@ function publish_release {
    # Arguments:
    #   $1 - Path to top level Consul source that contains the built release
    #   $2 - boolean whether to publish to git upstream
-   #   $3 - boolean whether to publish to releases.hashicorp.com
+   #   $3 - boolean whether to publish to GitHub releases
    #
    # Returns:
    #   0 - success
@@ -372,16 +425,16 @@ function publish_release {
    
    local sdir="$1"
    local pub_git="$2"
-   local pub_hc_releases="$3"
+   local pub_release_site="$3"
    
    if test -z "${pub_git}"
    then
       pub_git=1
    fi
    
-   if test -z "${pub_hc_releases}"
+   if test -z "${pub_release_site}"
    then
-      pub_hc_releases=1
+      pub_release_site=1
    fi
    
    local vers="$(get_version ${sdir} true false)"
@@ -413,10 +466,10 @@ function publish_release {
       git_push_ref "$1" "v${vers}" "${remote}" || return 1
    fi
    
-   if is_set "${pub_hc_releases}"
+   if is_set "${pub_release_site}"
    then
-      status_stage "==> Publishing to releases.hashicorp.com"
-      hashicorp_release "${sdir}/pkg/dist" || return 1
+      status_stage "==> Publishing to GitHub releases"
+      publish_release_site "${sdir}/pkg/dist" "${vers}" || return 1
    fi
    
    return 0

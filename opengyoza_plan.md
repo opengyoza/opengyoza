@@ -151,6 +151,7 @@ Match OpenWonton:
   - Refactor while keeping tests green.
 - If tests depend on Nomad, use OpenWonton instead of upstream Nomad:
   https://github.com/openwonton/openwonton
+  - CI Nomad integration jobs should clone OpenWonton (main + v0.8.7).
 - When running tests, redirect output to a file and check line count with
   `wc -l` before opening (per repo rules).
 
@@ -180,6 +181,10 @@ Match OpenWonton:
       - Root `main.go` moved to `cmd/gyoza`; `cmd/consul` shim resolves `gyoza` and warns by default.
 - [x] Update build/packaging/Docker/CI for new binaries.
       - Build scripts now produce `gyoza` + `consul`, release packaging includes both; dev Docker copies both and entrypoint runs `gyoza`. Added root `Dockerfile` + `scripts/docker-entrypoint.sh` to run `gyoza`. CI updated for Go 1.24 and dual binaries.
+- [x] Rebrand CI and release metadata defaults.
+      - CircleCI cache keys and author metadata updated; release-site messaging and docker build tags aligned to OpenGyoza.
+- [x] Switch download references to GitHub releases.
+      - Website downloads, demo Vagrantfile, and benchmark templates now pull from GitHub release assets; publish tooling uses GitHub CLI.
 - [x] Update README, docs, website branding, legal + migration guide.
       - README updated; migration guide added; docs index/guides index and site layout links updated.
       - CLI examples updated to `gyoza` across commands/guides/install/platform docs. Branding sweep complete; legal page added under docs; remaining: any non-docs legal updates if required.
