@@ -1,38 +1,47 @@
 ---
 layout: "docs"
-page_title: "Consul Protocol Compatibility Promise"
+page_title: "OpenGyoza Protocol Compatibility Promise"
 sidebar_current: "docs-upgrading-compatibility"
 description: |-
-  We expect Consul to run in large clusters of long-running agents. Because safely upgrading agents in this sort of environment relies heavily on backwards compatibility, we have a strong commitment to keeping different Consul versions protocol-compatible with each other.
+  We expect OpenGyoza to run in large clusters of long-running agents. Because safely upgrading agents in this sort of environment relies heavily on backwards compatibility, we have a strong commitment to keeping different OpenGyoza versions protocol-compatible with each other.
 ---
 
 # Protocol Compatibility Promise
 
-We expect Consul to run in large clusters of long-running agents. Because
+We expect OpenGyoza to run in large clusters of long-running agents. Because
 safely upgrading agents in this sort of environment relies heavily on backwards
-compatibility, we have a strong commitment to keeping different Consul
+compatibility, we have a strong commitment to keeping different OpenGyoza
 versions protocol-compatible with each other.
 
-We promise that every subsequent release of Consul will remain backwards
+We promise that every subsequent release of OpenGyoza will remain backwards
 compatible with _at least_ one prior version. Concretely: version 0.5 can
 speak to 0.4 (and vice versa) but may not be able to speak to 0.1.
 
-Backwards compatibility is automatic unless otherwise noted. Consul agents by
+Backwards compatibility is automatic unless otherwise noted. OpenGyoza agents by
 default will speak the latest protocol but can understand earlier ones.
 
 -> **Note:** If speaking an earlier protocol, _new features may not be available_.
 
 The ability for an agent to speak an earlier protocol is to ensure that any agent
-can be upgraded without cluster disruption. Consul agents can be updated one
+can be upgraded without cluster disruption. OpenGyoza agents can be updated one
 at a time, one version at a time.
 
 For more details on the specifics of upgrading, see the [upgrading page](/docs/upgrading.html).
+
+## Legacy Compatibility
+
+OpenGyoza preserves legacy Consul interfaces for existing tooling:
+
+- `CONSUL_*` environment variables continue to work.
+- Existing config keys and CLI flags remain valid.
+- HTTP API headers such as `X-Consul-*` are retained.
+- Any remaining `consul/` directory names are kept strictly for compatibility with established paths and tooling.
 
 ## Protocol Compatibility Table
 
 <table class="table table-bordered table-striped">
   <tr>
-    <th>Consul Version</th>
+    <th>OpenGyoza Version</th>
     <th>Protocol Compatibility</th>
   </tr>
   <tr>
@@ -57,4 +66,4 @@ For more details on the specifics of upgrading, see the [upgrading page](/docs/u
   </tr>
 </table>
 
--> **Note:** Raft Protocol is versioned separately, but maintains compatibility with at least one prior version. See [here](https://www.consul.io/docs/upgrade-specific.html#raft-protocol-version-compatibility) for details.
+-> **Note:** Raft Protocol is versioned separately, but maintains compatibility with at least one prior version. See [here](/docs/upgrade-specific.html#raft-protocol-version-compatibility) for details.

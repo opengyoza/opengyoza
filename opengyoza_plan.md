@@ -198,3 +198,5 @@ Match OpenWonton:
 - [x] Ensure tests are green.
       - Full `go test ./...` passes (2026-02-02).
 - [x] Produce `CONSUL_DIFF_REPORT.md`.
+- [x] Document compatibility guarantees for legacy env vars, config keys, API headers,
+      and retained `consul/` paths.
