@@ -32,6 +32,6 @@ jobs:
         run: |
           tag="${GITHUB_REF_NAME}"
           if ! gh release view "${tag}" >/dev/null 2>&1; then
-            gh release create "${tag}" --title "OpenGyoza ${tag#v}" --notes "OpenGyoza ${tag#v}"
+            gh release create "${tag}" --title "OpenGyoza ${tag#v}" --generate-notes
           fi
           gh release upload "${tag}" pkg/dist/* --clobber
