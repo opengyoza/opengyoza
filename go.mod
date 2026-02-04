@@ -1,7 +1,6 @@
 module github.com/opengyoza/opengyoza
 
 go 1.24.0
-
 toolchain go1.24.0
 
 replace github.com/opengyoza/opengyoza/api => ./api

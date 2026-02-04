@@ -199,6 +199,7 @@ Match OpenWonton:
       - BSL keyword scan run on 2026-02-02; matches limited to planning/legal notes and vendor syscall names.
 - [x] Ensure tests are green.
       - Full `GOTOOLCHAIN=go1.24.0 GOFLAGS=-mod=mod go test ./...` passes (2026-02-04).
+      - Full `GOTOOLCHAIN=go1.24.0 go test ./...` (vendor mode) passes (2026-02-04).
 - [x] Produce `CONSUL_DIFF_REPORT.md`.
 - [x] Document compatibility guarantees for legacy env vars, config keys, API headers,
       and retained `consul/` paths.
