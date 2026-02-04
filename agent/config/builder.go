@@ -14,14 +14,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hashicorp/consul/agent/checks"
-	"github.com/hashicorp/consul/agent/connect/ca"
-	"github.com/hashicorp/consul/agent/consul"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/ipaddr"
-	"github.com/hashicorp/consul/lib"
-	"github.com/hashicorp/consul/tlsutil"
-	"github.com/hashicorp/consul/types"
+	"github.com/opengyoza/opengyoza/agent/checks"
+	"github.com/opengyoza/opengyoza/agent/connect/ca"
+	"github.com/opengyoza/opengyoza/agent/consul"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/ipaddr"
+	"github.com/opengyoza/opengyoza/lib"
+	"github.com/opengyoza/opengyoza/tlsutil"
+	"github.com/opengyoza/opengyoza/types"
 	"github.com/hashicorp/go-multierror"
 	"github.com/hashicorp/go-sockaddr/template"
 	"golang.org/x/time/rate"
@@ -86,7 +86,7 @@ func NewBuilder(flags Flags) (*Builder, error) {
 	// We expect all flags to be parsed and flags.Args to be empty.
 	// Therefore, we bail if we find unparsed args.
 	if len(flags.Args) > 0 {
-		return nil, fmt.Errorf("config: Unknown extra arguments: %v", flags.Args)
+		return nil, fmt.Errorf("Unexpected extra arguments: %v", flags.Args)
 	}
 
 	newSource := func(name string, v interface{}) Source {
@@ -128,7 +128,7 @@ func NewBuilder(flags Flags) (*Builder, error) {
 			Data:   s,
 		})
 	}
-	b.Tail = append(b.Tail, NonUserSource(), DefaultConsulSource(), DefaultEnterpriseSource(), DefaultVersionSource())
+	b.Tail = append(b.Tail, NonUserSource(), DefaultConsulSource(), DefaultVersionSource())
 	if b.boolVal(b.Flags.DevMode) {
 		b.Tail = append(b.Tail, DevConsulSource())
 	}
@@ -512,35 +512,6 @@ func (b *Builder) Build() (rt RuntimeConfig, err error) {
 	c.TaggedAddresses["lan"] = advertiseAddrLAN.IP.String()
 	c.TaggedAddresses["wan"] = advertiseAddrWAN.IP.String()
 
-	// segments
-	var segments []structs.NetworkSegment
-	for _, s := range c.Segments {
-		name := b.stringVal(s.Name)
-		port := b.portVal(fmt.Sprintf("segments[%s].port", name), s.Port)
-		if port <= 0 {
-			return RuntimeConfig{}, fmt.Errorf("Port for segment %q cannot be <= 0", name)
-		}
-
-		bind := b.makeTCPAddr(
-			b.expandFirstIP(fmt.Sprintf("segments[%s].bind", name), s.Bind),
-			bindAddr,
-			port,
-		)
-
-		advertise := b.makeTCPAddr(
-			b.expandFirstIP(fmt.Sprintf("segments[%s].advertise", name), s.Advertise),
-			advertiseAddrLAN,
-			port,
-		)
-
-		segments = append(segments, structs.NetworkSegment{
-			Name:        name,
-			Bind:        bind,
-			Advertise:   advertise,
-			RPCListener: b.boolVal(s.RPCListener),
-		})
-	}
-
 	// Parse the metric filters
 	var telemetryAllowedPrefixes, telemetryBlockedPrefixes []string
 	for _, rule := range c.Telemetry.PrefixFilter {
@@ -675,8 +646,6 @@ func (b *Builder) Build() (rt RuntimeConfig, err error) {
 		CheckDeregisterIntervalMin: b.durationVal("check_deregister_interval_min", c.CheckDeregisterIntervalMin),
 		CheckReapInterval:          b.durationVal("check_reap_interval", c.CheckReapInterval),
 		Revision:                   b.stringVal(c.Revision),
-		SegmentLimit:               b.intVal(c.SegmentLimit),
-		SegmentNameLimit:           b.intVal(c.SegmentNameLimit),
 		SyncCoordinateIntervalMin:  b.durationVal("sync_coordinate_interval_min", c.SyncCoordinateIntervalMin),
 		SyncCoordinateRateTarget:   b.float64Val(c.SyncCoordinateRateTarget),
 		Version:                    b.stringVal(c.Version),
@@ -725,13 +694,10 @@ func (b *Builder) Build() (rt RuntimeConfig, err error) {
 
 		// Autopilot
 		AutopilotCleanupDeadServers:      b.boolVal(c.Autopilot.CleanupDeadServers),
-		AutopilotDisableUpgradeMigration: b.boolVal(c.Autopilot.DisableUpgradeMigration),
 		AutopilotLastContactThreshold:    b.durationVal("autopilot.last_contact_threshold", c.Autopilot.LastContactThreshold),
 		AutopilotMaxTrailingLogs:         b.intVal(c.Autopilot.MaxTrailingLogs),
 		AutopilotMinQuorum:               b.uintVal(c.Autopilot.MinQuorum),
-		AutopilotRedundancyZoneTag:       b.stringVal(c.Autopilot.RedundancyZoneTag),
 		AutopilotServerStabilizationTime: b.durationVal("autopilot.server_stabilization_time", c.Autopilot.ServerStabilizationTime),
-		AutopilotUpgradeVersionTag:       b.stringVal(c.Autopilot.UpgradeVersionTag),
 
 		// DNS
 		DNSAddrs:              dnsAddrs,
@@ -851,7 +817,6 @@ func (b *Builder) Build() (rt RuntimeConfig, err error) {
 		NodeID:                           types.NodeID(b.stringVal(c.NodeID)),
 		NodeMeta:                         c.NodeMeta,
 		NodeName:                         b.nodeName(c.NodeName),
-		NonVotingServer:                  b.boolVal(c.NonVotingServer),
 		PidFile:                          b.stringVal(c.PidFile),
 		PrimaryDatacenter:                primaryDatacenter,
 		RPCAdvertiseAddr:                 rpcAdvertiseAddr,
@@ -875,8 +840,6 @@ func (b *Builder) Build() (rt RuntimeConfig, err error) {
 		RetryJoinMaxAttemptsLAN:          b.intVal(c.RetryJoinMaxAttemptsLAN),
 		RetryJoinMaxAttemptsWAN:          b.intVal(c.RetryJoinMaxAttemptsWAN),
 		RetryJoinWAN:                     b.expandAllOptionalAddrs("retry_join_wan", c.RetryJoinWAN),
-		SegmentName:                      b.stringVal(c.SegmentName),
-		Segments:                         segments,
 		SerfAdvertiseAddrLAN:             serfAdvertiseAddrLAN,
 		SerfAdvertiseAddrWAN:             serfAdvertiseAddrWAN,
 		SerfBindAddrLAN:                  serfBindAddrLAN,
@@ -966,9 +929,6 @@ func (b *Builder) Validate(rt RuntimeConfig) error {
 	}
 	if ipaddr.IsAny(rt.AdvertiseAddrWAN.IP) {
 		return fmt.Errorf("Advertise WAN address cannot be 0.0.0.0, :: or [::]")
-	}
-	if err := b.validateSegments(rt); err != nil {
-		return err
 	}
 	for _, a := range rt.DNSAddrs {
 		if _, ok := a.(*net.UnixAddr); ok {

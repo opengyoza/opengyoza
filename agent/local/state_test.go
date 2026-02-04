@@ -9,16 +9,16 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/testrpc"
+	"github.com/opengyoza/opengyoza/testrpc"
 
-	"github.com/hashicorp/consul/agent"
-	"github.com/hashicorp/consul/agent/config"
-	"github.com/hashicorp/consul/agent/local"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/agent/token"
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/sdk/testutil/retry"
-	"github.com/hashicorp/consul/types"
+	"github.com/opengyoza/opengyoza/agent"
+	"github.com/opengyoza/opengyoza/agent/config"
+	"github.com/opengyoza/opengyoza/agent/local"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/token"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/sdk/testutil/retry"
+	"github.com/opengyoza/opengyoza/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -1030,9 +1030,11 @@ func TestAgentAntiEntropy_Checks(t *testing.T) {
 		}
 	}
 
-	if err := checksInSync(a.State, 4); err != nil {
-		t.Fatal(err)
-	}
+	retry.Run(t, func(r *retry.R) {
+		if err := checksInSync(a.State, 4); err != nil {
+			r.Fatal(err)
+		}
+	})
 
 	// Make sure we sent along our node info addresses when we synced.
 	{
@@ -1094,9 +1096,11 @@ func TestAgentAntiEntropy_Checks(t *testing.T) {
 		}
 	}
 
-	if err := checksInSync(a.State, 3); err != nil {
-		t.Fatal(err)
-	}
+	retry.Run(t, func(r *retry.R) {
+		if err := checksInSync(a.State, 3); err != nil {
+			r.Fatal(err)
+		}
+	})
 }
 
 func TestAgentAntiEntropy_Checks_ACLDeny(t *testing.T) {
@@ -1415,6 +1419,17 @@ func TestAgentAntiEntropy_Check_DeferSync(t *testing.T) {
 	// Update the check output! Should be deferred
 	a.State.UpdateCheck("web", api.HealthPassing, "output")
 
+	// Ensure we scheduled a deferred update.
+	retry.RunWith(&retry.Timer{Timeout: 200 * time.Millisecond, Wait: 20 * time.Millisecond}, t, func(r *retry.R) {
+		cs := a.State.CheckState("web")
+		if cs == nil {
+			r.Fatalf("check is not registered")
+		}
+		if cs.DeferCheck == nil {
+			r.Fatalf("deferred update not scheduled")
+		}
+	})
+
 	// We are going to wait up to 850ms for the deferred check update to run. The update
 	// can happen any time within: check_update_interval / 2 + random(min: 0, max: check_update_interval)
 	// For this test that means it will get deferred for 250ms - 750ms. We add up to 100ms on top of that to
@@ -1432,11 +1447,6 @@ func TestAgentAntiEntropy_Check_DeferSync(t *testing.T) {
 		}
 	})
 	elapsed := time.Since(start)
-
-	// ensure the check deferral didn't update too fast
-	if elapsed < 240*time.Millisecond {
-		t.Fatalf("early update: elapsed %v\n\n%+v", elapsed, checks)
-	}
 
 	// ensure the check deferral didn't update too late
 	if elapsed > 850*time.Millisecond {

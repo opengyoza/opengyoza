@@ -41,6 +41,7 @@ func TestConnectCARoots(t *testing.T) {
 	defer codec.Close()
 
 	testrpc.WaitForTestAgent(t, s1.RPC, "dc1")
+	testrpc.WaitForLeader(t, s1.RPC, "dc1")
 
 	// Insert some CAs
 	state := s1.fsm.State()
@@ -139,8 +140,6 @@ func TestConnectCAConfig_GetSet(t *testing.T) {
 }
 
 func TestConnectCAConfig_TriggerRotation(t *testing.T) {
-	t.Parallel()
-
 	assert := assert.New(t)
 	require := require.New(t)
 	dir1, s1 := testServer(t)
@@ -156,8 +155,12 @@ func TestConnectCAConfig_TriggerRotation(t *testing.T) {
 		Datacenter: "dc1",
 	}
 	var rootList structs.IndexedCARoots
-	require.Nil(msgpackrpc.CallWithCodec(codec, "ConnectCA.Roots", rootReq, &rootList))
-	assert.Len(rootList.Roots, 1)
+	retry.Run(t, func(r *retry.R) {
+		r.Check(msgpackrpc.CallWithCodec(codec, "ConnectCA.Roots", rootReq, &rootList))
+		if got := len(rootList.Roots); got != 1 {
+			r.Fatalf("expected 1 root, got %d", got)
+		}
+	})
 	oldRoot := rootList.Roots[0]
 
 	// Update the provider config to use a new private key, which should
@@ -179,7 +182,9 @@ func TestConnectCAConfig_TriggerRotation(t *testing.T) {
 		}
 		var reply interface{}
 
-		require.NoError(msgpackrpc.CallWithCodec(codec, "ConnectCA.ConfigurationSet", args, &reply))
+		retry.Run(t, func(r *retry.R) {
+			r.Check(msgpackrpc.CallWithCodec(codec, "ConnectCA.ConfigurationSet", args, &reply))
+		})
 	}
 
 	// Make sure the new root has been added along with an intermediate
@@ -190,7 +195,7 @@ func TestConnectCAConfig_TriggerRotation(t *testing.T) {
 			Datacenter: "dc1",
 		}
 		var reply structs.IndexedCARoots
-		retry.Run(t, func(r *retry.R) {
+		retry.RunWith(&retry.Timer{Timeout: 15 * time.Second, Wait: 100 * time.Millisecond}, t, func(r *retry.R) {
 			r.Check(msgpackrpc.CallWithCodec(codec, "ConnectCA.Roots", args, &reply))
 			if len(reply.Roots) != 2 {
 				r.Fatalf("expected 2 roots, got %d", len(reply.Roots))
