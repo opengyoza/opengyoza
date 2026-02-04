@@ -9,12 +9,12 @@ GOTOOLS = \
 	github.com/vektra/mockery/cmd/mockery
 
 GOTAGS ?=
-GOMODULES ?= ./... ./api/... ./sdk/...
+GOMODULES ?= ./... github.com/opengyoza/opengyoza/api/... github.com/opengyoza/opengyoza/sdk/...
 GOFILES ?= $(shell go list $(GOMODULES) | grep -v /vendor/)
 ifeq ($(origin GOTEST_PKGS_EXCLUDE), undefined)
-GOTEST_PKGS ?= $(GOMODULES)
+GOTEST_PKGS ?= $(shell go list $(GOMODULES))
 else
-GOTEST_PKGS=$(shell go list $(GOMODULES) | sed 's/github.com\/opengyoza\/opengyoza/./' | egrep -v "^($(GOTEST_PKGS_EXCLUDE))$$")
+GOTEST_PKGS=$(shell go list $(GOMODULES) | egrep -v "^($(GOTEST_PKGS_EXCLUDE))$$")
 endif
 GOOS?=$(shell go env GOOS)
 GOARCH?=$(shell go env GOARCH)
@@ -212,15 +212,11 @@ cov:
 test: other-consul dev-build vet test-install-deps test-internal
 
 test-install-deps:
-	go test -tags '$(GOTAGS)' -i $(GOTEST_PKGS)
+	go test -tags '$(GOTAGS)' -run '^$$' $(GOTEST_PKGS)
 
 update-vendor:
 	@echo "--> Running go mod vendor"
 	@go mod vendor
-	@echo "--> Removing vendoring of our own nested modules"
-	@rm -rf vendor/github.com/opengyoza/opengyoza
-	@grep -v "opengyoza/opengyoza/" < vendor/modules.txt > vendor/modules.txt.new
-	@mv vendor/modules.txt.new vendor/modules.txt
 
 test-internal:
 	@echo "--> Running go test"

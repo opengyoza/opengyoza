@@ -4209,19 +4209,19 @@ func TestAgent_Monitor(t *testing.T) {
 	}
 
 	// Try to stream logs until we see the expected log line
-	retry.Run(t, func(r *retry.R) {
-		req, _ = http.NewRequest("GET", "/v1/agent/monitor?loglevel=debug", nil)
-		resp = newClosableRecorder()
-		done := make(chan struct{})
-		go func() {
-			if _, err := a.srv.AgentMonitor(resp, req); err != nil {
-				t.Fatalf("err: %s", err)
-			}
-			close(done)
-		}()
+		retry.Run(t, func(r *retry.R) {
+			req, _ = http.NewRequest("GET", "/v1/agent/monitor?loglevel=debug", nil)
+			resp = newClosableRecorder()
+			errCh := make(chan error, 1)
+			go func() {
+				_, err := a.srv.AgentMonitor(resp, req)
+				errCh <- err
+			}()
 
-		resp.Close()
-		<-done
+			resp.Close()
+			if err := <-errCh; err != nil {
+				r.Fatalf("err: %s", err)
+			}
 
 		got := resp.Body.Bytes()
 		want := []byte(`[WARN] agent: Node name "invalid!" will not be discoverable via DNS`)

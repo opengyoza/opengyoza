@@ -9,11 +9,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/testrpc"
+	"github.com/opengyoza/opengyoza/testrpc"
 
-	"github.com/hashicorp/consul/acl"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/sdk/testutil/retry"
+	"github.com/opengyoza/opengyoza/acl"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/sdk/testutil/retry"
 )
 
 func TestEventFire(t *testing.T) {
@@ -265,12 +265,11 @@ func TestEventList_Blocking(t *testing.T) {
 		index = header
 	})
 
+	errCh := make(chan error, 1)
 	go func() {
 		time.Sleep(50 * time.Millisecond)
 		p := &UserEvent{Name: "second"}
-		if err := a.UserEvent("dc1", "root", p); err != nil {
-			t.Fatalf("err: %v", err)
-		}
+		errCh <- a.UserEvent("dc1", "root", p)
 	}()
 
 	retry.Run(t, func(r *retry.R) {
@@ -290,6 +289,9 @@ func TestEventList_Blocking(t *testing.T) {
 			r.Fatalf("bad: %#v", list)
 		}
 	})
+	if err := <-errCh; err != nil {
+		t.Fatalf("err: %v", err)
+	}
 }
 
 func TestEventList_EventBufOrder(t *testing.T) {

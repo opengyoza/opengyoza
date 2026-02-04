@@ -1474,20 +1474,27 @@ func TestCatalog_ListServices_Blocking(t *testing.T) {
 	// Async cause a change
 	idx := out.Index
 	start := time.Now()
+	errCh := make(chan error, 1)
 	go func() {
 		time.Sleep(100 * time.Millisecond)
 		if err := s1.fsm.State().EnsureNode(idx+1, &structs.Node{Node: "foo", Address: "127.0.0.1"}); err != nil {
-			t.Fatalf("err: %v", err)
+			errCh <- fmt.Errorf("ensure node: %w", err)
+			return
 		}
 		if err := s1.fsm.State().EnsureService(idx+2, "foo", &structs.NodeService{ID: "db", Service: "db", Tags: []string{"primary"}, Address: "127.0.0.1", Port: 5000}); err != nil {
-			t.Fatalf("err: %v", err)
+			errCh <- fmt.Errorf("ensure service: %w", err)
+			return
 		}
+		errCh <- nil
 	}()
 
 	// Re-run the query
 	out = structs.IndexedServices{}
 	if err := msgpackrpc.CallWithCodec(codec, "Catalog.ListServices", &args, &out); err != nil {
 		t.Fatalf("err: %v", err)
+	}
+	if err := <-errCh; err != nil {
+		t.Fatal(err)
 	}
 
 	// Should block at least 100ms

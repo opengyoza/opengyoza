@@ -5,10 +5,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/acl"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/testrpc"
+	"github.com/opengyoza/opengyoza/acl"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/testrpc"
 	"github.com/hashicorp/net-rpc-msgpackrpc"
 	"github.com/pascaldekloe/goe/verify"
 )
@@ -341,10 +341,11 @@ func TestKVSEndpoint_List_Blocking(t *testing.T) {
 
 	// Async cause a change
 	start := time.Now()
+	errCh := make(chan error, 1)
+	codec3 := rpcClient(t, s1)
 	go func() {
+		defer codec3.Close()
 		time.Sleep(100 * time.Millisecond)
-		codec := rpcClient(t, s1)
-		defer codec.Close()
 		arg := structs.KVSRequest{
 			Datacenter: "dc1",
 			Op:         api.KVDelete,
@@ -353,14 +354,15 @@ func TestKVSEndpoint_List_Blocking(t *testing.T) {
 			},
 		}
 		var out bool
-		if err := msgpackrpc.CallWithCodec(codec, "KVS.Apply", &arg, &out); err != nil {
-			t.Fatalf("err: %v", err)
-		}
+		errCh <- msgpackrpc.CallWithCodec(codec3, "KVS.Apply", &arg, &out)
 	}()
 
 	// Re-run the query
 	dirent = structs.IndexedDirEntries{}
 	if err := msgpackrpc.CallWithCodec(codec, "KVS.List", &getR, &dirent); err != nil {
+		t.Fatalf("err: %v", err)
+	}
+	if err := <-errCh; err != nil {
 		t.Fatalf("err: %v", err)
 	}
 
@@ -874,10 +876,14 @@ func TestKVS_Issue_1626(t *testing.T) {
 	}
 
 	// Set up a blocking query on the base key.
-	doneCh := make(chan *structs.IndexedDirEntries, 1)
+	type blockingResult struct {
+		dirent *structs.IndexedDirEntries
+		err    error
+	}
+	doneCh := make(chan blockingResult, 1)
+	codec2 := rpcClient(t, s1)
 	go func() {
-		codec := rpcClient(t, s1)
-		defer codec.Close()
+		defer codec2.Close()
 
 		getR := structs.KeyRequest{
 			Datacenter: "dc1",
@@ -888,10 +894,11 @@ func TestKVS_Issue_1626(t *testing.T) {
 			},
 		}
 		var dirent structs.IndexedDirEntries
-		if err := msgpackrpc.CallWithCodec(codec, "KVS.Get", &getR, &dirent); err != nil {
-			t.Fatalf("err: %v", err)
+		if err := msgpackrpc.CallWithCodec(codec2, "KVS.Get", &getR, &dirent); err != nil {
+			doneCh <- blockingResult{err: err}
+			return
 		}
-		doneCh <- &dirent
+		doneCh <- blockingResult{dirent: &dirent}
 	}()
 
 	// Now update a second key with a prefix that has the first key name
@@ -913,7 +920,10 @@ func TestKVS_Issue_1626(t *testing.T) {
 
 	// Make sure the blocking query didn't wake up for this update.
 	select {
-	case <-doneCh:
+	case res := <-doneCh:
+		if res.err != nil {
+			t.Fatalf("err: %v", res.err)
+		}
 		t.Fatalf("Blocking query should not have completed")
 	case <-time.After(1 * time.Second):
 	}
@@ -936,14 +946,17 @@ func TestKVS_Issue_1626(t *testing.T) {
 
 	// Make sure the blocking query wakes up for the final update.
 	select {
-	case dirent := <-doneCh:
-		if dirent.Index <= index {
-			t.Fatalf("Bad: %v", dirent)
+	case res := <-doneCh:
+		if res.err != nil {
+			t.Fatalf("err: %v", res.err)
 		}
-		if len(dirent.Entries) != 1 {
-			t.Fatalf("Bad: %v", dirent)
+		if res.dirent == nil || res.dirent.Index <= index {
+			t.Fatalf("Bad: %v", res.dirent)
 		}
-		d := dirent.Entries[0]
+		if len(res.dirent.Entries) != 1 {
+			t.Fatalf("Bad: %v", res.dirent)
+		}
+		d := res.dirent.Entries[0]
 		if string(d.Value) != "updated" {
 			t.Fatalf("bad: %v", d)
 		}

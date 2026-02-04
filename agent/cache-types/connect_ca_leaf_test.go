@@ -6,12 +6,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/sdk/testutil/retry"
+	"github.com/opengyoza/opengyoza/sdk/testutil/retry"
 
-	"github.com/hashicorp/consul/agent/cache"
-	"github.com/hashicorp/consul/agent/connect"
-	"github.com/hashicorp/consul/agent/consul"
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/cache"
+	"github.com/opengyoza/opengyoza/agent/connect"
+	"github.com/opengyoza/opengyoza/agent/consul"
+	"github.com/opengyoza/opengyoza/agent/structs"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
@@ -691,7 +691,6 @@ func TestConnectCALeaf_CSRRateLimiting(t *testing.T) {
 func TestConnectCALeaf_watchRootsDedupingMultipleCallers(t *testing.T) {
 	t.Parallel()
 
-	require := require.New(t)
 	rpc := TestRPC(t)
 	defer rpc.AssertExpectations(t)
 
@@ -738,6 +737,7 @@ func TestConnectCALeaf_watchRootsDedupingMultipleCallers(t *testing.T) {
 	// rootsUpdate is used to coordinate clients so they know when they should
 	// expect to see leaf renewed after root change.
 	rootsUpdatedCh := make(chan struct{})
+	errCh := make(chan error, n)
 
 	// Create a function that models a single client. It should go through the
 	// steps of getting an initial cert and then watching for changes until root
@@ -751,10 +751,19 @@ func TestConnectCALeaf_watchRootsDedupingMultipleCallers(t *testing.T) {
 		fetchCh := TestFetchCh(t, typ, opts, req)
 		select {
 		case <-time.After(100 * time.Millisecond):
-			t.Fatal("shouldn't block waiting for fetch")
+			errCh <- fmt.Errorf("client %d: shouldn't block waiting for fetch", i)
+			return
 		case result := <-fetchCh:
-			v := mustFetchResult(t, result)
-			opts.LastResult = &v
+			switch v := result.(type) {
+			case error:
+				errCh <- fmt.Errorf("client %d: fetch error: %v", i, v)
+				return
+			case cache.FetchResult:
+				opts.LastResult = &v
+			default:
+				errCh <- fmt.Errorf("client %d: unexpected type from fetch %T", i, v)
+				return
+			}
 		}
 
 		// Second fetch should block with set index
@@ -762,7 +771,8 @@ func TestConnectCALeaf_watchRootsDedupingMultipleCallers(t *testing.T) {
 		fetchCh = TestFetchCh(t, typ, opts, req)
 		select {
 		case result := <-fetchCh:
-			t.Fatalf("should not return: %#v", result)
+			errCh <- fmt.Errorf("client %d: should not return: %#v", i, result)
+			return
 		case <-time.After(100 * time.Millisecond):
 		}
 
@@ -775,17 +785,37 @@ func TestConnectCALeaf_watchRootsDedupingMultipleCallers(t *testing.T) {
 		select {
 		case <-rootsUpdatedCh:
 		case <-time.After(200 * time.Millisecond):
-			t.Fatalf("waited too long for root update")
+			errCh <- fmt.Errorf("client %d: waited too long for root update", i)
+			return
 		}
 
 		// Now we should see root update within a short period
 		select {
 		case <-time.After(100 * time.Millisecond):
-			t.Fatal("shouldn't block waiting for fetch")
+			errCh <- fmt.Errorf("client %d: shouldn't block waiting for fetch", i)
+			return
 		case result := <-fetchCh:
-			v := mustFetchResult(t, result)
+			var v cache.FetchResult
+			switch val := result.(type) {
+			case error:
+				errCh <- fmt.Errorf("client %d: fetch error: %v", i, val)
+				return
+			case cache.FetchResult:
+				v = val
+			default:
+				errCh <- fmt.Errorf("client %d: unexpected type from fetch %T", i, val)
+				return
+			}
+			issued, ok := v.Value.(*structs.IssuedCert)
+			if !ok || issued == nil {
+				errCh <- fmt.Errorf("client %d: unexpected fetch value %T", i, v.Value)
+				return
+			}
 			// Index must be different
-			require.NotEqual(opts.MinIndex, v.Value.(*structs.IssuedCert).CreateIndex)
+			if opts.MinIndex == issued.CreateIndex {
+				errCh <- fmt.Errorf("client %d: expected create index to change", i)
+				return
+			}
 		}
 
 		testDoneCh <- struct{}{}
@@ -802,6 +832,8 @@ func TestConnectCALeaf_watchRootsDedupingMultipleCallers(t *testing.T) {
 
 	for i := 0; i < n; i++ {
 		select {
+		case err := <-errCh:
+			t.Fatal(err)
 		case <-timeoutCh:
 			t.Fatal("timed out waiting for clients")
 		case <-setupDoneCh:
@@ -831,6 +863,8 @@ func TestConnectCALeaf_watchRootsDedupingMultipleCallers(t *testing.T) {
 	timeoutCh = time.After(200 * time.Millisecond)
 	for i := 0; i < n; i++ {
 		select {
+		case err := <-errCh:
+			t.Fatal(err)
 		case <-timeoutCh:
 			t.Fatalf("timed out waiting for %d of %d clients to renew after root change", n-i, n)
 		case <-testDoneCh:
