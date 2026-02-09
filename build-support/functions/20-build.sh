@@ -80,15 +80,34 @@ function build_ui {
       local ui_log
       ui_log=$(mktemp -t opengyoza-ui-build.XXXXXX) || return 1
       status "Copying the source from '${ui_dir}' to /consul-src within the container"
+      local ui_step="copy-source"
       (
-         tar -c $(ls -A | grep -v "^(node_modules\|dist\|tmp)") 2>>"${ui_log}" | docker cp - ${container_id}:/consul-src 2>>"${ui_log}" &&
-         status "Running build in container" && docker start -a ${container_id} 2>&1 | tee "${ui_log}" &&
-         rm -rf ${1}/ui-v2/dist &&
-         status "Copying back artifacts" && docker cp ${container_id}:/consul-src/dist ${1}/ui-v2/dist 2>>"${ui_log}"
+         tar -c $(ls -A | grep -v "^(node_modules\|dist\|tmp)") 2>>"${ui_log}" | docker cp - ${container_id}:/consul-src 2>>"${ui_log}"
       )
       ret=$?
+      if test ${ret} -eq 0
+      then
+         ui_step="build"
+         status "Running build in container"
+         docker start -a ${container_id} 2>&1 | tee "${ui_log}"
+         ret=$?
+      fi
+      if test ${ret} -eq 0
+      then
+         ui_step="clean-dist"
+         rm -rf ${1}/ui-v2/dist 2>>"${ui_log}"
+         ret=$?
+      fi
+      if test ${ret} -eq 0
+      then
+         ui_step="copy-dist"
+         status "Copying back artifacts"
+         docker cp ${container_id}:/consul-src/dist ${1}/ui-v2/dist 2>>"${ui_log}"
+         ret=$?
+      fi
       if test ${ret} -ne 0
       then
+         err "UI build step failed: ${ui_step}"
          err "UI build output (last 200 lines):"
          tail -n 200 "${ui_log}" 2>/dev/null || true
          err "UI container status:"
