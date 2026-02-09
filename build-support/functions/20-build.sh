@@ -73,18 +73,25 @@ function build_ui {
    pushd ${ui_dir} > /dev/null
 
    status "Creating the UI Build Container with image: ${image_name} and version '${version}'"
-   local container_id=$(docker create -it -e "CONSUL_GIT_SHA=${commit_hash}" -e "CONSUL_VERSION=${version}" -e "CONSUL_BINARY_TYPE=${CONSUL_BINARY_TYPE}" ${image_name})
+   local container_id=$(docker create -i -e "CONSUL_GIT_SHA=${commit_hash}" -e "CONSUL_VERSION=${version}" -e "CONSUL_BINARY_TYPE=${CONSUL_BINARY_TYPE}" ${image_name})
    local ret=$?
    if test $ret -eq 0
    then
+      local ui_log
+      ui_log=$(mktemp -t opengyoza-ui-build.XXXXXX) || return 1
       status "Copying the source from '${ui_dir}' to /consul-src within the container"
       (
          tar -c $(ls -A | grep -v "^(node_modules\|dist\|tmp)") | docker cp - ${container_id}:/consul-src &&
-         status "Running build in container" && docker start -i ${container_id} &&
+         status "Running build in container" && docker start -a ${container_id} | tee "${ui_log}" &&
          rm -rf ${1}/ui-v2/dist &&
          status "Copying back artifacts" && docker cp ${container_id}:/consul-src/dist ${1}/ui-v2/dist
       )
       ret=$?
+      if test ${ret} -ne 0
+      then
+         err "UI build output (last 200 lines):"
+         tail -n 200 "${ui_log}" 2>/dev/null || true
+      fi
       docker rm ${container_id} > /dev/null
    fi
 
