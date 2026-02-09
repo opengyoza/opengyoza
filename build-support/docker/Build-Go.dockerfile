@@ -7,6 +7,12 @@ ARG GOTOOLS="github.com/elazarl/go-bindata-assetfs/go-bindata-assetfs@latest \
    golang.org/x/tools/cmd/cover@latest \
    golang.org/x/tools/cmd/stringer@latest"
 
-RUN for tool in ${GOTOOLS}; do go install -v ${tool}; done && mkdir -p /consul
+RUN for tool in ${GOTOOLS}; do \
+      if echo "${tool}" | grep -q "@"; then \
+         go install -v "${tool}"; \
+      else \
+         go install -v "${tool}@latest"; \
+      fi; \
+   done && mkdir -p /consul
 
 WORKDIR /consul
