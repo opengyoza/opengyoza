@@ -3,14 +3,14 @@ layout: "docs"
 page_title: "Forwarding"
 sidebar_current: "docs-guides-forwarding"
 description: |-
-  By default, DNS is served from port 53. On most operating systems, this requires elevated privileges. Instead of running Consul with an administrative or root account, it is possible to instead forward appropriate queries to Consul, running on an unprivileged port, from another DNS server or port redirect.
+  By default, DNS is served from port 53. On most operating systems, this requires elevated privileges. Instead of running OpenGyoza with an administrative or root account, it is possible to instead forward appropriate queries to OpenGyoza, running on an unprivileged port, from another DNS server or port redirect.
 ---
 
 # Forwarding DNS
 
 By default, DNS is served from port 53. On most operating systems, this
-requires elevated privileges. Instead of running Consul with an administrative
-or root account, it is possible to instead forward appropriate queries to Consul,
+requires elevated privileges. Instead of running OpenGyoza with an administrative
+or root account, it is possible to instead forward appropriate queries to OpenGyoza,
 running on an unprivileged port, from another DNS server or port redirect.
 
 In this guide, we will demonstrate forwarding from:
@@ -25,22 +25,21 @@ In this guide, we will demonstrate forwarding from:
 After configuring forwarding, we will demonstrate how to test the configuration. Finally, we will also provide some troubleshooting
 guidance. 
 
-~> Note, by default, Consul does not resolve DNS
-records outside the `.consul.` zone unless the
+~> **Note:** OpenGyoza does not resolve DNS records outside the `.consul.` zone unless the
 [recursors](/docs/agent/options.html#recursors) configuration option
-has been set. As an example of how this changes Consul's behavior,
-suppose a Consul DNS reply includes a CNAME record pointing outside
+has been set. As an example of how this changes OpenGyoza's behavior,
+suppose an OpenGyoza DNS reply includes a CNAME record pointing outside
 the `.consul` TLD. The DNS reply will only include CNAME records by
 default. By contrast, when `recursors` is set and the upstream resolver is
-functioning correctly, Consul will try to resolve CNAMEs and include
+functioning correctly, OpenGyoza will try to resolve CNAMEs and include
 any records (e.g. A, AAAA, PTR) for them in its DNS reply.
 
 
 ## BIND Setup
 
-Note, in this example, BIND and Consul are running on the same machine.
+Note, in this example, BIND and OpenGyoza are running on the same machine.
 
-First, you have to disable DNSSEC so that Consul and [BIND](https://www.isc.org/downloads/bind/) can communicate. Here is an example of such a configuration:
+First, you have to disable DNSSEC so that OpenGyoza and [BIND](https://www.isc.org/downloads/bind/) can communicate. Here is an example of such a configuration:
 
 ```text
 options {
@@ -67,7 +66,7 @@ include "/etc/named/consul.conf";
 
 ### Zone File
 
-Then we set up a zone for our Consul managed records in `consul.conf`:
+Then we set up a zone for our OpenGyoza managed records in `consul.conf`:
 
 ```text
 zone "consul" IN {
@@ -77,14 +76,14 @@ zone "consul" IN {
 };
 ```
 
-Here we assume Consul is running with default settings and is serving
+Here we assume OpenGyoza is running with default settings and is serving
 DNS on port 8600.
 
 ## Dnsmasq Setup
 
 [Dnsmasq](http://www.thekelleys.org.uk/dnsmasq/doc.html) is typically configured via a `dnsmasq.conf` or a series of files in
 the `/etc/dnsmasq.d` directory. In Dnsmasq's configuration file
-(e.g. `/etc/dnsmasq.d/10-consul`), add the following:
+(e.g. `/etc/dnsmasq.d/10-gyoza`), add the following:
 
 ```text
 # Enable forward lookup of the 'consul' domain:
@@ -145,7 +144,7 @@ server:
   do-not-query-localhost: no
   domain-insecure: "consul"
 
-#Add consul as a stub-zone
+#Add gyoza as a stub-zone
 stub-zone:
   name: "consul"
   stub-addr: 127.0.0.1@8600
@@ -162,7 +161,7 @@ include: "/etc/unbound/unbound.conf.d/*.conf"
 
 [`systemd-resolved`](https://www.freedesktop.org/wiki/Software/systemd/resolved/) is typically configured with `/etc/systemd/resolved.conf`. 
 To configure systemd-resolved to send queries for the consul domain to
-Consul, configure resolved.conf to contain the following:
+OpenGyoza, configure resolved.conf to contain the following:
 
 ```
 DNS=127.0.0.1
@@ -170,8 +169,8 @@ Domains=~consul
 ```
 
 The main limitation with this configuration is that the DNS field
-cannot contain ports. So for this to work either Consul must be
-[configured to listen on port 53](https://www.consul.io/docs/agent/options.html#dns_port)
+cannot contain ports. So for this to work either OpenGyoza must be
+[configured to listen on port 53](/docs/agent/options.html#dns_port)
 instead of 8600 or you can use iptables to map port 53 to 8600. 
 The following iptables commands are sufficient to do the port
 mapping.
@@ -182,21 +181,21 @@ mapping.
 ```
 
 Binding to port 53 will usually require running either as a privileged user (or on Linux running with the 
-CAP_NET_BIND_SERVICE capability). If using the Consul docker image you will need to add the following to the
-environment to allow Consul to use the port: `CONSUL_ALLOW_PRIVILEGED_PORTS=yes` 
+CAP_NET_BIND_SERVICE capability). If using the OpenGyoza container image you will need to add the following to the
+environment to allow OpenGyoza to use the port: `CONSUL_ALLOW_PRIVILEGED_PORTS=yes` 
 
 Note: With this setup, PTR record queries will still be sent out
-to the other configured resolvers in addition to Consul. 
+to the other configured resolvers in addition to OpenGyoza. 
 
 ## iptables Setup
 
-Note, for iptables, the rules must be set on the same host as the Consul
+Note, for iptables, the rules must be set on the same host as the OpenGyoza
 instance and relay hosts should not be on the same host or the redirects will 
 intercept the traffic.
 
 On Linux systems that support it, incoming requests and requests to
 the local host can use [`iptables`](http://www.netfilter.org/) to forward ports on the same machine
-without a secondary service. Since Consul, by default, only resolves
+without a secondary service. Since OpenGyoza, by default, only resolves
 the `.consul` TLD, it is especially important to use the `recursors`
 option if you wish the `iptables` setup to resolve for other domains.
 The recursors should not include the local host as the redirects would
@@ -205,9 +204,9 @@ just intercept the requests.
 The iptables method is suited for situations where an external DNS
 service is already running in your infrastructure and is used as the
 recursor or if you want to use an existing DNS server as your query
-endpoint and forward requests for the consul domain to the Consul
-server. In both of those cases you may want to query the Consul server
-but not need the overhead of a separate service on the Consul host.
+endpoint and forward requests for the consul domain to the OpenGyoza
+server. In both of those cases you may want to query the OpenGyoza server
+but not need the overhead of a separate service on the OpenGyoza host.
 
 ```
 [root@localhost ~]# iptables -t nat -A PREROUTING -p udp -m udp --dport 53 -j REDIRECT --to-ports 8600
@@ -218,8 +217,8 @@ but not need the overhead of a separate service on the Consul host.
 
 ## macOS Setup
 
-On macOS systems, you can use the macOS system resolver to point all .consul requests to consul.
-Just add a resolver entry in /etc/resolver/ to point at consul. 
+On macOS systems, you can use the macOS system resolver to point all .consul requests to OpenGyoza.
+Just add a resolver entry in /etc/resolver/ to point at OpenGyoza. 
 documentation for this feature is available via: ```man5 resolver```.
 To setup create a new file ```/etc/resolver/consul``` (you will need sudo/root access) and put in the file:
 
@@ -232,7 +231,7 @@ This is telling the macOS resolver daemon for all .consul TLD requests, ask 127.
 
 ## Testing
 
-First, perform a DNS query against Consul directly to be sure that the record exists:
+First, perform a DNS query against OpenGyoza directly to be sure that the record exists:
 
 ```text
 [root@localhost ~]# dig @localhost -p 8600 primary.redis.service.dc-1.consul. A
@@ -311,7 +310,7 @@ consul1.node.dc1.consul.
 ## Troubleshooting
 
 If you don't get an answer from your DNS server (e.g. BIND, Dnsmasq) but you
-do get an answer from Consul, your best bet is to turn on your DNS server's
+do get an answer from OpenGyoza, your best bet is to turn on your DNS server's
 query log to see what's happening.
 
 For BIND:
@@ -331,7 +330,7 @@ error (no valid DS) resolving
 This indicates that DNSSEC is not disabled properly.
 
 If you see errors about network connections, verify that there are no firewall
-or routing problems between the servers running BIND and Consul.
+or routing problems between the servers running BIND and OpenGyoza.
 
 For Dnsmasq, see the `log-queries` configuration option and the `USR1`
 signal.
@@ -341,4 +340,4 @@ signal.
 In this guide we provided examples of configuring DNS forwarding with many 
 common, third-party tools. It is the responsibility of the operator to ensure
 which ever tool they select is configured properly prior to integration 
-with Consul. 
+with OpenGyoza. 

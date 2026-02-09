@@ -4,12 +4,12 @@ page_title: "Commands: Snapshot Inspect"
 sidebar_current: "docs-commands-snapshot-inspect"
 ---
 
-# Consul Snapshot Inspect
+# OpenGyoza Snapshot Inspect
 
-Command: `consul snapshot inspect`
+Command: `gyoza snapshot inspect`
 
 The `snapshot inspect` command is used to inspect an atomic, point-in-time
-snapshot of the state of the Consul servers which includes key/value entries,
+snapshot of the state of the OpenGyoza servers which includes key/value entries,
 service catalog, prepared queries, sessions, and ACLs. The snapshot is read
 from the given file.
 
@@ -28,14 +28,14 @@ The following fields are displayed when inspecting a snapshot:
 
 ## Usage
 
-Usage: `consul snapshot inspect [options] FILE`
+Usage: `gyoza snapshot inspect [options] FILE`
 
 ## Examples
 
 To inspect a snapshot from the file "backup.snap":
 
 ```text
-$ consul snapshot inspect backup.snap
+$ gyoza snapshot inspect backup.snap
 ID           2-5-1477944140022
 Size         667
 Index        5

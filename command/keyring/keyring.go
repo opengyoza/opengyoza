@@ -4,9 +4,9 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/hashicorp/consul/agent"
-	consulapi "github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/command/flags"
+	"github.com/opengyoza/opengyoza/agent"
+	consulapi "github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/command/flags"
 	"github.com/mitchellh/cli"
 )
 

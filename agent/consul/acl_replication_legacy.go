@@ -7,7 +7,7 @@ import (
 	"time"
 
 	metrics "github.com/armon/go-metrics"
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/structs"
 )
 
 // aclIterator simplifies the algorithm below by providing a basic iterator that

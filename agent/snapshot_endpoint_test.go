@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hashicorp/consul/acl"
-	"github.com/hashicorp/consul/testrpc"
+	"github.com/opengyoza/opengyoza/acl"
+	"github.com/opengyoza/opengyoza/testrpc"
 )
 
 func TestSnapshot(t *testing.T) {

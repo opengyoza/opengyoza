@@ -4,11 +4,11 @@ page_title: "Commands: TLS Cert Create"
 sidebar_current: "docs-commands-tls-cert"
 ---
 
-# Consul TLS Cert Create
+# OpenGyoza TLS Cert Create
 
-Command: `consul tls cert create`
+Command: `gyoza tls cert create`
 
-The `tls cert create` command is used to create certificates for your Consul TLS
+The `tls cert create` command is used to create certificates for your OpenGyoza TLS
 setup.
 
 ## Examples
@@ -16,7 +16,7 @@ setup.
 Create a certificate for servers:
 
 ```bash
-$ consul tls cert create -server
+$ gyoza tls cert create -server
 ==> WARNING: Server Certificates grants authority to become a
     server and access all state in the cluster including root keys
     and all ACL tokens. Do not distribute them to production hosts
@@ -29,7 +29,7 @@ $ consul tls cert create -server
 Create a certificate for clients:
 
 ```bash
-$ consul tls cert create -client
+$ gyoza tls cert create -client
 ==> Using consul-ca.pem and consul-ca-key.pem
 ==> Saved consul-client-0.pem
 ==> Saved consul-client-0-key.pem
@@ -38,14 +38,14 @@ $ consul tls cert create -client
 Create a certificate for cli:
 
 ```bash
-$ consul tls cert create -cli
+$ gyoza tls cert create -cli
 ==> Using consul-ca.pem and consul-ca-key.pem
 ==> Saved consul-cli-0.pem
 ==> Saved consul-cli-0-key.pem
 ```
 ## Usage
 
-Usage: `consul tls cert create [filename-prefix] [options]`
+Usage: `gyoza tls cert create [filename-prefix] [options]`
 
 #### TLS Cert Create Options
 

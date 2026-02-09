@@ -13,7 +13,7 @@ that must be set is the "enabled" option on Consul Servers to enable Connect.
 All other configurations are optional and have reasonable defaults.
 
 -> **Tip:** Connect is enabled by default when running Consul in
-dev mode with `consul agent -dev`.
+dev mode with `gyoza agent -dev`.
 
 ## Agent Configuration
 

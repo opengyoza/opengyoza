@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/structs"
 	"github.com/hashicorp/go-version"
 	"github.com/hashicorp/serf/serf"
 	"github.com/stretchr/testify/require"

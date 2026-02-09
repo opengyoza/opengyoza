@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/hashicorp/consul/types"
+	"github.com/opengyoza/opengyoza/types"
 )
 
 type CheckTypes []*CheckType

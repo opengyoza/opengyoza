@@ -2,11 +2,11 @@ package agent
 
 import (
 	"context"
-	"github.com/hashicorp/consul/agent/cache"
-	cachetype "github.com/hashicorp/consul/agent/cache-types"
-	"github.com/hashicorp/consul/agent/checks"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/testrpc"
+	"github.com/opengyoza/opengyoza/agent/cache"
+	cachetype "github.com/opengyoza/opengyoza/agent/cache-types"
+	"github.com/opengyoza/opengyoza/agent/checks"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/testrpc"
 	"github.com/stretchr/testify/require"
 	"testing"
 	"time"

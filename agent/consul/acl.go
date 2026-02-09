@@ -9,10 +9,8 @@ import (
 	"time"
 
 	metrics "github.com/armon/go-metrics"
-	"github.com/hashicorp/consul/acl"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/sentinel"
+	"github.com/opengyoza/opengyoza/acl"
+	"github.com/opengyoza/opengyoza/agent/structs"
 	"golang.org/x/sync/singleflight"
 	"golang.org/x/time/rate"
 )
@@ -126,7 +124,6 @@ type ACLResolverConfig struct {
 	// so that it can detect when the servers have gotten ACLs enabled.
 	AutoDisable bool
 
-	Sentinel sentinel.Evaluator
 }
 
 // ACLResolver is the type to handle all your token and policy resolution needs.
@@ -159,7 +156,6 @@ type ACLResolver struct {
 	logger *log.Logger
 
 	delegate ACLResolverDelegate
-	sentinel sentinel.Evaluator
 
 	cache         *structs.ACLCaches
 	identityGroup singleflight.Group
@@ -212,7 +208,6 @@ func NewACLResolver(config *ACLResolverConfig) (*ACLResolver, error) {
 		config:      config.Config,
 		logger:      config.Logger,
 		delegate:    config.Delegate,
-		sentinel:    config.Sentinel,
 		cache:       cache,
 		autoDisable: config.AutoDisable,
 		down:        down,
@@ -249,7 +244,7 @@ func (r *ACLResolver) fetchAndCacheTokenLegacy(token string, cached *structs.Aut
 			policies = append(policies, policy.ConvertFromLegacy())
 		}
 
-		authorizer, err := acl.NewPolicyAuthorizer(parent, policies, r.sentinel)
+		authorizer, err := acl.NewPolicyAuthorizer(parent, policies)
 
 		r.cache.PutAuthorizerWithTTL(token, authorizer, reply.TTL)
 		return authorizer, err
@@ -292,7 +287,7 @@ func (r *ACLResolver) resolveTokenLegacy(token string) (acl.Authorizer, error) {
 				return nil, err
 			}
 
-			return policies.Compile(acl.RootAuthorizer(r.config.ACLDefaultPolicy), r.cache, r.sentinel)
+			return policies.Compile(acl.RootAuthorizer(r.config.ACLDefaultPolicy), r.cache)
 		}
 
 		return nil, err
@@ -1005,7 +1000,7 @@ func (r *ACLResolver) ResolveToken(token string) (acl.Authorizer, error) {
 	}
 
 	// Build the Authorizer
-	authorizer, err := policies.Compile(acl.RootAuthorizer(r.config.ACLDefaultPolicy), r.cache, r.sentinel)
+authorizer, err := policies.Compile(acl.RootAuthorizer(r.config.ACLDefaultPolicy), r.cache)
 	return authorizer, err
 
 }
@@ -1035,7 +1030,7 @@ func (r *ACLResolver) GetMergedPolicyForToken(token string) (*acl.Policy, error)
 		return nil, acl.ErrNotFound
 	}
 
-	return policies.Merge(r.cache, r.sentinel)
+return policies.Merge(r.cache)
 }
 
 // aclFilter is used to filter results from our state store based on ACL rules
@@ -1454,46 +1449,12 @@ func vetRegisterWithACL(rule acl.Authorizer, subj *structs.RegisterRequest,
 		return nil
 	}
 
-	// This gets called potentially from a few spots so we save it and
-	// return the structure we made if we have it.
-	var memo map[string]interface{}
-	scope := func() map[string]interface{} {
-		if memo != nil {
-			return memo
-		}
-
-		node := &api.Node{
-			ID:              string(subj.ID),
-			Node:            subj.Node,
-			Address:         subj.Address,
-			Datacenter:      subj.Datacenter,
-			TaggedAddresses: subj.TaggedAddresses,
-			Meta:            subj.NodeMeta,
-		}
-
-		var service *api.AgentService
-		if subj.Service != nil {
-			service = &api.AgentService{
-				ID:                subj.Service.ID,
-				Service:           subj.Service.Service,
-				Tags:              subj.Service.Tags,
-				Meta:              subj.Service.Meta,
-				Address:           subj.Service.Address,
-				Port:              subj.Service.Port,
-				EnableTagOverride: subj.Service.EnableTagOverride,
-			}
-		}
-
-		memo = sentinel.ScopeCatalogUpsert(node, service)
-		return memo
-	}
-
 	// Vet the node info. This allows service updates to re-post the required
 	// node info for each request without having to have node "write"
 	// privileges.
 	needsNode := ns == nil || subj.ChangesNode(ns.Node)
 
-	if needsNode && !rule.NodeWrite(subj.Node, scope) {
+	if needsNode && !rule.NodeWrite(subj.Node) {
 		return acl.ErrPermissionDenied
 	}
 
@@ -1501,17 +1462,14 @@ func vetRegisterWithACL(rule acl.Authorizer, subj *structs.RegisterRequest,
 	// the given service, and that we can write to any existing service that
 	// is being modified by id (if any).
 	if subj.Service != nil {
-		if !rule.ServiceWrite(subj.Service.Service, scope) {
+		if !rule.ServiceWrite(subj.Service.Service) {
 			return acl.ErrPermissionDenied
 		}
 
 		if ns != nil {
 			other, ok := ns.Services[subj.Service.ID]
 
-			// This is effectively a delete, so we DO NOT apply the
-			// sentinel scope to the service we are overwriting, just
-			// the regular ACL policy.
-			if ok && !rule.ServiceWrite(other.Service, nil) {
+			if ok && !rule.ServiceWrite(other.Service) {
 				return acl.ErrPermissionDenied
 			}
 		}
@@ -1540,7 +1498,7 @@ func vetRegisterWithACL(rule acl.Authorizer, subj *structs.RegisterRequest,
 
 		// Node-level check.
 		if check.ServiceID == "" {
-			if !rule.NodeWrite(subj.Node, scope) {
+			if !rule.NodeWrite(subj.Node) {
 				return acl.ErrPermissionDenied
 			}
 			continue
@@ -1565,10 +1523,7 @@ func vetRegisterWithACL(rule acl.Authorizer, subj *structs.RegisterRequest,
 			return fmt.Errorf("Unknown service '%s' for check '%s'", check.ServiceID, check.CheckID)
 		}
 
-		// We are only adding a check here, so we don't add the scope,
-		// since the sentinel policy doesn't apply to adding checks at
-		// this time.
-		if !rule.ServiceWrite(other.Service, nil) {
+		if !rule.ServiceWrite(other.Service) {
 			return acl.ErrPermissionDenied
 		}
 	}
@@ -1589,13 +1544,10 @@ func vetDeregisterWithACL(rule acl.Authorizer, subj *structs.DeregisterRequest,
 		return nil
 	}
 
-	// We don't apply sentinel in this path, since at this time sentinel
-	// only applies to create and update operations.
-
 	// Allow service deregistration if the token has write permission for the node.
 	// This accounts for cases where the agent no longer has a token with write permission
 	// on the service to deregister it.
-	if rule.NodeWrite(subj.Node, nil) {
+	if rule.NodeWrite(subj.Node) {
 		return nil
 	}
 
@@ -1607,7 +1559,7 @@ func vetDeregisterWithACL(rule acl.Authorizer, subj *structs.DeregisterRequest,
 		if ns == nil {
 			return fmt.Errorf("Unknown service '%s'", subj.ServiceID)
 		}
-		if !rule.ServiceWrite(ns.Service, nil) {
+		if !rule.ServiceWrite(ns.Service) {
 			return acl.ErrPermissionDenied
 		}
 	} else if subj.CheckID != "" {
@@ -1615,11 +1567,11 @@ func vetDeregisterWithACL(rule acl.Authorizer, subj *structs.DeregisterRequest,
 			return fmt.Errorf("Unknown check '%s'", subj.CheckID)
 		}
 		if nc.ServiceID != "" {
-			if !rule.ServiceWrite(nc.ServiceName, nil) {
+			if !rule.ServiceWrite(nc.ServiceName) {
 				return acl.ErrPermissionDenied
 			}
 		} else {
-			if !rule.NodeWrite(subj.Node, nil) {
+			if !rule.NodeWrite(subj.Node) {
 				return acl.ErrPermissionDenied
 			}
 		}
@@ -1641,24 +1593,7 @@ func vetNodeTxnOp(op *structs.TxnNodeOp, rule acl.Authorizer) error {
 
 	node := op.Node
 
-	n := &api.Node{
-		Node:            node.Node,
-		ID:              string(node.ID),
-		Address:         node.Address,
-		Datacenter:      node.Datacenter,
-		TaggedAddresses: node.TaggedAddresses,
-		Meta:            node.Meta,
-	}
-
-	// Sentinel doesn't apply to deletes, only creates/updates, so we don't need the scopeFn.
-	var scope func() map[string]interface{}
-	if op.Verb != api.NodeDelete && op.Verb != api.NodeDeleteCAS {
-		scope = func() map[string]interface{} {
-			return sentinel.ScopeCatalogUpsert(n, nil)
-		}
-	}
-
-	if rule != nil && !rule.NodeWrite(node.Node, scope) {
+	if rule != nil && !rule.NodeWrite(node.Node) {
 		return acl.ErrPermissionDenied
 	}
 
@@ -1674,23 +1609,7 @@ func vetServiceTxnOp(op *structs.TxnServiceOp, rule acl.Authorizer) error {
 
 	service := op.Service
 
-	n := &api.Node{Node: op.Node}
-	svc := &api.AgentService{
-		ID:                service.ID,
-		Service:           service.Service,
-		Tags:              service.Tags,
-		Meta:              service.Meta,
-		Address:           service.Address,
-		Port:              service.Port,
-		EnableTagOverride: service.EnableTagOverride,
-	}
-	var scope func() map[string]interface{}
-	if op.Verb != api.ServiceDelete && op.Verb != api.ServiceDeleteCAS {
-		scope = func() map[string]interface{} {
-			return sentinel.ScopeCatalogUpsert(n, svc)
-		}
-	}
-	if !rule.ServiceWrite(service.Service, scope) {
+	if !rule.ServiceWrite(service.Service) {
 		return acl.ErrPermissionDenied
 	}
 
@@ -1704,31 +1623,14 @@ func vetCheckTxnOp(op *structs.TxnCheckOp, rule acl.Authorizer) error {
 		return nil
 	}
 
-	n := &api.Node{Node: op.Check.Node}
-	svc := &api.AgentService{
-		ID:      op.Check.ServiceID,
-		Service: op.Check.ServiceID,
-		Tags:    op.Check.ServiceTags,
-	}
-	var scope func() map[string]interface{}
 	if op.Check.ServiceID == "" {
 		// Node-level check.
-		if op.Verb == api.CheckDelete || op.Verb == api.CheckDeleteCAS {
-			scope = func() map[string]interface{} {
-				return sentinel.ScopeCatalogUpsert(n, svc)
-			}
-		}
-		if !rule.NodeWrite(op.Check.Node, scope) {
+		if !rule.NodeWrite(op.Check.Node) {
 			return acl.ErrPermissionDenied
 		}
 	} else {
 		// Service-level check.
-		if op.Verb == api.CheckDelete || op.Verb == api.CheckDeleteCAS {
-			scope = func() map[string]interface{} {
-				return sentinel.ScopeCatalogUpsert(n, svc)
-			}
-		}
-		if !rule.ServiceWrite(op.Check.ServiceName, scope) {
+		if !rule.ServiceWrite(op.Check.ServiceName) {
 			return acl.ErrPermissionDenied
 		}
 	}

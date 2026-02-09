@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/hashicorp/consul/acl"
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/acl"
+	"github.com/opengyoza/opengyoza/agent/structs"
 )
 
 // aclCreateResponse is used to wrap the ACL ID

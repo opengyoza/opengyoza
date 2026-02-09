@@ -89,7 +89,7 @@ and [Policies](/api/acl/policies.html).
 
 ~> **Warning**: In this document we use the deprecated
  configuration parameter `acl_datacenter`. In Consul 1.4 and newer the
- parameter has been updated to [`primary_datacenter`](https://www.consul.io/docs/agent/options.html#primary_datacenter).
+ parameter has been updated to [`primary_datacenter`](/docs/agent/options.html#primary_datacenter).
 
 Consul provides an optional Access Control List (ACL) system which can be used to control
 access to data and APIs. The ACL is
@@ -242,7 +242,7 @@ The [`acl_agent_token`](/docs/agent/options.html#acl_agent_token) is a special t
 
 1. Updating the agent's node entry using the [Catalog API](/api/catalog.html), including updating its node metadata, tagged addresses, and network coordinates
 2. Performing [anti-entropy](/docs/internals/anti-entropy.html) syncing, in particular reading the node metadata and services registered with the catalog
-3. Reading and writing the special `_rexec` section of the KV store when executing [`consul exec`](/docs/commands/exec.html) commands
+3. Reading and writing the special `_rexec` section of the KV store when executing [`gyoza exec`](/docs/commands/exec.html) commands
 
 Here's an example policy sufficient to accomplish the above for a node called `mynode`:
 
@@ -428,11 +428,11 @@ agent token.
 #### Set an Anonymous Policy (Optional)
 
 At this point ACLs are bootstrapped with ACL agent tokens configured, but there are no
-other policies set up. Even basic operations like `consul members` will be restricted
+other policies set up. Even basic operations like `gyoza members` will be restricted
 by the ACL default policy of "deny":
 
 ```
-$ consul members
+$ gyoza members
 ```
 
 We don't get an error since the ACL has filtered what we see, and we aren't allowed to
@@ -442,7 +442,7 @@ If we supply the token we created above we will be able to see a listing of node
 it has write privileges to an empty `node` prefix, meaning it has access to all nodes:
 
 ```
-$ CONSUL_HTTP_TOKEN=fe3b8d40-0ee0-8783-6cc2-ab1aa9bb16c1 consul members
+$ CONSUL_HTTP_TOKEN=fe3b8d40-0ee0-8783-6cc2-ab1aa9bb16c1 gyoza members
 Node    Address         Status  Type    Build     Protocol  DC
 node-1  127.0.0.1:8301  alive   server  0.9.0dev  2         dc1
 node-2  127.0.0.2:8301  alive   client  0.9.0dev  2         dc1
@@ -469,10 +469,10 @@ $ curl \
 ```
 
 The anonymous token is implicitly used if no token is supplied, so now we can run
-`consul members` without supplying a token and we will be able to see the nodes:
+`gyoza members` without supplying a token and we will be able to see the nodes:
 
 ```
-$ consul members
+$ gyoza members
 Node    Address         Status  Type    Build     Protocol  DC
 node-1  127.0.0.1:8301  alive   server  0.9.0dev  2         dc1
 node-2  127.0.0.2:8301  alive   client  0.9.0dev  2         dc1
@@ -750,7 +750,7 @@ Event rules are keyed by the event name prefix they apply to, using the longest 
 In the example above, the rules allow read-only access to any event, and firing of any event that
 starts with "deploy".
 
-The [`consul exec`](/docs/commands/exec.html) command uses events with the "_rexec" prefix during
+The [`gyoza exec`](/docs/commands/exec.html) command uses events with the "_rexec" prefix during
 operation, so to enable this feature in a Consul environment with ACLs enabled, you will need to
 give agents a token with access to this event prefix, in addition to configuring
 [`disable_remote_exec`](/docs/agent/options.html#disable_remote_exec) to `false`.
@@ -800,27 +800,6 @@ key "baz" {
 In the example above, the rules allow reading the key "baz", and only allow recursive reads on the prefix "bar".
 
 A token with `write` access on a prefix also has `list` access. A token with `list` access on a prefix also has `read` access on all its suffixes.
-
-#### Sentinel Integration
-
-Consul Enterprise supports additional optional fields for key write policies for
-[Sentinel](https://docs.hashicorp.com/sentinel/app/consul/) integration. An example key rule with a
-Sentinel code policy looks like this:
-
-```hcl
-key "foo" {
-  policy = "write"
-  sentinel {
-      code = <<EOF
-import "strings"
-main = rule { strings.has_suffix(value, "bar") }
-EOF
-      enforcementlevel = "hard-mandatory"
-  }
-}
-```
-
-For more detailed information, see the [Consul Sentinel documentation](/docs/agent/sentinel.html).
 
 #### Keyring Rules
 

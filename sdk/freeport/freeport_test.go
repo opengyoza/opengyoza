@@ -6,7 +6,7 @@ import (
 	"net"
 	"testing"
 
-	"github.com/hashicorp/consul/sdk/testutil/retry"
+	"github.com/opengyoza/opengyoza/sdk/testutil/retry"
 )
 
 func TestTakeReturn(t *testing.T) {

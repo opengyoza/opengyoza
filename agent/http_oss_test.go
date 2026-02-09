@@ -11,9 +11,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/hashicorp/consul/testrpc"
+	"github.com/opengyoza/opengyoza/testrpc"
 
-	"github.com/hashicorp/consul/logger"
+	"github.com/opengyoza/opengyoza/logger"
 )
 
 // extra endpoints that should be tested, and their allowed methods

@@ -3,15 +3,15 @@ layout: "docs"
 page_title: "Commands: Keygen"
 sidebar_current: "docs-commands-keygen"
 description: |-
-  The `keygen` command generates an encryption key that can be used for Consul agent traffic encryption. The keygen command uses a cryptographically strong pseudo-random number generator to generate the key.
+  The `keygen` command generates an encryption key that can be used for OpenGyoza agent traffic encryption. The keygen command uses a cryptographically strong pseudo-random number generator to generate the key.
 
 ---
 
-# Consul Keygen
+# OpenGyoza Keygen
 
-Command: `consul keygen`
+Command: `gyoza keygen`
 
 The `keygen` command generates an encryption key that can be used for
-[Consul agent traffic encryption](/docs/agent/encryption.html).
+[OpenGyoza agent traffic encryption](/docs/agent/encryption.html).
 The keygen command uses a cryptographically
 strong pseudo-random number generator to generate the key.

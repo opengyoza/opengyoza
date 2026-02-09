@@ -5,8 +5,8 @@ import (
 	"math/rand"
 	"testing"
 
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/lib"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/lib"
 	"github.com/hashicorp/go-memdb"
 	"github.com/hashicorp/serf/coordinate"
 	"github.com/pascaldekloe/goe/verify"

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/structs"
 )
 
 // GET /v1/connect/ca/roots

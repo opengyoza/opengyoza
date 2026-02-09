@@ -7,15 +7,15 @@ sidebar_current: "docs-commands-acl-translate-rules"
 -> **Deprecated:** This command exists only as a convenience to make legacy ACL migration easier.
 It will be removed in a future major release when support for the legacy ACL system is removed.
 
-# Consul ACL Translate Rules
+# OpenGyoza ACL Translate Rules
 
-Command: `consul acl translate-rules`
+Command: `gyoza acl translate-rules`
 
 This command translates the legacy ACL rule syntax into the new syntax.
 
 ### Usage
 
-Usage: `consul acl translate rules [options] TRANSLATE`
+Usage: `gyoza acl translate rules [options] TRANSLATE`
 
 
 #### API Options
@@ -42,29 +42,29 @@ Usage: `consul acl translate rules [options] TRANSLATE`
 Translate rules within a file:
 
 ```sh
-$ consul acl translate-rules @rules.hcl
+$ gyoza acl translate-rules @rules.hcl
 ```
 
 Translate rules from stdin:
 
 ```sh
-$ consul acl translate-rules -
+$ gyoza acl translate-rules -
 ```
 
 Translate rules from a string argument:
 
 ```sh
-$ consul acl translate-rules 'key "" { policy = "write"}'
+$ gyoza acl translate-rules 'key "" { policy = "write"}'
 ```
 
 Translate rules for a legacy ACL token using its SecretID passed from stdin:
 
 ```sh
-$ consul acl translate-rules --token-secret -
+$ gyoza acl translate-rules --token-secret -
 ```
 
 Translate rules for a legacy ACL token using its AccessorID:
 
 ```sh
-$ consul acl translate-rules 429cd746-03d5-4bbb-a83a-18b164171c89
+$ gyoza acl translate-rules 429cd746-03d5-4bbb-a83a-18b164171c89
 ```

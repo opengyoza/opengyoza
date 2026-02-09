@@ -1,7 +1,7 @@
 package kv
 
 import (
-	"github.com/hashicorp/consul/command/flags"
+	"github.com/opengyoza/opengyoza/command/flags"
 	"github.com/mitchellh/cli"
 )
 

@@ -16,9 +16,9 @@ import (
 	"github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/types"
 
-	"github.com/hashicorp/consul/agent/connect"
-	"github.com/hashicorp/consul/agent/proxycfg"
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/connect"
+	"github.com/opengyoza/opengyoza/agent/proxycfg"
+	"github.com/opengyoza/opengyoza/agent/structs"
 )
 
 // clustersFromSnapshot returns the xDS API representation of the "clusters" in the snapshot.

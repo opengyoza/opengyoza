@@ -6,9 +6,9 @@ description: |-
   The lock command provides a mechanism for leader election, mutual exclusion, or worker pools. For example, this can be used to ensure a maximum number of services running at once across a cluster.
 ---
 
-# Consul Lock
+# OpenGyoza Lock
 
-Command: `consul lock`
+Command: `gyoza lock`
 
 The `lock` command provides a mechanism for simple distributed locking.
 A lock (or semaphore) is created at a given prefix in the KV store,
@@ -28,12 +28,12 @@ values of `-n` are provided, an error will be returned.
 
 An example use case is for highly-available N+1 deployments. In these
 cases, if N instances of a service are required, N+1 are deployed and use
-consul lock with `-n=N` to ensure only N instances are running. For singleton
+gyoza lock with `-n=N` to ensure only N instances are running. For singleton
 services, a hot standby waits until the current leader fails to take over.
 
 ## Usage
 
-Usage: `consul lock [options] prefix child...`
+Usage: `gyoza lock [options] prefix child...`
 
 The only required options are the key prefix and the command to execute.
 The prefix must be writable. The child is invoked only when the lock is held,
@@ -41,7 +41,7 @@ and the `CONSUL_LOCK_HELD` environment variable will be set to `true`.
 
 If the lock is lost, communication is disrupted, or the parent process
 interrupted, the child process will receive a `SIGTERM`. After a grace period
-of 5 seconds, a `SIGKILL` will be used to force termination. For Consul agents
+of 5 seconds, a `SIGKILL` will be used to force termination. For OpenGyoza agents
 on Windows, the child process is always terminated with a `SIGKILL`, since
 Windows has no POSIX compatible notion for `SIGTERM`.
 
@@ -56,7 +56,7 @@ Windows has no POSIX compatible notion for `SIGTERM`.
   if this is true, otherwise this doesn't propagate an error from the
   child. The default value is false.
 
-* `-monitor-retry` - Retry up to this number of times if Consul returns a 500 error
+* `-monitor-retry` - Retry up to this number of times if OpenGyoza returns a 500 error
    while monitoring the lock. This allows riding out brief periods of unavailability
    without causing leader elections, but increases the amount of time required
    to detect a lost lock in some cases. Defaults to 3, with a 1s wait between retries.
@@ -84,7 +84,7 @@ Windows has no POSIX compatible notion for `SIGTERM`.
 * `-verbose` - Enables verbose output.
 
 ## SHELL
-Consul lock launches its children in a shell. By default, Consul will use the shell
+OpenGyoza lock launches its children in a shell. By default, OpenGyoza will use the shell
 defined in the environment variable `SHELL`. If `SHELL` is not defined, it will
 default to `/bin/sh`. It should be noted that not all shells terminate child
 processes when they receive `SIGTERM`. Under Ubuntu, `/bin/sh` is linked to `dash`,

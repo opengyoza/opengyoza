@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/lib"
+	"github.com/opengyoza/opengyoza/lib"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -68,9 +68,8 @@ $ curl \
 ]
 ```
 
-In **Consul Enterprise**, this will include coordinates for user-added network
-areas as well, as indicated by the `AreaID`. Coordinates are only compatible
-within the same area.
+This fork does not include network areas; responses include only the default
+area.
 
 ## Read LAN Coordinates for all nodes
 
@@ -96,11 +95,6 @@ The table below shows this endpoint's support for
 - `dc` `(string: "")` - Specifies the datacenter to query. This will default to
   the datacenter of the agent being queried. This is specified as part of the
   URL as a query parameter.
-- `segment` `(string: "")` - (Enterprise-only) Specifies the segment to list members for.
-  If left blank, this will query for the default segment when connecting to a server and
-  the agent's own segment when connecting to a client (clients can only be part of one
-  network segment). When querying a server, setting this to the special string `_all`
-  will show members in all segments.
 
 ### Sample Request
 
@@ -126,9 +120,8 @@ $ curl \
 ]
 ```
 
-In **Consul Enterprise**, this may include multiple coordinates for the same node,
-each marked with a different `Segment`. Coordinates are only compatible within the same
-segment.
+Responses include a single coordinate for each node. The `Segment` field is present
+for compatibility and is empty in this fork.
 
 ## Read LAN Coordinates for a node
 
@@ -153,11 +146,6 @@ The table below shows this endpoint's support for
 - `dc` `(string: "")` - Specifies the datacenter to query. This will default to
   the datacenter of the agent being queried. This is specified as part of the
   URL as a query parameter.
-- `segment` `(string: "")` - (Enterprise-only) Specifies the segment to list members for.
-  If left blank, this will query for the default segment when connecting to a server and
-  the agent's own segment when connecting to a client (clients can only be part of one
-  network segment). When querying a server, setting this to the special string `_all`
-  will show members in all segments.
 
 ### Sample Request
 
@@ -183,9 +171,8 @@ $ curl \
 ]
 ```
 
-In **Consul Enterprise**, this may include multiple coordinates for the same node,
-each marked with a different `Segment`. Coordinates are only compatible within the same
-segment.
+Responses include a single coordinate for each node. The `Segment` field is present
+for compatibility and is empty in this fork.
 
 ## Update LAN Coordinates for a node
 

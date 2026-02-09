@@ -17,7 +17,7 @@ cat <<-EOF
 Usage: ${SCRIPT_NAME} (consul|ui|static-assets) [<options ...>]
 
 Description:
-   This script will build the various Consul components within docker containers
+   This script will build the various Gyoza/Consul components within docker containers
    and copy all the relevant artifacts out of the containers back to the source.
 
 Options:
@@ -106,7 +106,7 @@ function main {
             export GO_BUILD_TAG="${image:-${GO_BUILD_CONTAINER_DEFAULT}}"
             refresh_docker_images "${sdir}" go-build-image || return 1
          fi
-         status_stage "==> Building Consul"
+         status_stage "==> Building Gyoza + Consul shim"
          build_consul "${sdir}" "" "${image}" || return 1
          ;;
       static-assets )

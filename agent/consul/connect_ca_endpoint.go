@@ -9,14 +9,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/hashicorp/consul/lib/semaphore"
+	"github.com/opengyoza/opengyoza/lib/semaphore"
 
 	"golang.org/x/time/rate"
 
-	"github.com/hashicorp/consul/acl"
-	"github.com/hashicorp/consul/agent/connect"
-	"github.com/hashicorp/consul/agent/consul/state"
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/acl"
+	"github.com/opengyoza/opengyoza/agent/connect"
+	"github.com/opengyoza/opengyoza/agent/consul/state"
+	"github.com/opengyoza/opengyoza/agent/structs"
 	"github.com/hashicorp/go-memdb"
 )
 
@@ -431,7 +431,7 @@ func (s *ConnectCA) Sign(
 		return err
 	}
 	if isService {
-		if rule != nil && !rule.ServiceWrite(serviceID.Service, nil) {
+		if rule != nil && !rule.ServiceWrite(serviceID.Service) {
 			return acl.ErrPermissionDenied
 		}
 
@@ -442,7 +442,7 @@ func (s *ConnectCA) Sign(
 				"we are %s", serviceID.Datacenter, s.srv.config.Datacenter)
 		}
 	} else if isAgent {
-		if rule != nil && !rule.NodeWrite(agentID.Agent, nil) {
+		if rule != nil && !rule.NodeWrite(agentID.Agent) {
 			return acl.ErrPermissionDenied
 		}
 	}

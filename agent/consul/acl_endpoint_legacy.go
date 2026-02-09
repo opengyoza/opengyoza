@@ -5,10 +5,10 @@ import (
 	"time"
 
 	"github.com/armon/go-metrics"
-	"github.com/hashicorp/consul/acl"
-	"github.com/hashicorp/consul/agent/consul/state"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/lib"
+	"github.com/opengyoza/opengyoza/acl"
+	"github.com/opengyoza/opengyoza/agent/consul/state"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/lib"
 	"github.com/hashicorp/go-memdb"
 )
 
@@ -114,7 +114,7 @@ func aclApplyInternal(srv *Server, args *structs.ACLRequest, reply *string) erro
 		}
 
 		// Validate the rules compile
-		_, err := acl.NewPolicyFromSource("", 0, args.ACL.Rules, acl.SyntaxLegacy, srv.sentinel)
+		_, err := acl.NewPolicyFromSource("", 0, args.ACL.Rules, acl.SyntaxLegacy)
 		if err != nil {
 			return fmt.Errorf("ACL rule compilation failed: %v", err)
 		}

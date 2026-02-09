@@ -18,11 +18,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/agent/checks"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/lib"
-	"github.com/hashicorp/consul/sdk/testutil"
-	"github.com/hashicorp/consul/types"
+	"github.com/opengyoza/opengyoza/agent/checks"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/lib"
+	"github.com/opengyoza/opengyoza/sdk/testutil"
+	"github.com/opengyoza/opengyoza/types"
 	"github.com/pascaldekloe/goe/verify"
 	"github.com/stretchr/testify/require"
 )
@@ -558,17 +558,6 @@ func TestConfigFlagsAndEdgecases(t *testing.T) {
 			},
 			patch: func(rt *RuntimeConfig) {
 				rt.NodeMeta = map[string]string{"a": "b", "c": "d"}
-				rt.DataDir = dataDir
-			},
-		},
-		{
-			desc: "-non-voting-server",
-			args: []string{
-				`-non-voting-server`,
-				`-data-dir=` + dataDir,
-			},
-			patch: func(rt *RuntimeConfig) {
-				rt.NonVotingServer = true
 				rt.DataDir = dataDir
 			},
 		},
@@ -3544,13 +3533,10 @@ func TestFullConfig(t *testing.T) {
 			"advertise_addr_wan": "78.63.37.19",
 			"autopilot": {
 				"cleanup_dead_servers": true,
-				"disable_upgrade_migration": true,
 				"last_contact_threshold": "12705s",
 				"max_trailing_logs": 17849,
 				"min_quorum":		 3,
-				"redundancy_zone_tag": "3IsufDJf",
-				"server_stabilization_time": "23057s",
-				"upgrade_version_tag": "W9pDwFAL"
+				"server_stabilization_time": "23057s"
 			},
 			"bind_addr": "16.99.34.17",
 			"bootstrap": true,
@@ -3741,7 +3727,6 @@ func TestFullConfig(t *testing.T) {
 				"A7ynFMJB": "0Nx6RGab"
 			},
 			"node_name": "otlLxGaI",
-			"non_voting_server": true,
 			"performance": {
 				"leave_drain_time": "8265s",
 				"raft_multiplier": 5,
@@ -3775,23 +3760,6 @@ func TestFullConfig(t *testing.T) {
 			"retry_join_wan": [ "PFsR02Ye", "rJdQIhER" ],
 			"retry_max": 913,
 			"retry_max_wan": 23160,
-			"segment": "BC2NhTDi",
-			"segments": [
-				{
-					"name": "PExYMe2E",
-					"bind": "36.73.36.19",
-					"port": 38295,
-					"rpc_listener": true,
-					"advertise": "63.39.19.18"
-				},
-				{
-					"name": "UzCvJgup",
-					"bind": "37.58.38.19",
-					"port": 39292,
-					"rpc_listener": true,
-					"advertise": "83.58.26.27"
-				}
-			],
 			"serf_lan": "99.43.63.15",
 			"serf_wan": "67.88.33.19",
 			"server": true,
@@ -4145,13 +4113,10 @@ func TestFullConfig(t *testing.T) {
 			advertise_addr_wan = "78.63.37.19"
 			autopilot = {
 				cleanup_dead_servers = true
-				disable_upgrade_migration = true
 				last_contact_threshold = "12705s"
 				max_trailing_logs = 17849
 				min_quorum = 3
-				redundancy_zone_tag = "3IsufDJf"
 				server_stabilization_time = "23057s"
-				upgrade_version_tag = "W9pDwFAL"
 			}
 			bind_addr = "16.99.34.17"
 			bootstrap = true
@@ -4343,7 +4308,6 @@ func TestFullConfig(t *testing.T) {
 				"A7ynFMJB" = "0Nx6RGab"
 			}
 			node_name = "otlLxGaI"
-			non_voting_server = true
 			performance {
 				leave_drain_time = "8265s"
 				raft_multiplier = 5
@@ -4379,23 +4343,6 @@ func TestFullConfig(t *testing.T) {
 			retry_join_wan = [ "PFsR02Ye", "rJdQIhER" ]
 			retry_max = 913
 			retry_max_wan = 23160
-			segment = "BC2NhTDi"
-			segments = [
-				{
-					name = "PExYMe2E"
-					bind = "36.73.36.19"
-					port = 38295
-					rpc_listener = true
-					advertise = "63.39.19.18"
-				},
-				{
-					name = "UzCvJgup"
-					bind = "37.58.38.19"
-					port = 39292
-					rpc_listener = true
-					advertise = "83.58.26.27"
-				}
-			]
 			serf_lan = "99.43.63.15"
 			serf_wan = "67.88.33.19"
 			server = true
@@ -4722,8 +4669,6 @@ func TestFullConfig(t *testing.T) {
 					"check_deregister_interval_min": "27870s",
 					"check_reap_interval": "10662s",
 					"discovery_max_stale": "5s",
-					"segment_limit": 24705,
-					"segment_name_limit": 27046,
 					"sync_coordinate_interval_min": "27983s",
 					"sync_coordinate_rate_target": 137.81
 				}`,
@@ -4764,8 +4709,6 @@ func TestFullConfig(t *testing.T) {
 					check_deregister_interval_min = "27870s"
 					check_reap_interval = "10662s"
 					discovery_max_stale = "5s"
-					segment_limit = 24705
-					segment_name_limit = 27046
 					sync_coordinate_interval_min = "27983s"
 					sync_coordinate_rate_target = 137.81
 				`,
@@ -4800,8 +4743,6 @@ func TestFullConfig(t *testing.T) {
 		AEInterval:                 10003 * time.Second,
 		CheckDeregisterIntervalMin: 27870 * time.Second,
 		CheckReapInterval:          10662 * time.Second,
-		SegmentLimit:               24705,
-		SegmentNameLimit:           27046,
 		SyncCoordinateIntervalMin:  27983 * time.Second,
 		SyncCoordinateRateTarget:   137.81,
 
@@ -4851,13 +4792,10 @@ func TestFullConfig(t *testing.T) {
 		AdvertiseAddrLAN:                 ipAddr("17.99.29.16"),
 		AdvertiseAddrWAN:                 ipAddr("78.63.37.19"),
 		AutopilotCleanupDeadServers:      true,
-		AutopilotDisableUpgradeMigration: true,
 		AutopilotLastContactThreshold:    12705 * time.Second,
 		AutopilotMaxTrailingLogs:         17849,
 		AutopilotMinQuorum:               3,
-		AutopilotRedundancyZoneTag:       "3IsufDJf",
 		AutopilotServerStabilizationTime: 23057 * time.Second,
-		AutopilotUpgradeVersionTag:       "W9pDwFAL",
 		BindAddr:                         ipAddr("16.99.34.17"),
 		Bootstrap:                        true,
 		BootstrapExpect:                  53,
@@ -5026,7 +4964,6 @@ func TestFullConfig(t *testing.T) {
 		NodeID:                           types.NodeID("AsUIlw99"),
 		NodeMeta:                         map[string]string{"5mgGQMBk": "mJLtVMSG", "A7ynFMJB": "0Nx6RGab"},
 		NodeName:                         "otlLxGaI",
-		NonVotingServer:                  true,
 		PidFile:                          "43xN80Km",
 		PrimaryDatacenter:                "ejtmd43d",
 		RPCAdvertiseAddr:                 tcpAddr("17.99.29.16:3757"),
@@ -5050,21 +4987,6 @@ func TestFullConfig(t *testing.T) {
 		RetryJoinMaxAttemptsLAN:          913,
 		RetryJoinMaxAttemptsWAN:          23160,
 		RetryJoinWAN:                     []string{"PFsR02Ye", "rJdQIhER"},
-		SegmentName:                      "BC2NhTDi",
-		Segments: []structs.NetworkSegment{
-			{
-				Name:        "PExYMe2E",
-				Bind:        tcpAddr("36.73.36.19:38295"),
-				Advertise:   tcpAddr("63.39.19.18:38295"),
-				RPCListener: true,
-			},
-			{
-				Name:        "UzCvJgup",
-				Bind:        tcpAddr("37.58.38.19:39292"),
-				Advertise:   tcpAddr("83.58.26.27:39292"),
-				RPCListener: true,
-			},
-		},
 		SerfPortLAN: 8301,
 		SerfPortWAN: 8302,
 		ServerMode:  true,
@@ -5466,8 +5388,6 @@ func TestFullConfig(t *testing.T) {
 			rt.Bootstrap = false
 			rt.DevMode = false
 			rt.EnableUI = false
-			rt.SegmentName = ""
-			rt.Segments = nil
 
 			// validate the runtime config
 			if err := b.Validate(rt); err != nil {
@@ -5740,13 +5660,10 @@ func TestSanitize(t *testing.T) {
 		"AdvertiseAddrLAN": "",
 		"AdvertiseAddrWAN": "",
 		"AutopilotCleanupDeadServers": false,
-		"AutopilotDisableUpgradeMigration": false,
 		"AutopilotLastContactThreshold": "0s",
 		"AutopilotMaxTrailingLogs": 0,
 		"AutopilotMinQuorum": 0,
-		"AutopilotRedundancyZoneTag": "",
 		"AutopilotServerStabilizationTime": "0s",
-		"AutopilotUpgradeVersionTag": "",
 		"BindAddr": "127.0.0.1",
 		"Bootstrap": false,
 		"BootstrapExpect": 0,
@@ -5888,7 +5805,6 @@ func TestSanitize(t *testing.T) {
 		"NodeID": "",
 		"NodeMeta": {},
 		"NodeName": "",
-		"NonVotingServer": false,
 		"PidFile": "",
 		"PrimaryDatacenter": "",
 		"RPCAdvertiseAddr": "",
@@ -5917,10 +5833,6 @@ func TestSanitize(t *testing.T) {
 			"wan_foo=bar wan_key=hidden wan_secret=hidden wan_bang=bar"
 		],
 		"Revision": "",
-		"SegmentLimit": 0,
-		"SegmentName": "",
-		"SegmentNameLimit": 0,
-		"Segments": [],
 		"SerfAdvertiseAddrLAN": "tcp://1.2.3.4:5678",
 		"SerfAdvertiseAddrWAN": "",
 		"SerfBindAddrLAN": "",

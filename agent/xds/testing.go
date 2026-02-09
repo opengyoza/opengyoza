@@ -13,7 +13,7 @@ import (
 	"github.com/mitchellh/go-testing-interface"
 	"google.golang.org/grpc/metadata"
 
-	"github.com/hashicorp/consul/agent/connect"
+	"github.com/opengyoza/opengyoza/agent/connect"
 )
 
 // TestADSStream mocks

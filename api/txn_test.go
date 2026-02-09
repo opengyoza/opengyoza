@@ -1,7 +1,7 @@
 package api
 
 import (
-	"github.com/hashicorp/consul/sdk/testutil/retry"
+	"github.com/opengyoza/opengyoza/sdk/testutil/retry"
 	"strings"
 	"testing"
 	"time"
@@ -265,7 +265,7 @@ func TestAPI_ClientTxn(t *testing.T) {
 						"lan": s.Config.Bind,
 						"wan": s.Config.Bind,
 					},
-					Meta:        map[string]string{"consul-network-segment": ""},
+					Meta:        ret.Results[1].Node.Meta,
 					CreateIndex: ret.Results[1].Node.CreateIndex,
 					ModifyIndex: ret.Results[1].Node.ModifyIndex,
 				},

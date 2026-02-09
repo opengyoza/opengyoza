@@ -4,11 +4,11 @@ page_title: "Commands: Catalog"
 sidebar_current: "docs-commands-catalog"
 ---
 
-# Consul Catalog
+# OpenGyoza Catalog
 
-Command: `consul catalog`
+Command: `gyoza catalog`
 
-The `catalog` command is used to interact with Consul's catalog via the command
+The `catalog` command is used to interact with OpenGyoza's catalog via the command
 line. It exposes top-level commands for reading and filtering data from the
 registry.
 
@@ -19,7 +19,7 @@ The catalog is also accessible via the [HTTP API](/api/catalog.html).
 List all datacenters:
 
 ```text
-$ consul catalog datacenters
+$ gyoza catalog datacenters
 dc1
 dc2
 dc3
@@ -28,7 +28,7 @@ dc3
 List all nodes:
 
 ```text
-$ consul catalog nodes
+$ gyoza catalog nodes
 Node       ID        Address    DC
 worker-01  1b662d97  10.4.5.31  dc1
 ```
@@ -36,7 +36,7 @@ worker-01  1b662d97  10.4.5.31  dc1
 List all nodes which provide a particular service:
 
 ```text
-$ consul catalog nodes -service=redis
+$ gyoza catalog nodes -service=redis
 Node       ID        Address     DC
 worker-01  1b662d97  10.4.5.31   dc1
 worker-02  d407a592  10.4.4.158  dc1
@@ -45,8 +45,8 @@ worker-02  d407a592  10.4.4.158  dc1
 List all services:
 
 ```text
-$ consul catalog services
-consul
+$ gyoza catalog services
+gyoza
 postgresql
 redis
 ```
@@ -54,8 +54,8 @@ redis
 List all services on a node:
 
 ```text
-$ consul catalog services -node=worker-01
-consul
+$ gyoza catalog services -node=worker-01
+gyoza
 postgres
 ```
 
@@ -64,13 +64,13 @@ by clicking on one of the links in the sidebar.
 
 ## Usage
 
-Usage: `consul catalog <subcommand>`
+Usage: `gyoza catalog <subcommand>`
 
-For the exact documentation for your Consul version, run `consul catalog -h` to
+For the exact documentation for your OpenGyoza version, run `gyoza catalog -h` to
 view the complete list of subcommands.
 
 ```text
-Usage: consul catalog <subcommand> [options] [args]
+Usage: gyoza catalog <subcommand> [options] [args]
 
   # ...
 

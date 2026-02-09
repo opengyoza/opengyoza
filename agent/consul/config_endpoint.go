@@ -5,9 +5,9 @@ import (
 	"time"
 
 	metrics "github.com/armon/go-metrics"
-	"github.com/hashicorp/consul/acl"
-	"github.com/hashicorp/consul/agent/consul/state"
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/acl"
+	"github.com/opengyoza/opengyoza/agent/consul/state"
+	"github.com/opengyoza/opengyoza/agent/structs"
 	memdb "github.com/hashicorp/go-memdb"
 	"github.com/mitchellh/copystructure"
 )

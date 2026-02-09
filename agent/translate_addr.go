@@ -3,7 +3,7 @@ package agent
 import (
 	"fmt"
 
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/structs"
 )
 
 // TranslateServicePort is used to provide the final, translated port for a service,

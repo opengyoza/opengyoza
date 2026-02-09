@@ -4,7 +4,7 @@ import (
 	"net"
 	"testing"
 
-	"github.com/hashicorp/consul/agent/metadata"
+	"github.com/opengyoza/opengyoza/agent/metadata"
 	"github.com/hashicorp/serf/serf"
 )
 

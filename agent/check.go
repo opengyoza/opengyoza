@@ -1,8 +1,8 @@
 package agent
 
 import (
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/types"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/types"
 )
 
 // persistedCheck is used to serialize a check and write it to disk

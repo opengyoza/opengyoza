@@ -24,22 +24,22 @@ starting the Consul agent. The key can be set via the `encrypt` parameter.
 ~> **WAN Joined Datacenters Note:** If using multiple WAN joined datacenters, be sure to use _the same encryption key_ in all datacenters.
 
 The key must be 32-bytes, Base64 encoded. As a convenience, Consul provides the
-[`consul keygen`](/docs/commands/keygen.html) command to generate a
+[`gyoza keygen`](/docs/commands/keygen.html) command to generate a
 cryptographically suitable key:
 
 ```text
-$ consul keygen
+$ gyoza keygen
 pUqJrVyVRj5jsiYEkM/tFQYfWyJIv4s3XkvDwy7Cu5s=
 ```
 
 With that key, you can enable encryption on the agent. If encryption is enabled,
-the output of [`consul agent`](/docs/commands/agent.html) will include "Encrypt: true":
+the output of [`gyoza agent`](/docs/commands/agent.html) will include "Encrypt: true":
 
 ```text
 $ cat encrypt.json
 {"encrypt": "pUqJrVyVRj5jsiYEkM/tFQYfWyJIv4s3XkvDwy7Cu5s="}
 
-$ consul agent -data-dir=/tmp/consul -config-file=encrypt.json
+$ gyoza agent -data-dir=/tmp/gyoza -config-file=encrypt.json
 ==> WARNING: LAN keyring exists but -encrypt given, using keyring
 ==> WARNING: WAN keyring exists but -encrypt given, using keyring
 ==> Starting Consul agent...

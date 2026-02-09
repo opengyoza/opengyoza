@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hashicorp/consul/types"
+	"github.com/opengyoza/opengyoza/types"
 	"github.com/hashicorp/serf/serf"
 )
 

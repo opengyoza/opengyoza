@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/hashicorp/consul/agent/proxycfg"
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/proxycfg"
+	"github.com/opengyoza/opengyoza/agent/structs"
 	"github.com/stretchr/testify/require"
 )
 

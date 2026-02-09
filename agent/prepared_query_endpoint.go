@@ -6,9 +6,9 @@ import (
 	"strconv"
 	"strings"
 
-	cachetype "github.com/hashicorp/consul/agent/cache-types"
-	"github.com/hashicorp/consul/agent/consul"
-	"github.com/hashicorp/consul/agent/structs"
+	cachetype "github.com/opengyoza/opengyoza/agent/cache-types"
+	"github.com/opengyoza/opengyoza/agent/consul"
+	"github.com/opengyoza/opengyoza/agent/structs"
 )
 
 // preparedQueryCreateResponse is used to wrap the query ID.
@@ -97,7 +97,6 @@ func (s *HTTPServer) preparedQueryExecute(id string, resp http.ResponseWriter, r
 		Agent: structs.QuerySource{
 			Node:       s.agent.config.NodeName,
 			Datacenter: s.agent.config.Datacenter,
-			Segment:    s.agent.config.SegmentName,
 		},
 	}
 	s.parseSource(req, &args.Source)
@@ -181,7 +180,6 @@ func (s *HTTPServer) preparedQueryExplain(id string, resp http.ResponseWriter, r
 		Agent: structs.QuerySource{
 			Node:       s.agent.config.NodeName,
 			Datacenter: s.agent.config.Datacenter,
-			Segment:    s.agent.config.SegmentName,
 		},
 	}
 	s.parseSource(req, &args.Source)

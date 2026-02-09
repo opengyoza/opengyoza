@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/structs"
 	memdb "github.com/hashicorp/go-memdb"
 	"github.com/stretchr/testify/require"
 )

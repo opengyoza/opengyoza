@@ -8,8 +8,8 @@ import (
 	"sort"
 	"strings"
 
-	consulapi "github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/command/flags"
+	consulapi "github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/command/flags"
 	"github.com/hashicorp/serf/serf"
 	"github.com/mitchellh/cli"
 	"github.com/ryanuber/columnize"
@@ -27,7 +27,6 @@ type cmd struct {
 	detailed     bool
 	wan          bool
 	statusFilter string
-	segment      string
 }
 
 func New(ui cli.Ui) *cmd {
@@ -46,9 +45,6 @@ func (c *cmd) init() {
 	c.flags.StringVar(&c.statusFilter, "status", ".*",
 		"If provided, output is filtered to only nodes matching the regular "+
 			"expression for status.")
-	c.flags.StringVar(&c.segment, "segment", consulapi.AllSegments,
-		"(Enterprise-only) If provided, output is filtered to only nodes in"+
-			"the given segment.")
 
 	c.http = &flags.HTTPFlags{}
 	flags.Merge(c.flags, c.http.ClientFlags())
@@ -75,7 +71,6 @@ func (c *cmd) Run(args []string) int {
 
 	// Make the request.
 	opts := consulapi.MembersOpts{
-		Segment: c.segment,
 		WAN:     c.wan,
 	}
 	members, err := client.Agent().MembersOpts(opts)
@@ -88,12 +83,6 @@ func (c *cmd) Run(args []string) int {
 	n := len(members)
 	for i := 0; i < n; i++ {
 		member := members[i]
-		if member.Tags["segment"] == "" {
-			member.Tags["segment"] = "<default>"
-		}
-		if c.segment == consulapi.AllSegments && member.Tags["role"] == "consul" {
-			member.Tags["segment"] = "<all>"
-		}
 		statusString := serf.MemberStatus(member.Status).String()
 		if !statusRe.MatchString(statusString) {
 			members[i], members[n-1] = members[n-1], members[i]
@@ -109,7 +98,7 @@ func (c *cmd) Run(args []string) int {
 		return 2
 	}
 
-	sort.Sort(ByMemberNameAndSegment(members))
+	sort.Sort(ByMemberName(members))
 
 	// Generate the output
 	var result []string
@@ -127,26 +116,19 @@ func (c *cmd) Run(args []string) int {
 }
 
 // so we can sort members by name
-type ByMemberNameAndSegment []*consulapi.AgentMember
+type ByMemberName []*consulapi.AgentMember
 
-func (m ByMemberNameAndSegment) Len() int      { return len(m) }
-func (m ByMemberNameAndSegment) Swap(i, j int) { m[i], m[j] = m[j], m[i] }
-func (m ByMemberNameAndSegment) Less(i, j int) bool {
-	switch {
-	case m[i].Tags["segment"] < m[j].Tags["segment"]:
-		return true
-	case m[i].Tags["segment"] > m[j].Tags["segment"]:
-		return false
-	default:
-		return m[i].Name < m[j].Name
-	}
+func (m ByMemberName) Len() int      { return len(m) }
+func (m ByMemberName) Swap(i, j int) { m[i], m[j] = m[j], m[i] }
+func (m ByMemberName) Less(i, j int) bool {
+	return m[i].Name < m[j].Name
 }
 
 // standardOutput is used to dump the most useful information about nodes
 // in a more human-friendly format
 func (c *cmd) standardOutput(members []*consulapi.AgentMember) []string {
 	result := make([]string, 0, len(members))
-	header := "Node|Address|Status|Type|Build|Protocol|DC|Segment"
+	header := "Node|Address|Status|Type|Build|Protocol|DC"
 	result = append(result, header)
 	for _, member := range members {
 		addr := net.TCPAddr{IP: net.ParseIP(member.Addr), Port: int(member.Port)}
@@ -158,17 +140,16 @@ func (c *cmd) standardOutput(members []*consulapi.AgentMember) []string {
 			build = build[:idx]
 		}
 		dc := member.Tags["dc"]
-		segment := member.Tags["segment"]
 
 		statusString := serf.MemberStatus(member.Status).String()
 		switch member.Tags["role"] {
 		case "node":
-			line := fmt.Sprintf("%s|%s|%s|client|%s|%s|%s|%s",
-				member.Name, addr.String(), statusString, build, protocol, dc, segment)
+			line := fmt.Sprintf("%s|%s|%s|client|%s|%s|%s",
+				member.Name, addr.String(), statusString, build, protocol, dc)
 			result = append(result, line)
 		case "consul":
-			line := fmt.Sprintf("%s|%s|%s|server|%s|%s|%s|%s",
-				member.Name, addr.String(), statusString, build, protocol, dc, segment)
+			line := fmt.Sprintf("%s|%s|%s|server|%s|%s|%s",
+				member.Name, addr.String(), statusString, build, protocol, dc)
 			result = append(result, line)
 		default:
 			line := fmt.Sprintf("%s|%s|%s|unknown||||",

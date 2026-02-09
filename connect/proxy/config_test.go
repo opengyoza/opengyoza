@@ -8,9 +8,9 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/hashicorp/consul/agent"
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/connect"
+	"github.com/opengyoza/opengyoza/agent"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/connect"
 	"github.com/stretchr/testify/require"
 )
 

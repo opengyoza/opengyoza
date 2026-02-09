@@ -4,9 +4,9 @@ page_title: "Commands: ACL Token Create"
 sidebar_current: "docs-commands-acl-token-create"
 ---
 
-# Consul ACL Token Create
+# OpenGyoza ACL Token Create
 
-Command: `consul acl token create`
+Command: `gyoza acl token create`
 
 This command creates new tokens. When creating a new token, policies may be linked using
 either the `-policy-id` or the `-policy-name` options. When specifying policies by IDs you
@@ -14,7 +14,7 @@ may use a unique prefix of the UUID as a shortcut for specifying the entire UUID
 
 ## Usage
 
-Usage: `consul acl token create [options] [args]`
+Usage: `gyoza acl token create [options] [args]`
 
 #### API Options
 
@@ -49,7 +49,7 @@ Usage: `consul acl token create [options] [args]`
 
 * `-secret=<string>` - Create the token with this Secret ID. It must be a UUID. If not
    specified one will be auto-generated.
-   **Note**: The SecretID is used to authorize operations against Consul and should
+   **Note**: The SecretID is used to authorize operations against OpenGyoza and should
    be generated from an appropriate cryptographic source.
 
 ## Examples
@@ -57,7 +57,7 @@ Usage: `consul acl token create [options] [args]`
 Create a new token:
 
 ```sh
-$ consul acl token create -description "Read Nodes and Services" -policy-id 06acc965
+$ gyoza acl token create -description "Read Nodes and Services" -policy-id 06acc965
 AccessorID:   986193b5-e2b5-eb26-6264-b524ea60cc6d
 SecretID:     ec15675e-2999-d789-832e-8c4794daa8d7
 Description:  Read Nodes and Services
@@ -70,7 +70,7 @@ Policies:
 Create a new local token:
 
 ```sh
-$ consul acl token create -description "Read Nodes and Services" -policy-id 06acc965 -local
+$ gyoza acl token create -description "Read Nodes and Services" -policy-id 06acc965 -local
 AccessorID:   4fdf0ec8-d251-3865-079c-7247c974fc50
 SecretID:     02143514-abf2-6c23-0aa1-ec2107e68f6b
 Description:  Read Nodes and Services
@@ -83,7 +83,7 @@ Policies:
 Create a new token and link with policies by name:
 
 ```sh
-$ consul acl token create -description "Super User" -policy-name global-management
+$ gyoza acl token create -description "Super User" -policy-name global-management
 AccessorID:   59f86a9b-d3b6-166c-32a0-be4ab3f94caa
 SecretID:     ada7f751-f654-8872-7f93-498e799158b6
 Description:  Super User
@@ -96,7 +96,7 @@ Policies:
 Create a new token with one service identity that expires in 15 minutes:
 
 ```sh
-$ consul acl token create -description 'crawler token' -service-identity 'crawler' -expires-ttl '15m'
+$ gyoza acl token create -description 'crawler token' -service-identity 'crawler' -expires-ttl '15m'
 AccessorID:       0c083aca-6c15-f0cc-c4d9-30578db54cd9
 SecretID:         930dafb6-5c08-040b-23fb-a368a95256f9
 Description:      crawler token

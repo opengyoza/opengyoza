@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hashicorp/consul/agent/connect"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/lib"
+	"github.com/opengyoza/opengyoza/agent/connect"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/lib"
 	"github.com/miekg/dns"
 )
 
@@ -79,7 +79,7 @@ func (c *Client) RequestAutoEncryptCerts(servers []string, port int, token strin
 	}
 	var reply structs.SignedResponse
 
-	// Retry implementation modeled after https://github.com/hashicorp/consul/pull/5228.
+	// Retry implementation modeled after https://github.com/opengyoza/opengyoza/pull/5228.
 	// TLDR; there is a 30s window from which a random time is picked.
 	// Repeat until the call is successful.
 	attempts := 0

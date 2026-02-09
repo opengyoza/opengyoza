@@ -87,7 +87,7 @@ $ curl \
 
 - `Datacenter` is the datacenter the block refers to.
 
-- `Segment` is the network segment the block refers to.
+- `Segment` is present for compatibility and is empty in this fork.
 
 - `Keys` is a map of each gossip key to the number of nodes it's currently
   installed on.

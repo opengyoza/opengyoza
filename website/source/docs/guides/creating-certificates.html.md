@@ -3,7 +3,7 @@ layout: "docs"
 page_title: "Creating and Configuring TLS Certificates"
 sidebar_current: "docs-guides-creating-certificates"
 description: |-
-  Learn how to create certificates for Consul.
+  Learn how to create certificates for OpenGyoza.
 ---
 
 # Creating and Configuring TLS Certificates
@@ -23,14 +23,14 @@ This guide has the following chapters:
 
 1. [Creating Certificates](#creating-certificates)
 1. [Configuring Agents](#configuring-agents)
-1. [Configuring the Consul CLI for HTTPS](#configuring-the-consul-cli-for-https)
-1. [Configuring the Consul UI for HTTPS](#configuring-the-consul-ui-for-https)
+1. [Configuring the OpenGyoza CLI for HTTPS](#configuring-the-opengyoza-cli-for-https)
+1. [Configuring the OpenGyoza UI for HTTPS](#configuring-the-opengyoza-ui-for-https)
 
 This guide is structured in way that you build knowledge with every step. It is
 recommended to read the whole guide before starting with the actual work,
 because you can save time if you are aware of some of the more advanced things
-in Chapter [3](#configuring-the-consul-cli-for-https) and
-[4](#configuring-the-consul-ui-for-https).
+in Chapter [3](#configuring-the-opengyoza-cli-for-https) and
+[4](#configuring-the-opengyoza-ui-for-https).
 
 ### Reference Material
 
@@ -45,12 +45,12 @@ in Chapter [3](#configuring-the-consul-cli-for-https) and
 
 ### Prerequisites
 
-This guide assumes you have Consul 1.4.1 (or newer) in your PATH.
+This guide assumes you have OpenGyoza (Consul 1.6.4 fork) in your PATH.
 
 ### Introduction
 
-The first step to configuring TLS for Consul is generating certificates. In
-order to prevent unauthorized cluster access, Consul requires all certificates
+The first step to configuring TLS for OpenGyoza is generating certificates. In
+order to prevent unauthorized cluster access, OpenGyoza requires all certificates
 be signed by the same Certificate Authority (CA). This should be a _private_ CA
 and not a public one like [Let's Encrypt][letsencrypt] as any certificate
 signed by this CA will be allowed to communicate with the cluster.
@@ -59,30 +59,31 @@ signed by this CA will be allowed to communicate with the cluster.
 
 There are a variety of tools for managing your own CA, [like the PKI secret
 backend in Vault][vault-pki], but for the sake of simplicity this guide will
-use Consul's builtin TLS helpers:
+use OpenGyoza's builtin TLS helpers:
 
 ```shell
-$ consul tls ca create
+$ gyoza tls ca create
 ==> Saved consul-agent-ca.pem
 ==> Saved consul-agent-ca-key.pem
 ```
 
 The CA certificate (`consul-agent-ca.pem`) contains the public key necessary to
-validate Consul certificates and therefore must be distributed to every node
-that runs a consul agent.
+validate OpenGyoza certificates and therefore must be distributed to every node
+that runs an OpenGyoza agent.
 
-~> The CA key (`consul-agent-ca-key.pem`) will be used to sign certificates for Consul
-nodes and must be kept private. Possession of this key allows anyone to run Consul as
-a trusted server and access all Consul data including ACL tokens.
+~> The CA key (`consul-agent-ca-key.pem`) will be used to sign certificates for OpenGyoza
+nodes and must be kept private. Possession of this key allows anyone to run OpenGyoza as
+a trusted server and access all OpenGyoza data including ACL tokens. Filenames keep the
+`consul` prefix for compatibility.
 
 
 ### Step 2: Create individual Server Certificates
 
-Create a server certificate for datacenter `dc1` and domain `consul`, if your
+Create a server certificate for datacenter `dc1` and domain `gyoza`, if your
 datacenter or domain is different please use the appropriate flags:
 
 ```shell
-$ consul tls cert create -server
+$ gyoza tls cert create -server
 ==> WARNING: Server Certificates grants authority to become a
     server and access all state in the cluster including root keys
     and all ACL tokens. Do not distribute them to production hosts
@@ -96,25 +97,25 @@ Please repeat this process until there is an *individual* certificate for each
 server. The command can be called over and over again, it will automatically add
 a suffix.
 
-In order to authenticate Consul servers, servers are provided with a special
+In order to authenticate OpenGyoza servers, servers are provided with a special
 certificate - one that contains `server.dc1.consul` in the `Subject Alternative
 Name`. If you enable
 [`verify_server_hostname`](/docs/agent/options.html#verify_server_hostname),
 only agents that provide such certificate are allowed to boot as a server.
-Without `verify_server_hostname = true` an attacker could compromise a Consul
+Without `verify_server_hostname = true` an attacker could compromise an OpenGyoza
 client agent and restart the agent as a server in order to get access to all the
 data in your cluster! This is why server certificates are special, and only
 servers should have them provisioned.
 
 ~> Server keys, like the CA key, must be kept private - they effectively allow
-access to all Consul data.
+access to all OpenGyoza data.
 
 ### Step 3: Create Client Certificates
 
 Create a client certificate:
 
 ```shell
-$ consul tls cert create -client
+$ gyoza tls cert create -client
 ==> Using consul-agent-ca.pem and consul-agent-ca-key.pem
 ==> Saved dc1-client-consul-0.pem
 ==> Saved dc1-client-consul-0-key.pem
@@ -128,14 +129,14 @@ is enabled, they cannot start as a server.
 
 ### Prerequisites
 
-For this section you need access to your existing or new Consul cluster and have
+For this section you need access to your existing or new OpenGyoza cluster and have
 the certificates from the previous chapters available.
 
 ### Notes on example configurations
 
 The example configurations from this as well as the following chapters are in
 json. You can copy each one of the examples in its own file in a directory
-([`-config-dir`](/docs/agent/options.html#_config_dir)) from where consul will
+([`-config-dir`](/docs/agent/options.html#_config_dir)) from where OpenGyoza will
 load all the configuration. This is just one way to do it, you can also put them
 all into one file if you prefer that.
 
@@ -146,19 +147,19 @@ The next steps show how to configure TLS for a brand new cluster. If you already
 have a cluster in production without TLS please see the [encryption
 guide][guide] for the steps needed to introduce TLS without downtime.
 
-### Step 1: Setup Consul servers with certificates
+### Step 1: Setup OpenGyoza servers with certificates
 
-This step describes how to setup one of your consul servers, you want to make
+This step describes how to setup one of your OpenGyoza servers, you want to make
 sure to repeat the process for the other ones as well with their individual
 certificates.
 
-The following files need to be copied to your Consul server:
+The following files need to be copied to your OpenGyoza server:
 
 * `consul-agent-ca.pem`: CA public certificate.
-* `dc1-server-consul-0.pem`: Consul server node public certificate for the `dc1` datacenter.
-* `dc1-server-consul-0-key.pem`: Consul server node private key for the `dc1` datacenter.
+* `dc1-server-consul-0.pem`: OpenGyoza server node public certificate for the `dc1` datacenter.
+* `dc1-server-consul-0-key.pem`: OpenGyoza server node private key for the `dc1` datacenter.
 
-Here is an example agent TLS configuration for Consul servers which mentions the
+Here is an example agent TLS configuration for OpenGyoza servers which mentions the
 copied files:
 
 ```json
@@ -178,21 +179,21 @@ copied files:
 
 This configuration disables the HTTP port to make sure there is only encryted
 communication. Existing clients that are not yet prepared to talk HTTPS won't be
-able to connect afterwards. This also affects builtin tooling like `consul
+able to connect afterwards. This also affects builtin tooling like `gyoza
 members` and the UI. The next chapters will demonstrate how to setup secure
 access.
 
-After a Consul agent restart, your servers should be only talking TLS.
+After an OpenGyoza agent restart, your servers should be only talking TLS.
 
-### Step 2: Setup Consul clients with certificates
+### Step 2: Setup OpenGyoza clients with certificates
 
-Now copy the following files to your Consul clients:
+Now copy the following files to your OpenGyoza clients:
 
 * `consul-agent-ca.pem`: CA public certificate.
-* `dc1-client-consul-0.pem`: Consul client node public certificate.
-* `dc1-client-consul-0-key.pem`: Consul client node private key.
+* `dc1-client-consul-0.pem`: OpenGyoza client node public certificate.
+* `dc1-client-consul-0-key.pem`: OpenGyoza client node private key.
 
-Here is an example agent TLS configuration for Consul agents which mentions the
+Here is an example agent TLS configuration for OpenGyoza agents which mentions the
 copied files:
 
 ```json
@@ -212,20 +213,20 @@ copied files:
 
 This configuration disables the HTTP port to make sure there is only encryted
 communication. Existing clients that are not yet prepared to talk HTTPS won't be
-able to connect afterwards. This also affects builtin tooling like `consul
+able to connect afterwards. This also affects builtin tooling like `gyoza
 members` and the UI. The next chapters will demonstrate how to setup secure
 access.
 
-After a Consul agent restart, your agents should be only talking TLS.
+After an OpenGyoza agent restart, your agents should be only talking TLS.
 
-## Configuring the Consul CLI for HTTPS
+## Configuring the OpenGyoza CLI for HTTPS
 
 If your cluster is configured to only communicate via HTTPS, you will need to
 create additional certificates in order to be able to continue to access the API
 and the UI:
 
 ```shell
-$ consul tls cert create -cli
+$ gyoza tls cert create -cli
 ==> Using consul-agent-ca.pem and consul-agent-ca-key.pem
 ==> Saved dc1-cli-consul-0.pem
 ==> Saved dc1-cli-consul-0-key.pem
@@ -234,28 +235,30 @@ $ consul tls cert create -cli
 If you are trying to get members of you cluster, the CLI will return an error:
 
 ```shell
-$ consul members
+$ gyoza members
 Error retrieving members:
   Get http://127.0.0.1:8500/v1/agent/members?segment=_all:
   dial tcp 127.0.0.1:8500: connect: connection refused
-$ consul members -http-addr="https://localhost:8501"
+$ gyoza members -http-addr="https://localhost:8501"
 Error retrieving members:
-  Get https://localhost:8501/v1/agent/members?segment=_all:
+  Get https://localhost:8501/v1/agent/members:
   x509: certificate signed by unknown authority
 ```
 
 But it will work again if you provide the certificates you provided:
 
 ```shell
-$ consul members -ca-file=consul-agent-ca.pem -client-cert=dc1-cli-consul-0.pem \
+$ gyoza members -ca-file=consul-agent-ca.pem -client-cert=dc1-cli-consul-0.pem \
   -client-key=dc1-cli-consul-0-key.pem -http-addr="https://localhost:8501"
-  Node     Address         Status  Type    Build     Protocol  DC   Segment
+  Node     Address         Status  Type    Build     Protocol  DC
   ...
 ```
 
-This process can be cumbersome to type each time, so the Consul CLI also
+This process can be cumbersome to type each time, so the OpenGyoza CLI also
 searches environment variables for default values. Set the following
 environment variables in your shell:
+
+~> **Note:** Environment variables keep the `CONSUL_*` prefix for compatibility.
 
 ```shell
 $ export CONSUL_HTTP_ADDR=https://localhost:8501
@@ -264,7 +267,7 @@ $ export CONSUL_CLIENT_CERT=dc1-cli-consul-0.pem
 $ export CONSUL_CLIENT_KEY=dc1-cli-consul-0-key.pem
 ```
 
-* `CONSUL_HTTP_ADDR` is the URL of the Consul agent and sets the default for
+* `CONSUL_HTTP_ADDR` is the URL of the OpenGyoza agent and sets the default for
   `-http-addr`.
 * `CONSUL_CACERT` is the location of your CA certificate and sets the default
   for `-ca-file`.
@@ -280,15 +283,15 @@ respond as expected.
 
 Using `localhost` and `127.0.0.1` as `Subject Alternative Names` in server
 and client certificates allows tools like `curl` to be able to communicate with
-Consul's HTTPS API when run on the same host. Other SANs may be added during
+OpenGyoza's HTTPS API when run on the same host. Other SANs may be added during
 server/client certificates creation with `-additional-dnsname` or 
 `-additional-ipaddress`to allow remote HTTPS requests from other hosts.
 
-## Configuring the Consul UI for HTTPS
+## Configuring the OpenGyoza UI for HTTPS
 
 If your servers and clients are configured now like above, you won't be able to
 access the builtin UI anymore. We recommend that you pick one (or two for
-availability) Consul agent you want to run the UI on and follow the instructions
+availability) OpenGyoza agent you want to run the UI on and follow the instructions
 to get the UI up and running again.
 
 ### Step 1: Which interface to bind to?
@@ -297,7 +300,7 @@ Depending on your setup you might need to change to which interface you are
 binding because thats `127.0.0.1` by default for the UI. Either via the
 [`addresses.https`](/docs/agent/options.html#https) or
 [client_addr](/docs/agent/options.html#client_addr) option which also impacts
-the DNS server. The Consul UI is unproteced which means you need to put some
+the DNS server. The OpenGyoza UI is unproteced which means you need to put some
 auth in front of it if you want to make it publicly available!
 
 Binding to `0.0.0.0` should work:
@@ -311,18 +314,18 @@ Binding to `0.0.0.0` should work:
 }
 ```
 
-~> Since your Consul agent is now available to the network, please make sure
+~> Since your OpenGyoza agent is now available to the network, please make sure
 that [`enable_script_checks`](/docs/agent/options.html#_enable_script_checks) is
 set to `false` and
-[`disable_remote_exec`](https://www.consul.io/docs/agent/options.html#disable_remote_exec)
+[`disable_remote_exec`](/docs/agent/options.html#disable_remote_exec)
 is set to `true`.
 
 ### Step 2: verify_incoming_rpc
 
-Your Consul agent will deny the connection straight away because
+Your OpenGyoza agent will deny the connection straight away because
 `verify_incoming` is enabled.
 
-> If set to true, Consul requires that all incoming connections make use of TLS
+> If set to true, OpenGyoza requires that all incoming connections make use of TLS
 > and that the client provides a certificate signed by a Certificate Authority
 > from the ca_file or ca_path. This applies to both server RPC and to the HTTPS
 > API.
@@ -335,8 +338,8 @@ $ curl https://localhost:8501/ui/ -k -I
 curl: (35) error:14094412:SSL routines:SSL3_READ_BYTES:sslv3 alert bad certificate
 ```
 
-This is the Consul HTTPS server denying your connection because you are not
-presenting a client certificate signed by your Consul CA. There is a combination
+This is the OpenGyoza HTTPS server denying your connection because you are not
+presenting a client certificate signed by your OpenGyoza CA. There is a combination
 of options however that allows us to keep using `verify_incoming` for RPC, but
 not for HTTPS:
 
@@ -362,7 +365,7 @@ HTTP/2 200
 ### Step 3: Subject Alternative Name
 
 This step will take care of setting up the domain you want to use to access the
-Consul UI. Unless you only need to access the UI over localhost or 127.0.0.1 you
+OpenGyoza UI. Unless you only need to access the UI over localhost or 127.0.0.1 you
 will need to go complete this step.
 
 ```shell
@@ -379,12 +382,12 @@ that your domain is not in `Subject Alternative Name` of the Certificate. We can
 fix that by creating a certificate that has our domain:
 
 ```shell
-$ consul tls cert create -server -additional-dnsname consul.example.com
+$ gyoza tls cert create -server -additional-dnsname consul.example.com
 ...
 ```
 
 And if you put your new cert into the configuration of the agent you picked to
-serve the UI and restart Consul, it works now:
+serve the UI and restart OpenGyoza, it works now:
 
 ```shell
 $ curl https://consul.example.com:8501/ui/ \
@@ -394,7 +397,7 @@ HTTP/2 200
 ...
 ```
 
-### Step 4: Trust the Consul CA
+### Step 4: Trust the OpenGyoza CA
 
 So far we have provided curl with our CA so that it can verify the connection,
 but if we stop doing that it will complain and so will our browser if you visit
@@ -407,7 +410,7 @@ curl: (60) SSL certificate problem: unable to get local issuer certificate
 ...
 ```
 
-You can fix that by trusting your Consul CA (`consul-agent-ca.pem`) on your machine,
+You can fix that by trusting your OpenGyoza CA (`consul-agent-ca.pem`) on your machine,
 please use Google to find out how to do that on your OS.
 
 ```shell
@@ -419,9 +422,9 @@ HTTP/2 200
 
 ## Summary
 
-When you have completed this guide, your Consul cluster will have TLS enabled
+When you have completed this guide, your OpenGyoza cluster will have TLS enabled
 and will encrypt all RPC and HTTP traffic (assuming you disabled the HTTP port).
-The other pre-requisites for a secure Consul deployment are:
+The other pre-requisites for a secure OpenGyoza deployment are:
 
 * [Enable gossip encryption](/docs/agent/encryption.html#gossip-encryption)
 * [Configure ACLs][acl] with default deny
@@ -431,4 +434,3 @@ The other pre-requisites for a secure Consul deployment are:
 [vault-pki]: https://www.vaultproject.io/docs/secrets/pki/index.html
 [guide]: /docs/agent/encryption.html#configuring-tls-on-an-existing-cluster
 [acl]: /docs/guides/acl.html
-

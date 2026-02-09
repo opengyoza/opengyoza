@@ -20,11 +20,11 @@ import (
 	envoydisco "github.com/envoyproxy/go-control-plane/envoy/service/discovery/v2"
 	"github.com/gogo/googleapis/google/rpc"
 	"github.com/gogo/protobuf/proto"
-	"github.com/hashicorp/consul/acl"
-	"github.com/hashicorp/consul/agent/cache"
-	"github.com/hashicorp/consul/agent/connect"
-	"github.com/hashicorp/consul/agent/proxycfg"
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/acl"
+	"github.com/opengyoza/opengyoza/agent/cache"
+	"github.com/opengyoza/opengyoza/agent/connect"
+	"github.com/opengyoza/opengyoza/agent/proxycfg"
+	"github.com/opengyoza/opengyoza/agent/structs"
 )
 
 // ADSStream is a shorter way of referring to this thing...
@@ -251,12 +251,12 @@ func (s *Server) process(stream ADSStream, reqCh <-chan *envoy.DiscoveryRequest)
 
 		switch cfgSnap.Kind {
 		case structs.ServiceKindConnectProxy:
-			if rule != nil && !rule.ServiceWrite(cfgSnap.Proxy.DestinationServiceName, nil) {
+			if rule != nil && !rule.ServiceWrite(cfgSnap.Proxy.DestinationServiceName) {
 				return status.Errorf(codes.PermissionDenied, "permission denied")
 			}
 		case structs.ServiceKindMeshGateway:
 			// TODO (mesh-gateway) - figure out what ACLs to check for the Gateways
-			if rule != nil && !rule.ServiceWrite(cfgSnap.Service, nil) {
+			if rule != nil && !rule.ServiceWrite(cfgSnap.Service) {
 				return status.Errorf(codes.PermissionDenied, "permission denied")
 			}
 		default:

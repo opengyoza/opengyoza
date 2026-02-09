@@ -1,7 +1,7 @@
 package plugin
 
 import (
-	"github.com/hashicorp/consul/agent/connect/ca"
+	"github.com/opengyoza/opengyoza/agent/connect/ca"
 	"github.com/hashicorp/go-plugin"
 )
 

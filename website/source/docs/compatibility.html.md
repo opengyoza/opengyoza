@@ -35,7 +35,7 @@ OpenGyoza preserves legacy Consul interfaces for existing tooling:
 - `CONSUL_*` environment variables continue to work.
 - Existing config keys and CLI flags remain valid.
 - HTTP API headers such as `X-Consul-*` are retained.
-- Any remaining `consul/` directory names are kept strictly for compatibility with established paths and tooling.
+- Any remaining `consul/` directory names are kept strictly for compatibility with established paths and tooling (not endorsement).
 
 ## Protocol Compatibility Table
 

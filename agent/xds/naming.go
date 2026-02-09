@@ -3,7 +3,7 @@ package xds
 import (
 	"fmt"
 
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/structs"
 )
 
 func CustomizeClusterName(clusterName string, chain *structs.CompiledDiscoveryChain) string {

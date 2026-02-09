@@ -4,9 +4,9 @@ page_title: "Commands: Config Read"
 sidebar_current: "docs-commands-config-read"
 ---
 
-# Consul Config Read
+# OpenGyoza Config Read
 
-Command: `consul config read`
+Command: `gyoza config read`
 
 The `config read` command reads the config entry specified by the given
 kind and name and outputs its JSON representation. See the
@@ -15,7 +15,7 @@ details about configuration entries.
 
 ## Usage
 
-Usage: `consul config read [options]`
+Usage: `gyoza config read [options]`
 
 #### API Options
 
@@ -29,7 +29,7 @@ Usage: `consul config read [options]`
 
 ## Examples
 
-    $ consul config read -kind service-defaults -name web
+    $ gyoza config read -kind service-defaults -name web
     {
         "Kind": "service-defaults",
         "Name": "web",

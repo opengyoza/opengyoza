@@ -436,21 +436,24 @@ func TestAutopilot_BootstrapExpect(t *testing.T) {
 	if dead == nil {
 		t.Fatal("no members set")
 	}
+	deadName := dead.config.NodeName
 	dead.Shutdown()
-	<-closeMap[dead.config.NodeName]
+	<-closeMap[deadName]
+	delete(servers, deadName)
 	retry.Run(t, func(r *retry.R) {
-		leader := findStatus(true)
-		if leader == nil {
-			r.Fatalf("no members set")
+		member := findStatus(true)
+		if member == nil {
+			member = findStatus(false)
 		}
-		for _, m := range leader.LANMembers() {
-			if m.Name == dead.config.NodeName && m.Status != serf.StatusLeft {
+		if member == nil {
+			r.Fatal("no members set")
+		}
+		for _, m := range member.LANMembers() {
+			if m.Name == deadName && m.Status != serf.StatusLeft {
 				r.Fatalf("%v should be left, got %v", m.Name, m.Status.String())
 			}
 		}
 	})
-
-	delete(servers, dead.config.NodeName)
 	//Autopilot should not take this one into left
 	dead = nil
 	retry.Run(t, func(r *retry.R) {
@@ -459,16 +462,21 @@ func TestAutopilot_BootstrapExpect(t *testing.T) {
 			r.Fatal("no members set")
 		}
 	})
+	deadName = dead.config.NodeName
 	dead.Shutdown()
-	<-closeMap[dead.config.NodeName]
+	<-closeMap[deadName]
+	delete(servers, deadName)
 
-	retry.Run(t, func(r *retry.R) {
-		leader := findStatus(true)
-		if leader == nil {
+	retry.RunWith(&retry.Timer{Timeout: 15 * time.Second, Wait: 25 * time.Millisecond}, t, func(r *retry.R) {
+		member := findStatus(true)
+		if member == nil {
+			member = findStatus(false)
+		}
+		if member == nil {
 			r.Fatal("no members set")
 		}
-		for _, m := range leader.LANMembers() {
-			if m.Name == dead.config.NodeName && m.Status != serf.StatusFailed {
+		for _, m := range member.LANMembers() {
+			if m.Name == deadName && m.Status != serf.StatusFailed {
 				r.Fatalf("%v should be failed, got %v", m.Name, m.Status.String())
 			}
 		}

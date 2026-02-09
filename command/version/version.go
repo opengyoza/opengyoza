@@ -3,8 +3,8 @@ package version
 import (
 	"fmt"
 
-	"github.com/hashicorp/consul/agent/config"
-	"github.com/hashicorp/consul/agent/consul"
+	"github.com/opengyoza/opengyoza/agent/config"
+	"github.com/opengyoza/opengyoza/agent/consul"
 	"github.com/mitchellh/cli"
 )
 

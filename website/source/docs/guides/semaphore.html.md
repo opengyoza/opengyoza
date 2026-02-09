@@ -3,18 +3,18 @@ layout: "docs"
 page_title: "Semaphore"
 sidebar_current: "docs-guides-semaphore"
 description: |-
-  This guide demonstrates how to implement a distributed semaphore using the Consul KV store.
+  This guide demonstrates how to implement a distributed semaphore using the OpenGyoza KV store.
 ---
 
 # Semaphore
 
 A distributed semaphore can be useful when you want to coordinate many services, while
-restricting access to certain resources. In this guide we will focus on using Consul's support for
-sessions and Consul KV to build a distributed
+restricting access to certain resources. In this guide we will focus on using OpenGyoza's support for
+sessions and OpenGyoza KV to build a distributed
 semaphore. Note, there are a number of ways that a semaphore can be built, we will not cover all the possible methods in this guide. 
 
 To complete this guide successfully, you should have familiarity with 
-[Consul KV](/docs/agent/kv.html) and Consul [sessions](/docs/internals/sessions.html). 
+[OpenGyoza KV](/docs/agent/kv.html) and OpenGyoza [sessions](/docs/internals/sessions.html). 
 
 ~>  If you only need mutual exclusion or leader election,
 [this guide](/docs/guides/leader-election.html)
@@ -66,7 +66,7 @@ curl -X PUT -d <body> http://localhost:8500/v1/kv/<prefix>/<session>?acquire=<se
  ```
 
 `body` can be used to associate a meaningful value with the contender, such as its node’s name. 
-This body is opaque to Consul but can be useful for human operators.
+This body is opaque to OpenGyoza but can be useful for human operators.
 
 The `<session>` value is the ID returned by the call to
 [`/v1/session/create`](/api/session.html#session_create).
@@ -175,4 +175,4 @@ Once that is done, both its contender key `<prefix>/<session>` and session shoul
 
 ## Summary
 
-In this guide we created a distributed semaphore using Consul KV and Consul sessions. We also learned how to manage the newly created semaphore. 
+In this guide we created a distributed semaphore using OpenGyoza KV and OpenGyoza sessions. We also learned how to manage the newly created semaphore. 

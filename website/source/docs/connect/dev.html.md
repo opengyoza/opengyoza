@@ -3,7 +3,7 @@ layout: "docs"
 page_title: "Connect - Development and Debugging"
 sidebar_current: "docs-connect-dev"
 description: |-
-  It is often necessary to connect to a service for development or debugging. If a service only exposes a Connect listener, then we need a way to establish a mutual TLS connection to the service. The `consul connect proxy` command can be used for this task on any machine with access to a Consul agent (local or remote).
+  It is often necessary to connect to a service for development or debugging. If a service only exposes a Connect listener, then we need a way to establish a mutual TLS connection to the service. The `gyoza connect proxy` command can be used for this task on any machine with access to a Consul agent (local or remote).
 ---
 
 # Developing and Debugging Connect Services
@@ -11,7 +11,7 @@ description: |-
 It is often necessary to connect to a service for development or debugging.
 If a service only exposes a Connect listener, then we need a way to establish
 a mutual TLS connection to the service. The
-[`consul connect proxy` command](/docs/commands/connect/proxy.html) can be used
+[`gyoza connect proxy` command](/docs/commands/connect/proxy.html) can be used
 for this task on any machine with access to a Consul agent (local or remote).
 
 Restricting access to services only via Connect ensures that the only way to
@@ -27,7 +27,7 @@ via Connect. Let's also assume that we have an ACL token to identify as
 `operator-mitchellh`. We can start a local proxy:
 
 ```sh
-$ consul connect proxy \
+$ gyoza connect proxy \
   -service operator-mitchellh \
   -upstream postgresql:8181
 ```
@@ -60,7 +60,7 @@ For example, if you have an ACL token that allows `service:write` for
 can start a proxy like so:
 
 ```sh
-$ consul connect proxy \
+$ gyoza connect proxy \
   -service web \
   -upstream postgresql:8181
 ```

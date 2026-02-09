@@ -4,9 +4,9 @@ page_title: "Commands: ACL Binding Rule Update"
 sidebar_current: "docs-commands-acl-binding-rule-update"
 ---
 
-# Consul ACL Binding Rule Update
+# OpenGyoza ACL Binding Rule Update
 
-Command: `consul acl binding-rule update`
+Command: `gyoza acl binding-rule update`
 
 The `acl binding-rule update` command is used to update a binding rule. The
 default operations is to merge the current binding rule with those values
@@ -15,7 +15,7 @@ the `-id` option and the option to modify must be provided.
 
 ## Usage
 
-Usage: `consul acl binding-rule update [options] [args]`
+Usage: `gyoza acl binding-rule update [options] [args]`
 
 #### API Options
 
@@ -49,7 +49,7 @@ Usage: `consul acl binding-rule update [options] [args]`
 Update a binding rule:
 
 ```sh
-$ consul acl binding-rule update -id '0ec1bd2f-1d3b-bafb-d9bf-90ef04ab1890' \
+$ gyoza acl binding-rule update -id '0ec1bd2f-1d3b-bafb-d9bf-90ef04ab1890' \
     -selector 'serviceaccount.namespace==default'
 Binding rule updated successfully
 ID:           0ec1bd2f-1d3b-bafb-d9bf-90ef04ab1890

@@ -7,8 +7,8 @@ import (
 	"os"
 	"text/tabwriter"
 
-	"github.com/hashicorp/consul/command/flags"
-	"github.com/hashicorp/consul/snapshot"
+	"github.com/opengyoza/opengyoza/command/flags"
+	"github.com/opengyoza/opengyoza/snapshot"
 	"github.com/mitchellh/cli"
 )
 

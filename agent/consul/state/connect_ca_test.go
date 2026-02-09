@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/agent/connect"
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/connect"
+	"github.com/opengyoza/opengyoza/agent/structs"
 	"github.com/hashicorp/go-memdb"
 	"github.com/pascaldekloe/goe/verify"
 	"github.com/stretchr/testify/assert"
@@ -147,7 +147,7 @@ func TestStore_CAConfig_Snapshot_Restore(t *testing.T) {
 }
 
 // Make sure we handle the case of a leftover blank CA config that
-// got stuck in a snapshot, as in https://github.com/hashicorp/consul/issues/4954
+// got stuck in a snapshot, as in https://github.com/opengyoza/opengyoza/issues/4954
 func TestStore_CAConfig_Snapshot_Restore_BlankConfig(t *testing.T) {
 	s := testStateStore(t)
 	before := &structs.CAConfiguration{}

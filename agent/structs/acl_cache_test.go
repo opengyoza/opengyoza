@@ -3,7 +3,7 @@ package structs
 import (
 	"testing"
 
-	"github.com/hashicorp/consul/acl"
+	"github.com/opengyoza/opengyoza/acl"
 	"github.com/stretchr/testify/require"
 )
 

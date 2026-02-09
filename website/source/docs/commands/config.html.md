@@ -4,11 +4,11 @@ page_title: "Commands: Config"
 sidebar_current: "docs-commands-config"
 ---
 
-# Consul Config
+# OpenGyoza Config
 
-Command: `consul config`
+Command: `gyoza config`
 
-The `config` command is used to interact with Consul's central configuration
+The `config` command is used to interact with OpenGyoza's central configuration
 system. It exposes commands for creating, updating, reading, and deleting
 different kinds of config entries. See the
 [agent configuration](/docs/agent/options.html#enable_central_service_config)
@@ -18,33 +18,33 @@ of the configuration entries content.
 
 ## Usage
 
-Usage: `consul config <subcommand>`
+Usage: `gyoza config <subcommand>`
 
-For the exact documentation for your Consul version, run `consul config -h` to view
+For the exact documentation for your OpenGyoza version, run `gyoza config -h` to view
 the complete list of subcommands.
 
 ```text
-Usage: consul config <subcommand> [options] [args]
+Usage: gyoza config <subcommand> [options] [args]
 
-  This command has subcommands for interacting with Consul's centralized
+  This command has subcommands for interacting with OpenGyoza's centralized
   configuration system. Here are some simple examples, and more detailed
   examples are available in the subcommands or the documentation.
 
   Write a config:
 
-    $ consul config write web.serviceconf.hcl
+    $ gyoza config write web.serviceconf.hcl
 
   Read a config:
 
-    $ consul config read -kind service-defaults -name web
+    $ gyoza config read -kind service-defaults -name web
 
   List all configs for a type:
 
-    $ consul config list -kind service-defaults
+    $ gyoza config list -kind service-defaults
 
   Delete a config:
 
-    $ consul config delete -kind service-defaults -name web
+    $ gyoza config delete -kind service-defaults -name web
 
   For more examples, ask for subcommand help or view the documentation.
 ```

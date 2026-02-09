@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/connect/proxy"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/connect/proxy"
 )
 
 // FlagUpstreams implements the flag.Value interface and allows specifying

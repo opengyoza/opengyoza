@@ -5,8 +5,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hashicorp/consul/agent"
-	"github.com/hashicorp/consul/sdk/testutil"
+	"github.com/opengyoza/opengyoza/agent"
+	"github.com/opengyoza/opengyoza/sdk/testutil"
 	"github.com/mitchellh/cli"
 	"github.com/stretchr/testify/require"
 )

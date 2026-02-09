@@ -27,10 +27,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/sdk/freeport"
-	"github.com/hashicorp/consul/sdk/testutil/retry"
 	"github.com/hashicorp/go-cleanhttp"
 	"github.com/hashicorp/go-uuid"
+	"github.com/opengyoza/opengyoza/sdk/freeport"
+	"github.com/opengyoza/opengyoza/sdk/testutil/retry"
 	"github.com/pkg/errors"
 )
 
@@ -45,6 +45,7 @@ type TestPortConfig struct {
 	DNS          int `json:"dns,omitempty"`
 	HTTP         int `json:"http,omitempty"`
 	HTTPS        int `json:"https,omitempty"`
+	GRPC         int `json:"grpc,omitempty"`
 	SerfLan      int `json:"serf_lan,omitempty"`
 	SerfWan      int `json:"serf_wan,omitempty"`
 	Server       int `json:"server,omitempty"`
@@ -58,14 +59,6 @@ type TestAddressConfig struct {
 	HTTP string `json:"http,omitempty"`
 }
 
-// TestNetworkSegment contains the configuration for a network segment.
-type TestNetworkSegment struct {
-	Name      string `json:"name"`
-	Bind      string `json:"bind"`
-	Port      int    `json:"port"`
-	Advertise string `json:"advertise"`
-}
-
 // TestServerConfig is the main server configuration struct.
 type TestServerConfig struct {
 	NodeName            string                 `json:"node_name"`
@@ -76,7 +69,6 @@ type TestServerConfig struct {
 	Server              bool                   `json:"server,omitempty"`
 	DataDir             string                 `json:"data_dir,omitempty"`
 	Datacenter          string                 `json:"datacenter,omitempty"`
-	Segments            []TestNetworkSegment   `json:"segments"`
 	DisableCheckpoint   bool                   `json:"disable_update_check"`
 	LogLevel            string                 `json:"log_level,omitempty"`
 	Bind                string                 `json:"bind_addr,omitempty"`
@@ -138,7 +130,7 @@ func defaultServerConfig() *TestServerConfig {
 		panic(err)
 	}
 
-	ports := freeport.MustTake(6)
+	ports := freeport.MustTake(7)
 
 	return &TestServerConfig{
 		NodeName:          "node-" + nodeID,
@@ -156,9 +148,10 @@ func defaultServerConfig() *TestServerConfig {
 			DNS:     ports[0],
 			HTTP:    ports[1],
 			HTTPS:   ports[2],
-			SerfLan: ports[3],
-			SerfWan: ports[4],
-			Server:  ports[5],
+			GRPC:    ports[3],
+			SerfLan: ports[4],
+			SerfWan: ports[5],
+			Server:  ports[6],
 		},
 		ReadyTimeout: 10 * time.Second,
 		Connect: map[string]interface{}{
@@ -271,7 +264,7 @@ func newTestServerConfigT(t *testing.T, cb ServerConfigCallback) (*TestServer, e
 		os.RemoveAll(tmpdir)
 		return nil, errors.Wrap(err, "failed marshaling json")
 	}
-	
+
 	if t != nil {
 		// if you really want this output ensure to pass a valid t
 		t.Logf("CONFIG JSON: %s", string(b))

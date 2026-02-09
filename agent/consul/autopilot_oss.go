@@ -2,7 +2,7 @@
 
 package consul
 
-import "github.com/hashicorp/consul/agent/consul/autopilot"
+import "github.com/opengyoza/opengyoza/agent/consul/autopilot"
 
 func (s *Server) initAutopilot(config *Config) {
 	apDelegate := &AutopilotDelegate{s}

@@ -4,9 +4,9 @@ page_title: "Commands: ACL Role Update"
 sidebar_current: "docs-commands-acl-role-update"
 ---
 
-# Consul ACL Role Update
+# OpenGyoza ACL Role Update
 
-Command: `consul acl role update`
+Command: `gyoza acl role update`
 
 The `acl role update` command is used to update a role. The default operations is to merge the
 current role with those values provided to the command invocation. Therefore to
@@ -16,7 +16,7 @@ modify must be provided. Note that renaming roles requires both the `-id` and
 
 ## Usage
 
-Usage: `consul acl role update [options] [args]`
+Usage: `gyoza acl role update [options] [args]`
 
 #### API Options
 
@@ -54,7 +54,7 @@ Usage: `consul acl role update [options] [args]`
 Update a role:
 
 ```sh
-$ consul acl role update -id 57147d87-6bf7-f794-1a6e-7d038c4e4ae9 \
+$ gyoza acl role update -id 57147d87-6bf7-f794-1a6e-7d038c4e4ae9 \
     -description 'web crawler updated role' -service-identity 'crawler'
 Role updated successfully
 ID:           57147d87-6bf7-f794-1a6e-7d038c4e4ae9
@@ -69,7 +69,7 @@ Service Identities:
 Rename a role by prefix:
 
 ```sh
-$ consul acl role update -id 57147 -name web-crawler
+$ gyoza acl role update -id 57147 -name web-crawler
 Role updated successfully
 ID:           57147d87-6bf7-f794-1a6e-7d038c4e4ae9
 Name:         web-crawler

@@ -4,14 +4,14 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/hashicorp/consul/acl"
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/acl"
+	"github.com/opengyoza/opengyoza/agent/structs"
 )
 
 func TestFilter_DirEnt(t *testing.T) {
 	t.Parallel()
-	policy, _ := acl.NewPolicyFromSource("", 0, testFilterRules, acl.SyntaxLegacy, nil)
-	aclR, _ := acl.NewPolicyAuthorizer(acl.DenyAll(), []*acl.Policy{policy}, nil)
+	policy, _ := acl.NewPolicyFromSource("", 0, testFilterRules, acl.SyntaxLegacy)
+	aclR, _ := acl.NewPolicyAuthorizer(acl.DenyAll(), []*acl.Policy{policy})
 
 	type tcase struct {
 		in  []string
@@ -52,8 +52,8 @@ func TestFilter_DirEnt(t *testing.T) {
 
 func TestFilter_Keys(t *testing.T) {
 	t.Parallel()
-	policy, _ := acl.NewPolicyFromSource("", 0, testFilterRules, acl.SyntaxLegacy, nil)
-	aclR, _ := acl.NewPolicyAuthorizer(acl.DenyAll(), []*acl.Policy{policy}, nil)
+	policy, _ := acl.NewPolicyFromSource("", 0, testFilterRules, acl.SyntaxLegacy)
+	aclR, _ := acl.NewPolicyAuthorizer(acl.DenyAll(), []*acl.Policy{policy})
 
 	type tcase struct {
 		in  []string
@@ -84,8 +84,8 @@ func TestFilter_Keys(t *testing.T) {
 
 func TestFilter_TxnResults(t *testing.T) {
 	t.Parallel()
-	policy, _ := acl.NewPolicyFromSource("", 0, testFilterRules, acl.SyntaxLegacy, nil)
-	aclR, _ := acl.NewPolicyAuthorizer(acl.DenyAll(), []*acl.Policy{policy}, nil)
+	policy, _ := acl.NewPolicyFromSource("", 0, testFilterRules, acl.SyntaxLegacy)
+	aclR, _ := acl.NewPolicyAuthorizer(acl.DenyAll(), []*acl.Policy{policy})
 
 	type tcase struct {
 		in  []string

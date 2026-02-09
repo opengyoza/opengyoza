@@ -18,9 +18,9 @@ import (
 	"github.com/hashicorp/serf/coordinate"
 	"github.com/mitchellh/hashstructure"
 
-	"github.com/hashicorp/consul/agent/cache"
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/types"
+	"github.com/opengyoza/opengyoza/agent/cache"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/types"
 )
 
 type MessageType uint8

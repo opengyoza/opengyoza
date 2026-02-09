@@ -9,10 +9,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/agent/connect"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/sdk/freeport"
-	"github.com/hashicorp/consul/sdk/testutil/retry"
+	"github.com/opengyoza/opengyoza/agent/connect"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/sdk/freeport"
+	"github.com/opengyoza/opengyoza/sdk/testutil/retry"
 	vaultapi "github.com/hashicorp/vault/api"
 	"github.com/stretchr/testify/require"
 )
@@ -263,6 +263,11 @@ var printedVaultVersion sync.Once
 
 // skipIfVaultNotPresent skips the test and returns true if vault is not found
 func skipIfVaultNotPresent(t *testing.T) bool {
+	if os.Getenv("CONSUL_TEST_VAULT") == "" && os.Getenv("OPENGYOZA_TEST_VAULT") == "" {
+		t.Skip("Vault tests disabled; set CONSUL_TEST_VAULT=1 (or OPENGYOZA_TEST_VAULT=1) to run")
+		return true
+	}
+
 	vaultBinaryName := os.Getenv("VAULT_BINARY_NAME")
 	if vaultBinaryName == "" {
 		vaultBinaryName = "vault"

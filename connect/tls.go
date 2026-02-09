@@ -14,8 +14,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/hashicorp/consul/agent/connect"
-	"github.com/hashicorp/consul/api"
+	"github.com/opengyoza/opengyoza/agent/connect"
+	"github.com/opengyoza/opengyoza/api"
 )
 
 // parseLeafX509Cert will parse an X509 certificate

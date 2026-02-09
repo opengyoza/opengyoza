@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/command/flags"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/command/flags"
 	"github.com/mitchellh/cli"
 )
 

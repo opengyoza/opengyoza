@@ -11,11 +11,11 @@ import (
 	"time"
 
 	"github.com/armon/go-metrics"
-	"github.com/hashicorp/consul/agent/pool"
-	"github.com/hashicorp/consul/agent/router"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/lib"
-	"github.com/hashicorp/consul/tlsutil"
+	"github.com/opengyoza/opengyoza/agent/pool"
+	"github.com/opengyoza/opengyoza/agent/router"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/lib"
+	"github.com/opengyoza/opengyoza/tlsutil"
 	"github.com/hashicorp/serf/serf"
 	"golang.org/x/time/rate"
 )
@@ -82,9 +82,6 @@ type Client struct {
 	shutdownCh   chan struct{}
 	shutdownLock sync.Mutex
 
-	// embedded struct to hold all the enterprise specific data
-	EnterpriseClient
-
 	tlsConfigurator *tlsutil.Configurator
 }
 
@@ -147,11 +144,6 @@ func NewClientLogger(config *Config, logger *log.Logger, tlsConfigurator *tlsuti
 
 	c.rpcLimiter.Store(rate.NewLimiter(config.RPCRate, config.RPCMaxBurst))
 
-	if err := c.initEnterprise(); err != nil {
-		c.Shutdown()
-		return nil, err
-	}
-
 	c.useNewACLs = 0
 	aclConfig := ACLResolverConfig{
 		Config:      config,
@@ -159,7 +151,6 @@ func NewClientLogger(config *Config, logger *log.Logger, tlsConfigurator *tlsuti
 		Logger:      logger,
 		AutoDisable: true,
 		CacheConfig: clientACLCacheConfig,
-		Sentinel:    nil,
 	}
 	var err error
 	if c.acls, err = NewACLResolver(&aclConfig); err != nil {
@@ -186,11 +177,6 @@ func NewClientLogger(config *Config, logger *log.Logger, tlsConfigurator *tlsuti
 	// Start LAN event handlers after the router is complete since the event
 	// handlers depend on the router and the router depends on Serf.
 	go c.lanEventHandler()
-
-	if err := c.startEnterprise(); err != nil {
-		c.Shutdown()
-		return nil, err
-	}
 
 	return c, nil
 }
@@ -245,21 +231,6 @@ func (c *Client) LocalMember() serf.Member {
 // LANMembers is used to return the members of the LAN cluster
 func (c *Client) LANMembers() []serf.Member {
 	return c.serf.Members()
-}
-
-// LANMembersAllSegments returns members from all segments.
-func (c *Client) LANMembersAllSegments() ([]serf.Member, error) {
-	return c.serf.Members(), nil
-}
-
-// LANSegmentMembers only returns our own segment's members, because clients
-// can't be in multiple segments.
-func (c *Client) LANSegmentMembers(segment string) ([]serf.Member, error) {
-	if segment == c.config.Segment {
-		return c.LANMembers(), nil
-	}
-
-	return nil, fmt.Errorf("segment %q not found", segment)
 }
 
 // RemoveFailedNode is used to remove a failed node from the cluster
@@ -402,16 +373,6 @@ func (c *Client) Stats() map[string]map[string]string {
 		stats["consul"]["acl"] = "disabled"
 	}
 
-	for outerKey, outerValue := range c.enterpriseStats() {
-		if _, ok := stats[outerKey]; ok {
-			for innerKey, innerValue := range outerValue {
-				stats[outerKey][innerKey] = innerValue
-			}
-		} else {
-			stats[outerKey] = outerValue
-		}
-	}
-
 	return stats
 }
 
@@ -423,7 +384,7 @@ func (c *Client) GetLANCoordinate() (lib.CoordinateSet, error) {
 		return nil, err
 	}
 
-	cs := lib.CoordinateSet{c.config.Segment: lan}
+	cs := lib.CoordinateSet{"": lan}
 	return cs, nil
 }
 

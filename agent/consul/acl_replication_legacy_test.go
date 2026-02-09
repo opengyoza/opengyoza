@@ -12,10 +12,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/agent/structs"
-	tokenStore "github.com/hashicorp/consul/agent/token"
-	"github.com/hashicorp/consul/sdk/testutil/retry"
-	"github.com/hashicorp/consul/testrpc"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	tokenStore "github.com/opengyoza/opengyoza/agent/token"
+	"github.com/opengyoza/opengyoza/sdk/testutil/retry"
+	"github.com/opengyoza/opengyoza/testrpc"
 )
 
 func TestACLReplication_Sorter(t *testing.T) {

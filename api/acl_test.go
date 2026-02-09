@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hashicorp/consul/sdk/testutil/retry"
+	"github.com/opengyoza/opengyoza/sdk/testutil/retry"
 
 	"github.com/stretchr/testify/require"
 )

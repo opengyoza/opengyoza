@@ -5,9 +5,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/types"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/types"
 )
 
 // Constants related to alias check backoff.

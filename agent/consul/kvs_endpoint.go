@@ -5,11 +5,10 @@ import (
 	"time"
 
 	"github.com/armon/go-metrics"
-	"github.com/hashicorp/consul/acl"
-	"github.com/hashicorp/consul/agent/consul/state"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/sentinel"
+	"github.com/opengyoza/opengyoza/acl"
+	"github.com/opengyoza/opengyoza/agent/consul/state"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/api"
 	"github.com/hashicorp/go-memdb"
 )
 
@@ -48,10 +47,7 @@ func kvsPreApply(srv *Server, rule acl.Authorizer, op api.KVOp, dirEnt *structs.
 			}
 
 		default:
-			scope := func() map[string]interface{} {
-				return sentinel.ScopeKVUpsert(dirEnt.Key, dirEnt.Value, dirEnt.Flags)
-			}
-			if !rule.KeyWrite(dirEnt.Key, scope) {
+			if !rule.KeyWrite(dirEnt.Key) {
 				return false, acl.ErrPermissionDenied
 			}
 		}

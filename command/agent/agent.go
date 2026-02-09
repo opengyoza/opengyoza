@@ -12,12 +12,12 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/hashicorp/consul/agent"
-	"github.com/hashicorp/consul/agent/config"
-	"github.com/hashicorp/consul/command/flags"
-	"github.com/hashicorp/consul/lib"
-	"github.com/hashicorp/consul/logger"
-	"github.com/hashicorp/consul/service_os"
+	"github.com/opengyoza/opengyoza/agent"
+	"github.com/opengyoza/opengyoza/agent/config"
+	"github.com/opengyoza/opengyoza/command/flags"
+	"github.com/opengyoza/opengyoza/lib"
+	"github.com/opengyoza/opengyoza/logger"
+	"github.com/opengyoza/opengyoza/service_os"
 	"github.com/hashicorp/go-checkpoint"
 	multierror "github.com/hashicorp/go-multierror"
 	"github.com/hashicorp/logutils"
@@ -224,15 +224,10 @@ func (c *cmd) run(args []string) int {
 	agent.LogWriter = logWriter
 	agent.MemSink = memSink
 
-	segment := config.SegmentName
-	if config.ServerMode {
-		segment = "<all>"
-	}
-
 	c.UI.Info(fmt.Sprintf("       Version: '%s'", c.versionHuman))
 	c.UI.Info(fmt.Sprintf("       Node ID: '%s'", config.NodeID))
 	c.UI.Info(fmt.Sprintf("     Node name: '%s'", config.NodeName))
-	c.UI.Info(fmt.Sprintf("    Datacenter: '%s' (Segment: '%s')", config.Datacenter, segment))
+	c.UI.Info(fmt.Sprintf("    Datacenter: '%s'", config.Datacenter))
 	c.UI.Info(fmt.Sprintf("        Server: %v (Bootstrap: %v)", config.ServerMode, config.Bootstrap))
 	c.UI.Info(fmt.Sprintf("   Client Addr: %v (HTTP: %d, HTTPS: %d, gRPC: %d, DNS: %d)", config.ClientAddrs,
 		config.HTTPPort, config.HTTPSPort, config.GRPCPort, config.DNSPort))

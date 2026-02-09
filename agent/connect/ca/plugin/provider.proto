@@ -10,7 +10,7 @@
 
 syntax = "proto3";
 
-option go_package = "github.com/hashicorp/consul/agent/connect/ca/plugin";
+option go_package = "github.com/opengyoza/opengyoza/agent/connect/ca/plugin";
 
 package plugin;
 

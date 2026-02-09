@@ -103,17 +103,17 @@ The options below are all specified on the command-line.
 
     ```sh
     # Using address within a specific CIDR
-    $ consul agent -bind '{{ GetPrivateInterfaces | include "network" "10.0.0.0/8" | attr "address" }}'
+    $ gyoza agent -bind '{{ GetPrivateInterfaces | include "network" "10.0.0.0/8" | attr "address" }}'
     ```
 
     ```sh
     # Using a static network interface name
-    $ consul agent -bind '{{ GetInterfaceIP "eth0" }}'
+    $ gyoza agent -bind '{{ GetInterfaceIP "eth0" }}'
     ```
 
     ```sh
     # Using regular expression matching for network interface name that is forwardable and up
-    $ consul agent -bind '{{ GetAllInterfaces | include "name" "^eth" | include "flags" "forwardable|up" | attr "address" }}'
+    $ gyoza agent -bind '{{ GetAllInterfaces | include "name" "^eth" | include "flags" "forwardable|up" | attr "address" }}'
     ```
 
 * <a name="_serf_wan_bind"></a><a href="#_serf_wan_bind">`-serf-wan-bind`</a> -
@@ -247,7 +247,7 @@ The options below are all specified on the command-line.
   use for encryption of Consul
   network traffic. This key must be 32-bytes that are Base64-encoded. The
   easiest way to create an encryption key is to use
-  [`consul keygen`](/docs/commands/keygen.html). All
+  [`gyoza keygen`](/docs/commands/keygen.html). All
   nodes within a cluster must share the same encryption key to communicate.
   The provided key is automatically persisted to the data directory and loaded
   automatically whenever the agent is restarted. This means that to encrypt
@@ -306,17 +306,17 @@ The options below are all specified on the command-line.
 
     ```sh
     # Using a DNS entry
-    $ consul agent -retry-join "consul.domain.internal"
+    $ gyoza agent -retry-join "consul.domain.internal"
     ```
 
     ```sh
     # Using IPv4
-    $ consul agent -retry-join "10.0.4.67"
+    $ gyoza agent -retry-join "10.0.4.67"
     ```
 
     ```sh
     # Using IPv6
-    $ consul agent -retry-join "[::1]:8301"
+    $ gyoza agent -retry-join "[::1]:8301"
     ```
 
     ### Cloud Auto-Joining
@@ -328,7 +328,7 @@ The options below are all specified on the command-line.
 
     ```sh
     # Using Cloud Auto-Joining
-    $ consul agent -retry-join "provider=aws tag_key=..."
+    $ gyoza agent -retry-join "provider=aws tag_key=..."
     ```
 
 * <a name="_retry_interval"></a><a href="#_retry_interval">`-retry-interval`</a> - Time
@@ -369,7 +369,7 @@ The options below are all specified on the command-line.
 * <a name="_log_level"></a><a href="#_log_level">`-log-level`</a> - The level of logging to
   show after the Consul agent has started. This defaults to "info". The available log levels are
   "trace", "debug", "info", "warn", and "err". You can always connect to an
-  agent via [`consul monitor`](/docs/commands/monitor.html) and use any log level. Also, the
+  agent via [`gyoza monitor`](/docs/commands/monitor.html) and use any log level. Also, the
   log level can be changed during a config reload.
 
 * <a name="_node"></a><a href="#_node">`-node`</a> - The name of this node in the cluster.
@@ -401,7 +401,7 @@ The options below are all specified on the command-line.
 
 * <a name="_protocol"></a><a href="#_protocol">`-protocol`</a> - The Consul protocol version to
   use. This defaults to the latest version. This should be set only when [upgrading](/docs/upgrading.html).
-  You can view the protocol versions supported by Consul by running `consul -v`.
+  You can view the protocol versions supported by Consul by running `gyoza -v`.
 
 * <a name="_raft_protocol"></a><a href="#_raft_protocol">`-raft-protocol`</a> - This controls the internal
   version of the Raft consensus protocol used for server communications. This must be set to 3 in order to
@@ -418,11 +418,6 @@ The options below are all specified on the command-line.
   previous leave and attempt to rejoin the cluster when starting. By default, Consul treats leave
   as a permanent intent and does not attempt to join the cluster again when starting. This flag
   allows the previous state to be used to rejoin the cluster.
-
-* <a name="_segment"></a><a href="#_segment">`-segment`</a> - (Enterprise-only) This flag is used to set
-  the name of the network segment the agent belongs to. An agent can only join and communicate with other agents
-  within its network segment. See the [Network Segments Guide](https://learn.hashicorp.com/consul/day-2-operations/network-segments) for more details.
-  By default, this is an empty string, which is the default network segment.
 
 * <a name="_serf_lan_port"></a><a href="#_serf_lan_port">`-serf-lan-port`</a> - the Serf LAN port to listen on.
   This overrides the default Serf LAN port 8301. This is available in Consul 1.2.2 and later.
@@ -441,11 +436,6 @@ The options below are all specified on the command-line.
 
 * <a name="_server_port"></a><a href="#_server_port">`-server-port`</a> - the server RPC port to listen on.
   This overrides the default server RPC port 8300. This is available in Consul 1.2.2 and later.
-
-* <a name="_non_voting_server"></a><a href="#_non_voting_server">`-non-voting-server`</a> - (Enterprise-only)
-  This flag is used to make the server not participate in the Raft quorum, and have it only receive the data
-  replication stream. This can be used to add read scalability to a cluster in cases where a high volume of
-  reads to servers are needed.
 
 * <a name="_syslog"></a><a href="#_syslog">`-syslog`</a> - This flag enables logging to syslog. This
   is only supported on Linux and OSX. It will result in an error if provided on Windows.
@@ -765,7 +755,7 @@ default will automatically work with some tooling.
     allows a number of sub-keys to be set which can configure operator-friendly settings for Consul servers.
     When these keys are provided as configuration, they will only be respected on bootstrapping. If they are not
     provided, the defaults will be used. In order to change the value of these options after bootstrapping, you will
-    need to use the [Consul Operator Autopilot](https://www.consul.io/docs/commands/operator/autopilot.html) command.
+    need to use the [Consul Operator Autopilot](/docs/commands/operator/autopilot.html) command.
     For more information about Autopilot, see the [Autopilot Guide](https://learn.hashicorp.com/consul/day-2-operations/autopilot).
 
     The following sub-keys are available:
@@ -789,20 +779,6 @@ default will automatically work with some tooling.
       Controls the minimum amount of time a server must be stable in the 'healthy' state before being added to the
       cluster. Only takes effect if all servers are running Raft protocol version 3 or higher. Must be a duration value
       such as `30s`. Defaults to `10s`.
-
-    * <a name="redundancy_zone_tag"></a><a href="#redundancy_zone_tag">`redundancy_zone_tag`</a> - (Enterprise-only)
-      This controls the [`-node-meta`](#_node_meta) key to use when Autopilot is separating servers into zones for
-      redundancy. Only one server in each zone can be a voting member at one time. If left blank (the default), this
-      feature will be disabled.
-
-    * <a name="disable_upgrade_migration"></a><a href="#disable_upgrade_migration">`disable_upgrade_migration`</a> - (Enterprise-only)
-      If set to `true`, this setting will disable Autopilot's upgrade migration strategy in Consul Enterprise of waiting
-      until enough newer-versioned servers have been added to the cluster before promoting any of them to voters. Defaults
-      to `false`.
-
-    * <a name="upgrade_version_tag"></a><a href="#upgrade_version_tag">`upgrade_version_tag`</a> - (Enterprise-only)
-      The node_meta tag to use for version info when performing upgrade migrations. If this is not set, the Consul
-      version will be used.
 
 * <a name="auto_encrypt"></a><a href="#auto_encrypt">`auto_encrypt`</a>
     This object allows setting options for the `auto_encrypt` feature.
@@ -984,8 +960,7 @@ default will automatically work with some tooling.
   0.8 the default was changed to true, to make remote exec opt-in instead of opt-out.
 
 * <a name="disable_update_check"></a><a href="#disable_update_check">`disable_update_check`</a>
-  Disables automatic checking for security bulletins and new version releases. This is disabled in
-  Consul Enterprise.
+  Disables automatic checking for security bulletins and new version releases.
 
 * <a name="discard_check_output"></a><a href="#discard_check_output">`discard_check_output`</a>
   Discards the output of health checks before storing them. This reduces the number of writes
@@ -1327,8 +1302,8 @@ default will automatically work with some tooling.
         clients multiplex many RPC calls over a single TCP connection so this
         can typically be kept low. It needs to be more than one though since
         servers open at least one additional connection for raft RPC, possibly
-        more for WAN federation when using network areas, and snapshot requests
-        from clients run over a separate TCP conn. A reasonably low limit
+        more for WAN federation, and snapshot requests from clients run over a
+        separate TCP conn. A reasonably low limit
         significantly reduces the ability of an unauthenticated attacker to
         consume unbounded resources by holding open many connections. You may
         need to increase this if WAN federated servers connect via proxies or
@@ -1554,28 +1529,8 @@ to the old fragment -->
 * <a name="retry_interval_wan"></a><a href="#retry_interval_wan">`retry_interval_wan`</a> Equivalent to the
   [`-retry-interval-wan` command-line flag](#_retry_interval_wan).
 
-* <a name="segment"></a><a href="#segment">`segment`</a> (Enterprise-only) Equivalent to the
-  [`-segment` command-line flag](#_segment).
-
-* <a name="segments"></a><a href="#segments">`segments`</a> (Enterprise-only) This is a list of nested objects that allows setting
-  the bind/advertise information for network segments. This can only be set on servers. See the
-  [Network Segments Guide](https://learn.hashicorp.com/consul/day-2-operations/network-segments) for more details.
-    * <a name="segment_name"></a><a href="#segment_name">`name`</a> - The name of the segment. Must be a string between
-    1 and 64 characters in length.
-    * <a name="segment_bind"></a><a href="#segment_bind">`bind`</a> - The bind address to use for the segment's gossip layer.
-    Defaults to the [`-bind`](#_bind) value if not provided.
-    * <a name="segment_port"></a><a href="#segment_port">`port`</a> - The port to use for the segment's gossip layer (required).
-    * <a name="segment_advertise"></a><a href="#segment_advertise">`advertise`</a> - The advertise address to use for the
-    segment's gossip layer. Defaults to the [`-advertise`](#_advertise) value if not provided.
-    * <a name="segment_rpc_listener"></a><a href="#segment_rpc_listener">`rpc_listener`</a> - If true, a separate RPC listener will
-    be started on this segment's [`-bind`](#_bind) address on the rpc port. Only valid if the segment's bind address differs from the
-    [`-bind`](#_bind) address. Defaults to false.
-
 * <a name="server"></a><a href="#server">`server`</a> Equivalent to the
   [`-server` command-line flag](#_server).
-
-* <a name="non_voting_server"></a><a href="#non_voting_server">`non_voting_server`</a> - Equivalent to the
-  [`-non-voting-server` command-line flag](#_non_voting_server).
 
 * <a name="server_name"></a><a href="#server_name">`server_name`</a> When provided, this overrides
   the [`node_name`](#_node) for the TLS certificate. It can be used to ensure that the certificate

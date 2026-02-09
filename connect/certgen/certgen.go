@@ -26,7 +26,7 @@
 //
 // NOTE: THIS IS A QUIRK OF OPENSSL; in Connect we distribute the roots alone
 // and stable intermediates like the XC cert to the _leaf_.
-package main // import "github.com/hashicorp/consul/connect/certgen"
+package main // import "github.com/opengyoza/opengyoza/connect/certgen"
 
 import (
 	"flag"
@@ -35,8 +35,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/hashicorp/consul/agent/connect"
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/connect"
+	"github.com/opengyoza/opengyoza/agent/structs"
 	"github.com/mitchellh/go-testing-interface"
 )
 

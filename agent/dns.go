@@ -14,13 +14,13 @@ import (
 	metrics "github.com/armon/go-metrics"
 	radix "github.com/armon/go-radix"
 	"github.com/coredns/coredns/plugin/pkg/dnsutil"
-	cachetype "github.com/hashicorp/consul/agent/cache-types"
-	"github.com/hashicorp/consul/agent/config"
-	"github.com/hashicorp/consul/agent/consul"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/ipaddr"
-	"github.com/hashicorp/consul/lib"
+	cachetype "github.com/opengyoza/opengyoza/agent/cache-types"
+	"github.com/opengyoza/opengyoza/agent/config"
+	"github.com/opengyoza/opengyoza/agent/consul"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/ipaddr"
+	"github.com/opengyoza/opengyoza/lib"
 	"github.com/miekg/dns"
 )
 
@@ -62,7 +62,6 @@ type dnsConfig struct {
 	OnlyPassing     bool
 	RecursorTimeout time.Duration
 	Recursors       []string
-	SegmentName     string
 	UDPAnswerLimit  int
 	ARecordLimit    int
 	NodeMetaTXT     bool
@@ -124,7 +123,6 @@ func GetDNSConfig(conf *config.RuntimeConfig) (*dnsConfig, error) {
 		NodeTTL:            conf.DNSNodeTTL,
 		OnlyPassing:        conf.DNSOnlyPassing,
 		RecursorTimeout:    conf.DNSRecursorTimeout,
-		SegmentName:        conf.SegmentName,
 		UDPAnswerLimit:     conf.DNSUDPAnswerLimit,
 		NodeMetaTXT:        conf.DNSNodeMetaTXT,
 		DisableCompression: conf.DNSDisableCompression,
@@ -661,7 +659,7 @@ PARSE:
 		}
 
 	default:
-		// https://github.com/hashicorp/consul/issues/3200
+		// https://github.com/opengyoza/opengyoza/issues/3200
 		//
 		// Since datacenter names cannot contain dots we can only allow one
 		// label between the query type and the domain to be the datacenter name.
@@ -1058,14 +1056,16 @@ func trimUDPResponse(req, resp *dns.Msg, udpAnswerLimit int) (trimmed bool) {
 	}
 
 	// This cuts UDP responses to a useful but limited number of responses.
-	maxAnswers := lib.MinInt(maxUDPAnswerLimit, udpAnswerLimit)
 	compress := resp.Compress
-	if maxSize == defaultMaxUDPSize && numAnswers > maxAnswers {
-		// We disable computation of Len ONLY for non-eDNS request (512 bytes)
-		resp.Compress = false
-		resp.Answer = resp.Answer[:maxAnswers]
-		if hasExtra {
-			syncExtra(index, resp)
+	if udpAnswerLimit > 0 {
+		maxAnswers := lib.MinInt(maxUDPAnswerLimit, udpAnswerLimit)
+		if maxSize == defaultMaxUDPSize && numAnswers > maxAnswers {
+			// We disable computation of Len ONLY for non-eDNS request (512 bytes)
+			resp.Compress = false
+			resp.Answer = resp.Answer[:maxAnswers]
+			if hasExtra {
+				syncExtra(index, resp)
+			}
 		}
 	}
 
@@ -1241,7 +1241,6 @@ func (d *DNSServer) preparedQueryLookup(cfg *dnsConfig, network, datacenter, que
 		// relative to ourself on the server side.
 		Agent: structs.QuerySource{
 			Datacenter: d.agent.config.Datacenter,
-			Segment:    d.agent.config.SegmentName,
 			Node:       d.agent.config.NodeName,
 		},
 	}

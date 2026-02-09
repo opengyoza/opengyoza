@@ -2,7 +2,7 @@
 // metadata.Server objects.  The servers package manages servers from a Consul
 // client's perspective (i.e. a list of servers that a client talks with for
 // RPCs).  The servers package does not provide any API guarantees and should
-// be called only by `hashicorp/consul`.
+// be called only by `opengyoza/opengyoza`.
 package router
 
 import (
@@ -13,8 +13,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/hashicorp/consul/agent/metadata"
-	"github.com/hashicorp/consul/lib"
+	"github.com/opengyoza/opengyoza/agent/metadata"
+	"github.com/opengyoza/opengyoza/lib"
 )
 
 const (

@@ -3,19 +3,19 @@ layout: "docs"
 page_title: "Commands: Logout"
 sidebar_current: "docs-commands-logout"
 description: >
-  The `logout` command will destroy the provided token if it was created from `consul login`.
+  The `logout` command will destroy the provided token if it was created from `gyoza login`.
 ---
 
-# Consul Logout
+# OpenGyoza Logout
 
-Command: `consul logout`
+Command: `gyoza logout`
 
 The `logout` command will destroy the provided token if it was created from
-`consul login`.
+`gyoza login`.
 
 ## Usage
 
-Usage: `consul logout [options]`
+Usage: `gyoza logout [options]`
 
 -> The token to delete should be specified with the `-token` argument, the
 `CONSUL_HTTP_TOKEN` environment variable, the `-token-file` argument, or the
@@ -30,5 +30,5 @@ Usage: `consul logout [options]`
 Logout and delete a login token.
 
 ```sh
-$ consul logout -token-file 'consul.token'
+$ gyoza logout -token-file 'gyoza.token'
 ```

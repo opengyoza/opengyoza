@@ -25,7 +25,7 @@ must ensure the cluster is in a healthy state including a functioning leader. On
 the leader has determined that all servers in the cluster are capable of using the
 new ACL system, the leader will transition itself. Then, the other servers will
 transition themselves to the new system, followed by the client agents. You can 
-use `consul info` to investigate the cluster health.
+use `gyoza info` to investigate the cluster health.
 
 Consul 1.4.0 retains full support for "legacy" ACL tokens so upgrades
 from Consul 1.3.0 are safe. Existing tokens will continue to work in the same
@@ -52,7 +52,7 @@ The high-level process for migrating a legacy token is as follows:
 This process assumes that the 1.4.0 upgrade is complete including all legacy
 ACLs having their accessor IDs populated. This might take up to several minutes
 after the servers upgrade in the primary datacenter. You can tell if this is the
-case by using `consul acl token list` and checking that no tokens exist with a
+case by using `gyoza acl token list` and checking that no tokens exist with a
 blank `AccessorID`.
 
 In addition, it is assumed that all clients that might _create_ ACL tokens (e.g.
@@ -81,7 +81,7 @@ have.
 The simplest and most automatic strategy is to create one new policy for every
 existing token. This is easy to automate, but may result in a lot of policies
 with exactly the same rules and with non-human-readable names which will make
-managing policies harder. This approach can be accomplished using the [`consul
+managing policies harder. This approach can be accomplished using the [`gyoza
 acl policy create`](/docs/commands/acl/policy/create.html) command with
 `-from-token` option.
 
@@ -111,7 +111,7 @@ semantics of the old ACL system.
 
 To assist with this approach, there is a CLI tool and corresponding API that can
 translate a legacy ACL token's rules into a new ACL policy that is exactly
-equivalent. See [`consul acl
+equivalent. See [`gyoza acl
 translate-rules`](/docs/commands/acl/translate-rules.html).
 
 | Pros | Cons |
@@ -141,7 +141,7 @@ endpoint. Specifically, ensure that the `Rules` field is omitted or empty. Empty
 
 #### Update via CLI
 
-Use the [`consul acl token update`](/docs/commands/acl/token/update.html)
+Use the [`gyoza acl token update`](/docs/commands/acl/token/update.html)
 command to update the token. Specifically you need to use `-upgrade-legacy`
 which will ensure that legacy rules are removed as well as the new policies
 added.
@@ -179,7 +179,7 @@ To create a policy for each one we can use something like:
 
 ```sh
 for id in $LEGACY_IDS; do \
-  consul acl policy create -name "migrated-$id" -from-token $id \
+  gyoza acl policy create -name "migrated-$id" -from-token $id \
     -description "Migrated from legacy ACL token"; \
 done
 ```
@@ -188,7 +188,7 @@ Each policy now has an identical set of rules to the original token. You can
 inspect these:
 
 ```sh
-$ consul acl policy read -name migrated-621cbd12-dde7-de06-9be0-e28d067b5b7f
+$ gyoza acl policy read -name migrated-621cbd12-dde7-de06-9be0-e28d067b5b7f
 ID:           573d84bd-8b08-3061-e391-d2602e1b4947
 Name:         migrated-621cbd12-dde7-de06-9be0-e28d067b5b7f
 Description:  Migrated from legacy ACL token
@@ -210,7 +210,7 @@ tokens.
 
 ```sh
 for id in $LEGACY_IDS; do \
-  consul acl token update -id $id -policy-name "migrated-$id" -upgrade-legacy; \
+  gyoza acl token update -id $id -policy-name "migrated-$id" -upgrade-legacy; \
 done
 ```
 
@@ -245,7 +245,7 @@ token's policy and return a new ACL policy that is exactly equivalent.
 ```sh
 $ for id in $LEGACY_IDS; do \
   echo "Policy for $id:"
-  consul acl translate-rules -token-accessor "$id"; \
+  gyoza acl translate-rules -token-accessor "$id"; \
 done
 Policy for 8b65fdf9-303e-0894-9f87-e71b3273600c:
 service_prefix "bar" {
@@ -271,7 +271,7 @@ available on macOS but equivalents for other platforms should be easy to find.
 $ mkdir policies
 $ for id in $LEGACY_IDS; do \
   # Fetch the equivalent new policy rules based on the legacy token rules
-  NEW_POLICY=$(consul acl translate-rules -token-accessor "$id"); \
+  NEW_POLICY=$(gyoza acl translate-rules -token-accessor "$id"); \
   # Sha1 hash the rules
   HASH=$(echo -n "$NEW_POLICY" | shasum | awk '{ print $1 }'); \
   # Write rules to a policy file named with the hash to de-duplicated
@@ -326,7 +326,7 @@ $ for p in $(ls policies | grep ".hcl"); do \
   # Extract the name suffix without .hcl
   NAME=$(echo "$p" | cut -d - -f 2- | cut -d . -f 1); \
   # Create new policy based on the rules in the file and the name we gave
-  consul acl policy create -name $NAME \
+  gyoza acl policy create -name $NAME \
     -rules "@policies/$p" \
     -description "Migrated from legacy token"; \
 done
@@ -357,13 +357,13 @@ created from those rules.
 
 ```sh
 $ for id in $LEGACY_IDS; do \
-  NEW_POLICY=$(consul acl translate-rules -token-accessor "$id"); \
+  NEW_POLICY=$(gyoza acl translate-rules -token-accessor "$id"); \
   HASH=$(echo -n "$NEW_POLICY" | shasum | awk '{ print $1 }'); \
   # Lookup the hash->new policy mapping from the policy file names
   POLICY_FILE=$(ls policies | grep "^$HASH"); \
   POLICY_NAME=$(echo "$POLICY_FILE" | cut -d - -f 2- | cut -d . -f 1); \
   echo "==> Mapping token $id to policy $POLICY_NAME"; \
-  consul acl token update -id $id -policy-name $POLICY_NAME -upgrade-legacy; \
+  gyoza acl token update -id $id -policy-name $POLICY_NAME -upgrade-legacy; \
 done
 ==> Mapping token 8b65fdf9-303e-0894-9f87-e71b3273600c to policy bar-service
 Token updated successfully.

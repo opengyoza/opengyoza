@@ -51,7 +51,7 @@ specified in all of the Consul servers's
 
 #### Creating or Updating a Configuration Entry
 
-The [`consul config write`](/docs/commands/config/write.html) command is used to
+The [`gyoza config write`](/docs/commands/config/write.html) command is used to
 create and update configuration entries. This command will load either a JSON or
 HCL file holding the configuration entry definition and then will push this
 configuration to Consul.
@@ -70,7 +70,7 @@ Config {
 Then to apply this configuration, run:
 
 ```bash
-$ consul config write proxy-defaults.hcl
+$ gyoza config write proxy-defaults.hcl
 ```
 
 If you need to make changes to a configuration entry, simple edit that file and
@@ -81,7 +81,7 @@ overwriting other unknown modifications.
 
 #### Reading a Configuration Entry
 
-The [`consul config read`](/docs/commands/config/read.html) command is used to
+The [`gyoza config read`](/docs/commands/config/read.html) command is used to
 read the current value of a configuration entry. The configuration entry will be
 displayed in JSON form which is how its transmitted between the CLI client and
 Consul's HTTP API.
@@ -89,7 +89,7 @@ Consul's HTTP API.
 Example:
 
 ```bash
-$ consul config read -kind service-defaults -name web
+$ gyoza config read -kind service-defaults -name web
 {
    "Kind": "service-defaults",
    "Name": "web",
@@ -99,13 +99,13 @@ $ consul config read -kind service-defaults -name web
 
 #### Listing Configuration Entries
 
-The [`consul config list`](/docs/commands/config/list.html) command is used to
+The [`gyoza config list`](/docs/commands/config/list.html) command is used to
 list out all the configuration entries for a given kind.
 
 Example:
 
 ```bash
-$ consul config list -kind service-defaults
+$ gyoza config list -kind service-defaults
 web
 api
 db
@@ -114,13 +114,13 @@ db
 
 #### Deleting Configuration Entries
 
-The [`consul config delete`](/docs/commands/config/delete.html) command is used
+The [`gyoza config delete`](/docs/commands/config/delete.html) command is used
 to delete an entry by specifying both its `kind` and `name`.
 
 Example:
 
 ```bash
-$ consul config delete -kind service-defaults -name web
+$ gyoza config delete -kind service-defaults -name web
 ```
 
 This command will not output anything when the deletion is successful.

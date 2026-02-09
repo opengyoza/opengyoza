@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/hashicorp/consul/agent/cache"
-	cachetype "github.com/hashicorp/consul/agent/cache-types"
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/cache"
+	cachetype "github.com/opengyoza/opengyoza/agent/cache-types"
+	"github.com/opengyoza/opengyoza/agent/structs"
 	"github.com/imdario/mergo"
 	"github.com/mitchellh/copystructure"
 	"golang.org/x/net/context"

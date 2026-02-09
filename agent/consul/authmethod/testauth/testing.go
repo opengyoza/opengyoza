@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/hashicorp/consul/acl"
-	"github.com/hashicorp/consul/agent/consul/authmethod"
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/acl"
+	"github.com/opengyoza/opengyoza/agent/consul/authmethod"
+	"github.com/opengyoza/opengyoza/agent/structs"
 	"github.com/hashicorp/go-uuid"
 )
 

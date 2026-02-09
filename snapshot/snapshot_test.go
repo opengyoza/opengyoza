@@ -13,7 +13,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/sdk/testutil"
+	"github.com/opengyoza/opengyoza/sdk/testutil"
 	"github.com/hashicorp/go-msgpack/codec"
 	"github.com/hashicorp/raft"
 )

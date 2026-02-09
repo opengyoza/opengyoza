@@ -11,10 +11,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/hashicorp/consul/agent"
-	"github.com/hashicorp/consul/agent/exec"
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/command/flags"
+	"github.com/opengyoza/opengyoza/agent"
+	"github.com/opengyoza/opengyoza/agent/exec"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/command/flags"
 	"github.com/mitchellh/cli"
 )
 

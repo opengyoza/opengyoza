@@ -4,30 +4,30 @@ page_title: "Commands: ACL Role"
 sidebar_current: "docs-commands-acl-role"
 ---
 
-# Consul ACL Roles
+# OpenGyoza ACL Roles
 
-Command: `consul acl role`
+Command: `gyoza acl role`
 
-The `acl role` command is used to manage Consul's ACL roles.
+The `acl role` command is used to manage OpenGyoza's ACL roles.
 It exposes commands for creating, updating, reading, deleting, and listing roles.
-This command is available in Consul 1.5.0 and newer.
+This command is available in OpenGyoza 1.5.0 and newer.
 
 ACL roles may also be managed via the [HTTP API](/api/acl/roles.html).
 
 -> **Note:** All of the example subcommands in this document will require a valid
-Consul token with the appropriate permissions.  Either set the
+OpenGyoza token with the appropriate permissions.  Either set the
 `CONSUL_HTTP_TOKEN` environment variable to the token's secret ID or pass the
 secret ID as the value of the `-token` parameter.
 
 ## Usage
 
-Usage: `consul acl role <subcommand>`
+Usage: `gyoza acl role <subcommand>`
 
-For the exact documentation for your Consul version, run `consul acl
+For the exact documentation for your OpenGyoza version, run `gyoza acl
 role -h` to view the complete list of subcommands.
 
 ```text
-Usage: consul acl role <subcommand> [options] [args]
+Usage: gyoza acl role <subcommand> [options] [args]
 
   ...
 
@@ -57,7 +57,7 @@ full UUID and used.
 Create a new ACL role:
 
 ```sh
-$ consul acl role create -name "new-role" \
+$ gyoza acl role create -name "new-role" \
                        -description "This is an example role" \
                        -policy-id 06acc965
 ```
@@ -65,23 +65,23 @@ $ consul acl role create -name "new-role" \
 List all roles:
 
 ```sh
-$ consul acl role list
+$ gyoza acl role list
 ```
 
 Update a role:
 
 ```sh
-$ consul acl role update -name "other-role" -datacenter "dc1"
+$ gyoza acl role update -name "other-role" -datacenter "dc1"
 ```
 
 Read a role:
 
 ```sh
-$ consul acl role read -id 0479e93e-091c-4475-9b06-79a004765c24
+$ gyoza acl role read -id 0479e93e-091c-4475-9b06-79a004765c24
 ```
 
 Delete a role
 
 ```sh
-$ consul acl role delete -name "my-role"
+$ gyoza acl role delete -name "my-role"
 ```

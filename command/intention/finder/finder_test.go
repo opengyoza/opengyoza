@@ -3,8 +3,8 @@ package finder
 import (
 	"testing"
 
-	"github.com/hashicorp/consul/agent"
-	"github.com/hashicorp/consul/api"
+	"github.com/opengyoza/opengyoza/agent"
+	"github.com/opengyoza/opengyoza/api"
 	"github.com/stretchr/testify/require"
 )
 

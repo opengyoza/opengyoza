@@ -11,7 +11,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/hashicorp/consul/acl"
+	"github.com/opengyoza/opengyoza/acl"
 )
 
 const (

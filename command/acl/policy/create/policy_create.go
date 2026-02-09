@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/hashicorp/consul/acl"
-	"github.com/hashicorp/consul/api"
-	aclhelpers "github.com/hashicorp/consul/command/acl"
-	"github.com/hashicorp/consul/command/flags"
-	"github.com/hashicorp/consul/command/helpers"
+	"github.com/opengyoza/opengyoza/acl"
+	"github.com/opengyoza/opengyoza/api"
+	aclhelpers "github.com/opengyoza/opengyoza/command/acl"
+	"github.com/opengyoza/opengyoza/command/flags"
+	"github.com/opengyoza/opengyoza/command/helpers"
 	"github.com/mitchellh/cli"
 )
 

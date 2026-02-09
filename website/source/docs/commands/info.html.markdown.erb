@@ -6,9 +6,9 @@ description: |-
   The `info` command provides various debugging information that can be useful to operators. Depending on if the agent is a client or server, information about different sub-systems will be returned.
 ---
 
-# Consul Info
+# OpenGyoza Info
 
-Command: `consul info`
+Command: `gyoza info`
 
 The `info` command provides various debugging information that can be
 useful to operators. Depending on if the agent is a client or server,
@@ -17,7 +17,7 @@ information about different sub-systems will be returned.
 There are currently the top-level keys for:
 
 * agent: Provides information about the agent
-* consul: Information about the consul library (client or server)
+* consul: Information about the OpenGyoza library (legacy label for compatibility)
 * raft: Provides info about the Raft [consensus library](/docs/internals/consensus.html)
 * serf_lan: Provides info about the LAN [gossip pool](/docs/internals/gossip.html)
 * serf_wan: Provides info about the WAN [gossip pool](/docs/internals/gossip.html)
@@ -70,7 +70,7 @@ serf_wan:
 
 ## Usage
 
-Usage: `consul info`
+Usage: `gyoza info`
 
 #### API Options
 

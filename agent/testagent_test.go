@@ -3,7 +3,7 @@ package agent
 import (
 	"testing"
 
-	"github.com/hashicorp/consul/agent/config"
+	"github.com/opengyoza/opengyoza/agent/config"
 	"github.com/hashicorp/hcl"
 )
 

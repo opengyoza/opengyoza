@@ -1,14 +1,14 @@
 ---
 layout: "docs"
-page_title: "Consul Glossary"
+page_title: "OpenGyoza Glossary"
 sidebar_current: "docs-glossary"
 description: |-
   This page collects brief definitions of some of the technical terms used in the documentation.
 ---
 
-# Consul Glossary
+# OpenGyoza Glossary
 
-This page collects brief definitions of some of the technical terms used in the documentation for Consul and Consul Enterprise, as well as some terms that come up frequently in conversations throughout the Consul community.
+This page collects brief definitions of some of the technical terms used in the documentation for OpenGyoza, as well as some terms that come up frequently in conversations throughout the OpenGyoza community.
 
 * [Agent](#agent) 
 * [Client](#client) 
@@ -22,8 +22,8 @@ This page collects brief definitions of some of the technical terms used in the 
 
 ## Agent 
 
-An agent is the long running daemon on every member of the Consul cluster.
-It is started by running `consul agent`. The agent is able to run in either *client*
+An agent is the long running daemon on every member of the OpenGyoza cluster.
+It is started by running `gyoza agent`. The agent is able to run in either *client*
 or *server* mode. Since all nodes must be running an agent, it is simpler to refer to
 the node as being either a client or server, but there are other instances of the agent. All
 agents can run the DNS or HTTP interfaces, and are responsible for running checks and

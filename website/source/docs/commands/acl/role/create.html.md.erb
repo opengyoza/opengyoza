@@ -4,15 +4,15 @@ page_title: "Commands: ACL Role Create"
 sidebar_current: "docs-commands-acl-role-create"
 ---
 
-# Consul ACL Role Create
+# OpenGyoza ACL Role Create
 
-Command: `consul acl role create`
+Command: `gyoza acl role create`
 
 The `acl role create` command creates new roles.
 
 ## Usage
 
-Usage: `consul acl role create [options] [args]`
+Usage: `gyoza acl role create [options] [args]`
 
 #### API Options
 
@@ -43,7 +43,7 @@ Usage: `consul acl role create [options] [args]`
 Create a new role with one policy:
 
 ```sh
-$ consul acl role create -name "crawler" -description "web crawler role" -policy-name "crawler-kv"
+$ gyoza acl role create -name "crawler" -description "web crawler role" -policy-name "crawler-kv"
 ID:           57147d87-6bf7-f794-1a6e-7d038c4e4ae9
 Name:         crawler
 Description:  web crawler role
@@ -54,7 +54,7 @@ Policies:
 Create a new role with one service identity:
 
 ```sh
-$ consul acl role create -name archiver -description 'archiver role' -service-identity "archiver:dc2"
+$ gyoza acl role create -name archiver -description 'archiver role' -service-identity "archiver:dc2"
 ID:           a365fdc9-ac71-e754-0645-7ab6bd747301
 Name:         archiver
 Description:  archiver role

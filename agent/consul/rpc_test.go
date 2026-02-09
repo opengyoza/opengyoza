@@ -8,11 +8,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/agent/consul/state"
-	"github.com/hashicorp/consul/agent/pool"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/sdk/testutil/retry"
-	"github.com/hashicorp/consul/testrpc"
+	"github.com/opengyoza/opengyoza/agent/consul/state"
+	"github.com/opengyoza/opengyoza/agent/pool"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/sdk/testutil/retry"
+	"github.com/opengyoza/opengyoza/testrpc"
 	"github.com/hashicorp/go-memdb"
 	msgpackrpc "github.com/hashicorp/net-rpc-msgpackrpc"
 	"github.com/stretchr/testify/assert"
@@ -630,9 +630,10 @@ func TestRPC_RPCMaxConnsPerClient(t *testing.T) {
 			conn3 := connectClient(t, s1, tc.magicByte, tc.tlsEnabled, false, "conn3")
 			defer conn3.Close()
 
-			// If we close one of the earlier ones, we should be able to open another
-			conn1.Close()
-			conn4 := connectClient(t, s1, tc.magicByte, tc.tlsEnabled, true, "conn4")
+				// If we close one of the earlier ones, we should be able to open another
+				conn1.Close()
+				time.Sleep(100 * time.Millisecond)
+				conn4 := connectClient(t, s1, tc.magicByte, tc.tlsEnabled, true, "conn4")
 			defer conn4.Close()
 
 			// Reload config with higher limit

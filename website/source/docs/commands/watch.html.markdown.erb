@@ -3,24 +3,24 @@ layout: "docs"
 page_title: "Commands: Watch"
 sidebar_current: "docs-commands-watch"
 description: |-
-  The `watch` command provides a mechanism to watch for changes in a particular data view (list of nodes, service members, key value, etc) and to invoke a process with the latest values of the view. If no process is specified, the current values are dumped to stdout which can be a useful way to inspect data in Consul.
+  The `watch` command provides a mechanism to watch for changes in a particular data view (list of nodes, service members, key value, etc) and to invoke a process with the latest values of the view. If no process is specified, the current values are dumped to stdout which can be a useful way to inspect data in OpenGyoza.
 ---
 
-# Consul Watch
+# OpenGyoza Watch
 
-Command: `consul watch`
+Command: `gyoza watch`
 
 The `watch` command provides a mechanism to watch for changes in a particular
 data view (list of nodes, service members, key value, etc) and to invoke
 a process with the latest values of the view. If no process is specified,
 the current values are dumped to STDOUT which can be a useful way to inspect
-data in Consul.
+data in OpenGyoza.
 
 There is more [documentation on watches here](/docs/agent/watches.html).
 
 ## Usage
 
-Usage: `consul watch [options] [child...]`
+Usage: `gyoza watch [options] [child...]`
 
 The only required option is `-type` which specifies the particular
 data view. Depending on the type, various options may be required

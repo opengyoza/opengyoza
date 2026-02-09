@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/hashicorp/consul/agent/cache"
+	"github.com/opengyoza/opengyoza/agent/cache"
 	"github.com/mitchellh/go-testing-interface"
 )
 

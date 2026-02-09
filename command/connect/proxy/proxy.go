@@ -13,11 +13,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/command/flags"
-	proxyImpl "github.com/hashicorp/consul/connect/proxy"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/command/flags"
+	proxyImpl "github.com/opengyoza/opengyoza/connect/proxy"
 
-	"github.com/hashicorp/consul/logger"
+	"github.com/opengyoza/opengyoza/logger"
 	"github.com/hashicorp/logutils"
 	"github.com/mitchellh/cli"
 )

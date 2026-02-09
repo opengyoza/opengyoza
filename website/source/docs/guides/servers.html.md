@@ -3,15 +3,15 @@ layout: "docs"
 page_title: "Adding & Removing Servers"
 sidebar_current: "docs-guides-servers"
 description: |-
-  Consul is designed to require minimal operator involvement, however any changes to the set of Consul servers must be handled carefully. To better understand why, reading about the consensus protocol will be useful. In short, the Consul servers perform leader election and replication. For changes to be processed, a minimum quorum of servers (N/2)+1 must be available. That means if there are 3 server nodes, at least 2 must be available.
+  OpenGyoza is designed to require minimal operator involvement, however any changes to the set of OpenGyoza servers must be handled carefully. To better understand why, reading about the consensus protocol will be useful. In short, the OpenGyoza servers perform leader election and replication. For changes to be processed, a minimum quorum of servers (N/2)+1 must be available. That means if there are 3 server nodes, at least 2 must be available.
 ---
 
 # Adding & Removing Servers
 
-Consul is designed to require minimal operator involvement, however any changes
-to the set of Consul servers must be handled carefully. To better understand
+OpenGyoza is designed to require minimal operator involvement, however any changes
+to the set of OpenGyoza servers must be handled carefully. To better understand
 why, reading about the [consensus protocol](/docs/internals/consensus.html) will
-be useful. In short, the Consul servers perform leader election and replication.
+be useful. In short, the OpenGyoza servers perform leader election and replication.
 For changes to be processed, a minimum quorum of servers (N/2)+1 must be available.
 That means if there are 3 server nodes, at least 2 must be available.
 
@@ -27,7 +27,7 @@ agent with the `-server` flag. At this point the server will not be a member of
 any cluster, and should emit something like:
 
 ```sh
-consul agent -server
+gyoza agent -server
 [WARN] raft: EnableSingleNode disabled, and no known peers. Aborting election.
 ```
 
@@ -36,7 +36,7 @@ This is expected, and we can now add this node to the existing cluster using `jo
 From the new server, we can join any member of the existing cluster:
 
 ```sh
-$ consul join <Existing Node Address>
+$ gyoza join <Existing Node Address>
 Successfully joined cluster by contacting 1 nodes.
 ```
 
@@ -47,12 +47,12 @@ option to add additional servers.
 
 ## Add a Server with Agent Configuration
 
-In production environments, you should use the [agent configuration](https://www.consul.io/docs/agent/options.html) option, `retry_join`. `retry_join` can be used as a command line flag or in the agent configuration file. 
+In production environments, you should use the [agent configuration](/docs/agent/options.html) option, `retry_join`. `retry_join` can be used as a command line flag or in the agent configuration file. 
 
-With the Consul CLI:
+With the OpenGyoza CLI (`gyoza`):
 
 ```sh
-$ consul agent -retry-join=["52.10.110.11", "52.10.110.12", "52.10.100.13"]
+$ gyoza agent -retry-join=["52.10.110.11", "52.10.110.12", "52.10.100.13"]
 ```
 
 In the agent configuration file:
@@ -66,7 +66,7 @@ In the agent configuration file:
 }
 ```
 
-[`retry_join`](https://www.consul.io/docs/agent/options.html#retry-join)
+[`retry_join`](/docs/agent/options.html#retry-join)
 will ensure that if any server loses connection
 with the cluster for any reason, including the node restarting, it can
 rejoin when it comes back. In additon to working with static IPs, it 
@@ -75,7 +75,7 @@ based on cloud metadata and discovery. Both servers and clients can use this met
 
 ### Server Coordination
 
-To ensure Consul servers are joining the cluster properly, you should monitor
+To ensure OpenGyoza servers are joining the cluster properly, you should monitor
 the server coordination. The gossip protocol is used to properly discover all
 the nodes in the cluster. Once the node has joined, the existing cluster
 leader should log something like:
@@ -89,7 +89,7 @@ replicating state. Since the existing cluster may be very far ahead, it can take
 time for the new node to catch up. To check on this, run `info` on the leader:
 
 ```text
-$ consul info
+$ gyoza info
 ...
 raft:
 	applied_index = 47244
@@ -132,7 +132,7 @@ can handle a node leaving, the actual process is simple. You simply issue a
 `leave` command to the server.
 
 ```sh
-consul leave
+gyoza leave
 ```
 
 The server leaving should contain logs like:
@@ -157,7 +157,7 @@ The leader should also emit various logs including:
 At this point the node has been gracefully removed from the cluster, and
 will shut down.
 
-~> Running `consul leave` on a server explicitly will reduce the quorum size. Even if the cluster used `bootstrap_expect` to set a quorum size initially, issuing `consul leave` on a server will reconfigure the cluster to have fewer servers. This means you could end up with just one server that is still able to commit writes because quorum is only 1, but those writes might be lost if that server fails before more are added.
+~> Running `gyoza leave` on a server explicitly will reduce the quorum size. Even if the cluster used `bootstrap_expect` to set a quorum size initially, issuing `gyoza leave` on a server will reconfigure the cluster to have fewer servers. This means you could end up with just one server that is still able to commit writes because quorum is only 1, but those writes might be lost if that server fails before more are added.
 
 To remove all agents that accidentally joined the wrong set of servers, clear out the contents of the data directory (`-data-dir`) on both client and server nodes.
 
@@ -178,7 +178,7 @@ leave the cluster. However, if this is not a possibility, then the `force-leave`
 can be used to force removal of a server.
 
 ```sh
-consul force-leave <node>
+gyoza force-leave <node>
 ```
 
 This is done by invoking that command with the name of the failed node. At this point,

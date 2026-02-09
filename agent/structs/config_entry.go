@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/hashicorp/consul/acl"
-	"github.com/hashicorp/consul/agent/cache"
-	"github.com/hashicorp/consul/lib"
+	"github.com/opengyoza/opengyoza/acl"
+	"github.com/opengyoza/opengyoza/agent/cache"
+	"github.com/opengyoza/opengyoza/lib"
 	"github.com/hashicorp/go-msgpack/codec"
 	"github.com/hashicorp/go-multierror"
 	"github.com/mitchellh/hashstructure"
@@ -96,7 +96,7 @@ func (e *ServiceConfigEntry) CanRead(rule acl.Authorizer) bool {
 }
 
 func (e *ServiceConfigEntry) CanWrite(rule acl.Authorizer) bool {
-	return rule.ServiceWrite(e.Name, nil)
+	return rule.ServiceWrite(e.Name)
 }
 
 func (e *ServiceConfigEntry) GetRaftIndex() *RaftIndex {

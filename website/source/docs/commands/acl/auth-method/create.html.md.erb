@@ -4,15 +4,15 @@ page_title: "Commands: ACL Auth Method Create"
 sidebar_current: "docs-commands-acl-auth-method-create"
 ---
 
-# Consul ACL Auth Method Create
+# OpenGyoza ACL Auth Method Create
 
-Command: `consul acl auth-method create`
+Command: `gyoza acl auth-method create`
 
 The `acl auth-method create` command creates new auth methods.
 
 ## Usage
 
-Usage: `consul acl auth-method create [options] [args]`
+Usage: `gyoza acl auth-method create [options] [args]`
 
 #### API Options
 
@@ -47,7 +47,7 @@ Usage: `consul acl auth-method create [options] [args]`
 Create a new Kubernetes auth method:
 
 ```sh
-$ consul acl auth-method create -name minikube -type kubernetes \
+$ gyoza acl auth-method create -name minikube -type kubernetes \
     -description 'minikube auth method' \
     -kubernetes-host 'https://192.0.2.42:8443' \
     -kubernetes-ca-cert '@minikube-ca.crt' \

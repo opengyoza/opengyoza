@@ -4,18 +4,18 @@ page_title: "Commands: KV Get"
 sidebar_current: "docs-commands-kv-get"
 ---
 
-# Consul KV Get
+# OpenGyoza KV Get
 
-Command: `consul kv get`
+Command: `gyoza kv get`
 
-The `kv get` command is used to retrieve the value from Consul's KV
+The `kv get` command is used to retrieve the value from OpenGyoza's KV
 store at the given key name. If no key exists with that name, an error is
 returned. If a key exists with that name but has no data, nothing is returned.
 A key name or prefix is required.
 
 ## Usage
 
-Usage: `consul kv get [options] [KEY_OR_PREFIX]`
+Usage: `gyoza kv get [options] [KEY_OR_PREFIX]`
 
 #### API Options
 
@@ -48,17 +48,17 @@ To retrieve the value for the key named "redis/config/connections" in the
 KV store:
 
 ```
-$ consul kv get redis/config/connections
+$ gyoza kv get redis/config/connections
 5
 ```
 
-This will return the original, raw value stored in Consul. To view detailed
+This will return the original, raw value stored in OpenGyoza. To view detailed
 information about the key, specify the "-detailed" flag. This will output all
 known metadata about the key including ModifyIndex and any user-supplied
 flags:
 
 ```
-$ consul kv get -detailed redis/config/connections
+$ gyoza kv get -detailed redis/config/connections
 CreateIndex      336
 Flags            0
 Key              redis/config/connections
@@ -71,7 +71,7 @@ Value            5
 If the key with the given name does not exist, an error is returned:
 
 ```
-$ consul kv get not-a-real-key
+$ gyoza kv get not-a-real-key
 Error! No key exists at: not-a-real-key
 ```
 
@@ -79,7 +79,7 @@ To treat the path as a prefix and list all keys which start with the given
 prefix, specify the "-recurse" flag:
 
 ```
-$ consul kv get -recurse redis/
+$ gyoza kv get -recurse redis/
 redis/config/connections:5
 redis/config/cpu:128
 redis/config/memory:512
@@ -88,7 +88,7 @@ redis/config/memory:512
 Or list detailed information about all pairs under a prefix:
 
 ```
-$ consul kv get -recurse -detailed redis
+$ gyoza kv get -recurse -detailed redis
 CreateIndex      336
 Flags            0
 Key              redis/config/connections
@@ -118,7 +118,7 @@ To just list the keys which start with the specified prefix, use the "-keys"
 option instead. This is more performant and results in a smaller payload:
 
 ```
-$ consul kv get -keys redis/config/
+$ gyoza kv get -keys redis/config/
 redis/config/connections
 redis/config/cpu
 redis/config/memory
@@ -129,7 +129,7 @@ recurse beyond that separator. You can choose a different separator by setting
 `-separator="<string>"`.
 
 ```
-$ consul kv get -keys -separator="c" redis
+$ gyoza kv get -keys -separator="c" redis
 redis/c
 ```
 
@@ -137,7 +137,7 @@ Alternatively, you can disable the separator altogether by setting it to the
 empty string:
 
 ```
-$ consul kv get -keys -separator="" redis
+$ gyoza kv get -keys -separator="" redis
 redis/config/connections
 redis/config/cpu
 redis/config/memory
@@ -146,7 +146,7 @@ redis/config/memory
 To list all keys at the root, simply omit the prefix parameter:
 
 ```
-$ consul kv get -keys
+$ gyoza kv get -keys
 memcached/
 redis/
 ```

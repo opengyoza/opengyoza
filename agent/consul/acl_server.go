@@ -4,9 +4,9 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/hashicorp/consul/acl"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/lib"
+	"github.com/opengyoza/opengyoza/acl"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/lib"
 )
 
 var serverACLCacheConfig *structs.ACLCachesConfig = &structs.ACLCachesConfig{

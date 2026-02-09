@@ -3,9 +3,9 @@ package consul
 import (
 	"fmt"
 
-	"github.com/hashicorp/consul/acl"
-	"github.com/hashicorp/consul/agent/consul/autopilot"
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/acl"
+	"github.com/opengyoza/opengyoza/agent/consul/autopilot"
+	"github.com/opengyoza/opengyoza/agent/structs"
 )
 
 // AutopilotGetConfiguration is used to retrieve the current Autopilot configuration.

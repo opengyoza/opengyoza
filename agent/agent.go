@@ -25,33 +25,32 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/armon/go-metrics"
-	"github.com/hashicorp/consul/acl"
-	"github.com/hashicorp/consul/agent/ae"
-	"github.com/hashicorp/consul/agent/cache"
-	cachetype "github.com/hashicorp/consul/agent/cache-types"
-	"github.com/hashicorp/consul/agent/checks"
-	"github.com/hashicorp/consul/agent/config"
-	"github.com/hashicorp/consul/agent/consul"
-	"github.com/hashicorp/consul/agent/local"
-	"github.com/hashicorp/consul/agent/proxycfg"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/agent/systemd"
-	"github.com/hashicorp/consul/agent/token"
-	"github.com/hashicorp/consul/agent/xds"
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/api/watch"
-	"github.com/hashicorp/consul/ipaddr"
-	"github.com/hashicorp/consul/lib"
-	"github.com/hashicorp/consul/lib/file"
-	"github.com/hashicorp/consul/logger"
-	"github.com/hashicorp/consul/tlsutil"
-	"github.com/hashicorp/consul/types"
+	"github.com/opengyoza/opengyoza/acl"
+	"github.com/opengyoza/opengyoza/agent/ae"
+	"github.com/opengyoza/opengyoza/agent/cache"
+	cachetype "github.com/opengyoza/opengyoza/agent/cache-types"
+	"github.com/opengyoza/opengyoza/agent/checks"
+	"github.com/opengyoza/opengyoza/agent/config"
+	"github.com/opengyoza/opengyoza/agent/consul"
+	"github.com/opengyoza/opengyoza/agent/local"
+	"github.com/opengyoza/opengyoza/agent/proxycfg"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/systemd"
+	"github.com/opengyoza/opengyoza/agent/token"
+	"github.com/opengyoza/opengyoza/agent/xds"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/api/watch"
+	"github.com/opengyoza/opengyoza/ipaddr"
+	"github.com/opengyoza/opengyoza/lib"
+	"github.com/opengyoza/opengyoza/lib/file"
+	"github.com/opengyoza/opengyoza/logger"
+	"github.com/opengyoza/opengyoza/tlsutil"
+	"github.com/opengyoza/opengyoza/types"
 	"github.com/hashicorp/go-multierror"
 	"github.com/hashicorp/go-uuid"
-	"github.com/hashicorp/memberlist"
 	"github.com/hashicorp/raft"
 	"github.com/hashicorp/serf/serf"
-	"github.com/shirou/gopsutil/host"
+	"github.com/shirou/gopsutil/v3/host"
 	"golang.org/x/net/http2"
 )
 
@@ -131,8 +130,6 @@ type delegate interface {
 	GetLANCoordinate() (lib.CoordinateSet, error)
 	Leave() error
 	LANMembers() []serf.Member
-	LANMembersAllSegments() ([]serf.Member, error)
-	LANSegmentMembers(segment string) ([]serf.Member, error)
 	LocalMember() serf.Member
 	JoinLAN(addrs []string) (n int, err error)
 	RemoveFailedNode(node string, prune bool) error
@@ -144,7 +141,6 @@ type delegate interface {
 	Shutdown() error
 	Stats() map[string]map[string]string
 	ReloadConfig(config *consul.Config) error
-	enterpriseDelegate
 }
 
 // notifier is called after a successful JoinLAN.
@@ -415,8 +411,6 @@ func (a *Agent) Start() error {
 	// waiting to discover a consul server
 	consulCfg.ServerUp = a.sync.SyncFull.Trigger
 
-	a.initEnterprise(consulCfg)
-
 	tlsConfigurator, err := tlsutil.NewConfigurator(c.ToTLSUtilConfig(), a.logger)
 	if err != nil {
 		return err
@@ -488,7 +482,6 @@ func (a *Agent) Start() error {
 		Source: &structs.QuerySource{
 			Node:       a.config.NodeName,
 			Datacenter: a.config.Datacenter,
-			Segment:    a.config.SegmentName,
 		},
 	})
 	if err != nil {
@@ -1167,14 +1160,6 @@ func (a *Agent) consulConfig() (*consul.Config, error) {
 	base.RPCAddr = a.config.RPCBindAddr
 	base.RPCAdvertise = a.config.RPCAdvertiseAddr
 
-	base.Segment = a.config.SegmentName
-	if len(a.config.Segments) > 0 {
-		segments, err := a.segmentConfig()
-		if err != nil {
-			return nil, err
-		}
-		base.Segments = segments
-	}
 	if a.config.Bootstrap {
 		base.Bootstrap = true
 	}
@@ -1232,9 +1217,6 @@ func (a *Agent) consulConfig() (*consul.Config, error) {
 	if a.config.SessionTTLMin != 0 {
 		base.SessionTTLMin = a.config.SessionTTLMin
 	}
-	if a.config.NonVotingServer {
-		base.NonVoter = a.config.NonVotingServer
-	}
 
 	// These are fully specified in the agent defaults, so we can simply
 	// copy them over.
@@ -1243,9 +1225,6 @@ func (a *Agent) consulConfig() (*consul.Config, error) {
 	base.AutopilotConfig.MaxTrailingLogs = uint64(a.config.AutopilotMaxTrailingLogs)
 	base.AutopilotConfig.MinQuorum = a.config.AutopilotMinQuorum
 	base.AutopilotConfig.ServerStabilizationTime = a.config.AutopilotServerStabilizationTime
-	base.AutopilotConfig.RedundancyZoneTag = a.config.AutopilotRedundancyZoneTag
-	base.AutopilotConfig.DisableUpgradeMigration = a.config.AutopilotDisableUpgradeMigration
-	base.AutopilotConfig.UpgradeVersionTag = a.config.AutopilotUpgradeVersionTag
 
 	// make sure the advertise address is always set
 	if base.RPCAdvertise == nil {
@@ -1358,8 +1337,7 @@ func (a *Agent) consulConfig() (*consul.Config, error) {
 	base.LogLevel = a.config.LogLevel
 	base.LogOutput = a.LogOutput
 
-	// This will set up the LAN keyring, as well as the WAN and any segments
-	// for servers.
+	// This will set up the LAN keyring, as well as the WAN for servers.
 	if err := a.setupKeyrings(base); err != nil {
 		return nil, fmt.Errorf("Failed to configure keyring: %v", err)
 	}
@@ -1367,50 +1345,6 @@ func (a *Agent) consulConfig() (*consul.Config, error) {
 	base.ConfigEntryBootstrap = a.config.ConfigEntryBootstrap
 
 	return base, nil
-}
-
-// Setup the serf and memberlist config for any defined network segments.
-func (a *Agent) segmentConfig() ([]consul.NetworkSegment, error) {
-	var segments []consul.NetworkSegment
-	config := a.config
-
-	for _, s := range config.Segments {
-		serfConf := consul.DefaultConfig().SerfLANConfig
-
-		serfConf.MemberlistConfig.BindAddr = s.Bind.IP.String()
-		serfConf.MemberlistConfig.BindPort = s.Bind.Port
-		serfConf.MemberlistConfig.AdvertiseAddr = s.Advertise.IP.String()
-		serfConf.MemberlistConfig.AdvertisePort = s.Advertise.Port
-
-		if config.ReconnectTimeoutLAN != 0 {
-			serfConf.ReconnectTimeout = config.ReconnectTimeoutLAN
-		}
-		if config.EncryptVerifyIncoming {
-			serfConf.MemberlistConfig.GossipVerifyIncoming = config.EncryptVerifyIncoming
-		}
-		if config.EncryptVerifyOutgoing {
-			serfConf.MemberlistConfig.GossipVerifyOutgoing = config.EncryptVerifyOutgoing
-		}
-
-		var rpcAddr *net.TCPAddr
-		if s.RPCListener {
-			rpcAddr = &net.TCPAddr{
-				IP:   s.Bind.IP,
-				Port: a.config.ServerPort,
-			}
-		}
-
-		segments = append(segments, consul.NetworkSegment{
-			Name:       s.Name,
-			Bind:       serfConf.MemberlistConfig.BindAddr,
-			Advertise:  serfConf.MemberlistConfig.AdvertiseAddr,
-			Port:       s.Bind.Port,
-			RPCAddr:    rpcAddr,
-			SerfConfig: serfConf,
-		})
-	}
-
-	return segments, nil
 }
 
 // makeRandomID will generate a random UUID for a node.
@@ -1590,30 +1524,7 @@ LOAD:
 
 // setupKeyrings is used to initialize and load keyrings during agent startup.
 func (a *Agent) setupKeyrings(config *consul.Config) error {
-	// First set up the LAN and WAN keyrings.
-	if err := a.setupBaseKeyrings(config); err != nil {
-		return err
-	}
-
-	// If there's no LAN keyring then there's nothing else to set up for
-	// any segments.
-	lanKeyring := config.SerfLANConfig.MemberlistConfig.Keyring
-	if lanKeyring == nil {
-		return nil
-	}
-
-	// Copy the initial state of the LAN keyring into each segment config.
-	// Segments don't have their own keyring file, they rely on the LAN
-	// holding the state so things can't get out of sync.
-	k, pk := lanKeyring.GetKeys(), lanKeyring.GetPrimaryKey()
-	for _, segment := range config.Segments {
-		keyring, err := memberlist.NewKeyring(k, pk)
-		if err != nil {
-			return err
-		}
-		segment.SerfConfig.MemberlistConfig.Keyring = keyring
-	}
-	return nil
+	return a.setupBaseKeyrings(config)
 }
 
 // registerEndpoint registers a handler for the consul RPC server
@@ -3619,7 +3530,6 @@ func (a *Agent) loadMetadata(conf *config.RuntimeConfig) error {
 	for k, v := range conf.NodeMeta {
 		meta[k] = v
 	}
-	meta[structs.MetaSegmentKey] = conf.SegmentName
 	return a.State.LoadMetadata(meta)
 }
 

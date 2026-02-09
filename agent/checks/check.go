@@ -3,7 +3,7 @@ package checks
 import (
 	"crypto/tls"
 	"fmt"
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/structs"
 	"io"
 	"io/ioutil"
 	"log"
@@ -16,10 +16,10 @@ import (
 	"time"
 
 	"github.com/armon/circbuf"
-	"github.com/hashicorp/consul/agent/exec"
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/lib"
-	"github.com/hashicorp/consul/types"
+	"github.com/opengyoza/opengyoza/agent/exec"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/lib"
+	"github.com/opengyoza/opengyoza/types"
 	"github.com/hashicorp/go-cleanhttp"
 )
 

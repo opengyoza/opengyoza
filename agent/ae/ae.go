@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/hashicorp/consul/lib"
+	"github.com/opengyoza/opengyoza/lib"
 )
 
 // scaleThreshold is the number of nodes after which regular sync runs are

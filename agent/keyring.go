@@ -8,8 +8,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/hashicorp/consul/agent/consul"
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/consul"
+	"github.com/opengyoza/opengyoza/agent/structs"
 	"github.com/hashicorp/memberlist"
 	"github.com/hashicorp/serf/serf"
 )

@@ -8,13 +8,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hashicorp/consul/testrpc"
+	"github.com/opengyoza/opengyoza/testrpc"
 	"github.com/stretchr/testify/require"
 
-	"github.com/hashicorp/consul/agent/consul/autopilot"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/sdk/testutil/retry"
+	"github.com/opengyoza/opengyoza/agent/consul/autopilot"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/sdk/testutil/retry"
 )
 
 func TestOperator_RaftConfiguration(t *testing.T) {

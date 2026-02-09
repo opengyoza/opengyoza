@@ -211,7 +211,7 @@ event "deploy" {
 Event rules are segmented by the event name they apply to. In the example above, the rules allow
 read-only access to any event, and firing of the "deploy" event.
 
-The [`consul exec`](/docs/commands/exec.html) command uses events with the "_rexec" prefix during
+The [`gyoza exec`](/docs/commands/exec.html) command uses events with the "_rexec" prefix during
 operation, so to enable this feature in a Consul environment with ACLs enabled, you will need to
 give agents a token with access to this event prefix, in addition to configuring
 [`disable_remote_exec`](/docs/agent/options.html#disable_remote_exec) to `false`.
@@ -259,27 +259,6 @@ key_prefix "baz" {
 In the example above, the rules allow reading the key "baz", and only allow recursive reads on the prefix "bar".
 
 A token with `write` access on a prefix also has `list` access. A token with `list` access on a prefix also has `read` access on all its suffixes.
-
-#### Sentinel Integration
-
-Consul Enterprise supports additional optional fields for key write policies for
-[Sentinel](https://docs.hashicorp.com/sentinel/app/consul/) integration. An example key rule with a
-Sentinel code policy looks like this:
-
-```hcl
-key "foo" {
-  policy = "write"
-  sentinel {
-      code = <<EOF
-import "strings"
-main = rule { strings.has_suffix(value, "bar") }
-EOF
-      enforcementlevel = "hard-mandatory"
-  }
-}
-```
-
-For more detailed information, see the [Consul Sentinel documentation](/docs/agent/sentinel.html).
 
 #### Keyring Rules
 

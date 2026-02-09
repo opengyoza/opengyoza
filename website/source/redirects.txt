@@ -47,9 +47,7 @@
 /docs/guide/acl-migrate-tokens.html        /docs/acl/acl-migrate-tokens.html
 /docs/guides/acl-migrate-tokens.html       /docs/acl/acl-migrate-tokens.html
 /docs/guides/bootstrapping.html            /docs/install/bootstrapping.html
-/docs/guides/sentinel.html                 /docs/agent/sentinel.html
 /docs/connect/proxies/sidecar-service.html /docs/connect/registration/sidecar-service.html
-/docs/enterprise/connect-multi-datacenter/index.html /docs/enterprise/index.html
 /segmentation.html /mesh.html
 /configuration.html /
 
@@ -77,12 +75,10 @@
 /docs/guides/consul-aws.html                   https://learn.hashicorp.com/consul/integrations/consul-aws
 /docs/guides/forwarding.html                   https://learn.hashicorp.com/consul/security-networking/forwarding
 /docs/guides/external.html                     https://learn.hashicorp.com/consul/developer-discovery/external
-/docs/guides/advanced-federation.html          https://learn.hashicorp.com/consul/day-2-operations/advanced-federation
 /docs/guides/datacenters.html                  https://learn.hashicorp.com/consul/security-networking/datacenters
 /docs/guides/geo-failover.html                 https://learn.hashicorp.com/consul/developer-discovery/geo-failover
 /docs/guides/leader-election.html              https://learn.hashicorp.com/consul/developer-configuration/elections
 /docs/guides/monitoring-telegraf.html          https://learn.hashicorp.com/consul/integrations/telegraf
-/docs/guides/network-segments.html             https://learn.hashicorp.com/consul/day-2-operations/network-segments
 /docs/guides/semaphore.html                    https://learn.hashicorp.com/consul/developer-configuration/semaphore
 /docs/guides/windows-guide.html                https://learn.hashicorp.com/consul/datacenter-deploy/windows
 /docs/guides/consul-containers.html            https://hub.docker.com/_/consul

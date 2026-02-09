@@ -1,10 +1,13 @@
 ---
 layout: "docs"
-page_title: "Securing Consul with ACLs"
+page_title: "Securing OpenGyoza with ACLs"
 sidebar_current: "docs-guides-acl-production"
 description: |-
-  This guide walks though securing your production Consul datacenter with ACLs.
+  This guide walks though securing your production OpenGyoza datacenter with ACLs.
 ---
+
+~> **Note:** This guide retains upstream Consul terminology and environment variables
+for ACL compatibility (for example, `CONSUL_HTTP_TOKEN`).
 
 The [Bootstrapping the ACL System guide](/advanced/day-1-operations/acl-guide)
 walks you through how to set up ACLs on a single datacenter. Because it
@@ -19,14 +22,14 @@ you will learn how to create tokens with minimum privileges for:
 * [Servers and Clients](/advanced/day-1-operations/production-acls#apply-individual-tokens-to-agents)
 * [Services](/advanced/day-1-operations/production-acls#apply-individual-tokens-to-services)
 * [DNS](/advanced/day-1-operations/production-acls#token-for-dns) 
-* [Consul KV](/advanced/day-1-operations/production-acls#consul-kv-tokens) 
-* [Consul UI](/advanced/day-1-operations/production-acls#consul-ui-tokens) 
+* [OpenGyoza KV](/advanced/day-1-operations/production-acls#consul-kv-tokens) 
+* [OpenGyoza UI](/advanced/day-1-operations/production-acls#consul-ui-tokens) 
 
 ~> **Important:** For best results, use this guide during the [initial
-deployment](/advanced/day-1-operations/deployment-guide) of a Consul (version
-1.4.3 or newer) datacenter. Specifically, you should have already installed all
+deployment](/advanced/day-1-operations/deployment-guide) of an OpenGyoza
+datacenter (OpenGyoza base: Consul 1.4.3 or newer). Specifically, you should have already installed all
 agents and configured initial service definitions, but you should not yet rely
-on Consul for any service discovery or service configuration operations.  
+on OpenGyoza for any service discovery or service configuration operations.  
 
 ## Bootstrap the ACL System
 
@@ -36,9 +39,9 @@ bootstrap token.
 ### Enable ACLs on the Agents
 
 To enable ACLs, add the following [ACL
-parameters](https://www.consul.io/docs/agent/options.html#configuration-key-reference)
-to the agent's configuration file and then restart the Consul service. If you
-want to reduce Consul client restarts, you can enable the ACLs 
+parameters](/docs/agent/options.html#configuration-key-reference)
+to the agent's configuration file and then restart the OpenGyoza service. If you
+want to reduce OpenGyoza client restarts, you can enable the ACLs 
 on them when you apply the token. 
 
 ```
@@ -52,8 +55,7 @@ on them when you apply the token.
 }
 ```
 
-~> Note: Token persistence was introduced in Consul 1.4.3. In older versions
-of Consul, you cannot persist tokens when using the HTTP API. 
+~> Note: Token persistence was introduced in OpenGyoza's Consul 1.4.3 base. In older versions, you cannot persist tokens when using the HTTP API.
 
 In this example, you configured the default policy of "deny", which means you
 are in whitelist mode. You also enabled token persistence when using the HTTP
@@ -73,17 +75,17 @@ To create the initial bootstrap token, use the `acl bootstrap` command on one
 of the servers. 
 
 ```sh
-$ consul acl bootstrap 
+$ gyoza acl bootstrap 
 ```
 
 The output gives you important information about the token, including the
 associated policy `global-management` and `SecretID`. 
 
-~> Note: By default, Consul assigns the `global-management` policy to the
+~> Note: By default, OpenGyoza assigns the `global-management` policy to the
 bootstrap token, which has unrestricted privileges. It is important to have one
 token with unrestricted privileges in case of emergencies; however you should
 only give a small number of administrators access to it. The `SecretID` is a
-UUID that you will use to identify the token when using the Consul CLI or HTTP
+UUID that you will use to identify the token when using the OpenGyoza CLI or HTTP
 API. 
 
 While you are setting up the ACL system, set the `CONSUL_HTTP_TOKEN`
@@ -128,29 +130,29 @@ node "consul-server-one" {
 ```
 
 When creating agent policies, review the [node rules](
-https://www.consul.io/docs/agent/acl-rules.html#node-rules). Now that 
+/docs/agent/acl-rules.html#node-rules). Now that 
 you have
-specified the policy, you can initialize it using the Consul
+specified the policy, you can initialize it using the OpenGyoza
 CLI. To create a programmatic process, you could also use
 the HTTP API.
 
 ```sh 
-$ consul acl policy create -name consul-server-one -rules @consul-server-one-policy.hcl 
+$ gyoza acl policy create -name consul-server-one -rules @consul-server-one-policy.hcl 
 ```
 
 The command output will include the policy information. 
 
-Repeat this process for all servers and clients in the Consul datacenter. Each agent should have its own policy based on the
+Repeat this process for all servers and clients in the OpenGyoza datacenter. Each agent should have its own policy based on the
 node name, that grants write privileges to it. 
 
 ### Create the Agent Token
 
 After creating the per-agent policies, create individual tokens for all the
-agents. You will need to include the policy in the `consul acl token create`
+agents. You will need to include the policy in the `gyoza acl token create`
 command.
 
 ```sh 
-$ consul acl token create -description "consul-server-one agent token" -policy-name consul-server-one 
+$ gyoza acl token create -description "consul-server-one agent token" -policy-name consul-server-one 
 ``` 
 
 This command returns the token information, which should include a description
@@ -169,7 +171,7 @@ review the Bootstrapping the ACL System [guide](/advanced/day-1-operations/acl-g
 file.
 
 ```sh
-$ consul acl set-agent-token -token "<your token here>" agent "<agent token here>"
+$ gyoza acl set-agent-token -token "<your token here>" agent "<agent token here>"
 ``` 
 
 The data file must contain a valid token. 
@@ -182,7 +184,7 @@ The data file must contain a valid token.
 ```
 
 At this point, every agent that has a token can once
-again read and write information to Consul, but only for node-related actions.
+again read and write information to OpenGyoza, but only for node-related actions.
 Actions for individual services are not yet allowed.
 
 ~> Note: If you are bootstrapping ACLs on an existing datacenter, remember to
@@ -199,7 +201,7 @@ service. Service tokens are necessary for
  registering and de-registering the service's checks.
 
 Review the [service
-rules](https://www.consul.io/docs/agent/acl-rules.html#service-rules) before
+rules](/docs/agent/acl-rules.html#service-rules) before
 getting started.
 
 Below is an example service definition that needs a token after bootstrapping
@@ -222,13 +224,13 @@ the ACL system.
 ```
 
 This service definition should be located in the [configuration
-directory](https://www.consul.io/docs/agent/options.html#_config_dir) on one of
+directory](/docs/agent/options.html#_config_dir) on one of
 the clients.  
 
 First, create the policy that will grant write privileges to only the
 "dashboard" service. This means the "dashboard" service can register
 itself, update it's health checks, and write any of the fields in the [service
-definition](https://www.consul.io/docs/agent/services.html).
+definition](/docs/agent/services.html).
 
 ```sh
 # dashboard-policy.hcl
@@ -240,13 +242,13 @@ service "dashboard" {
 Use the policy definition to initiate the policy.
 
 ```sh 
-$ consul acl policy create -name "dashboard-service" -rules @dashboard-policy.hcl 
+$ gyoza acl policy create -name "dashboard-service" -rules @dashboard-policy.hcl 
 ```
 
 Next, create a token with the policy.
 
 ```sh 
-$ consul acl token create -description "Token for Dashboard Service" -policy-name dashboard-service 
+$ gyoza acl token create -description "Token for Dashboard Service" -policy-name dashboard-service 
 ```
 
 The command will return information about the token, which should include a
@@ -277,7 +279,7 @@ If the service is running, you will need to restart it. Unlike with agent
 tokens, there is no HTTP API endpoint to apply the token directly to the
 service. If the service is registered with a configuration file, you must
 also set the token in the configuration file. However, if you register a
- service with the HTTP API, you can pass the token in the [header](https://www.consul.io/api/index.html#authentication) with
+ service with the HTTP API, you can pass the token in the [header](/api/index.html#authentication) with
   `X-Consul-Token` and it will be used by the service.
 
 If you are using a sidecar proxy, it can inherit the token from the service
@@ -286,12 +288,12 @@ definition. Alternatively, you can create a separate token.
 ## Token for DNS
 
 Depending on your use case, the token used for DNS may need policy rules for
-[nodes](https://www.consul.io/docs/agent/acl-rules.html#node-rules),
-[services](https://www.consul.io/docs/agent/acl-rules.html#service-rules), and
-[prepared queries](https://www.consul.io/docs/agent/acl-rules.html#prepared-query-rules).
-You should apply the token to the Consul agent serving DNS requests. When the
-DNS server makes a request to Consul, it will include the token in the request.
-Consul can either authorize or revoke the request, depending on the token's
+[nodes](/docs/agent/acl-rules.html#node-rules),
+[services](/docs/agent/acl-rules.html#service-rules), and
+[prepared queries](/docs/agent/acl-rules.html#prepared-query-rules).
+You should apply the token to the OpenGyoza agent serving DNS requests. When the
+DNS server makes a request to OpenGyoza, it will include the token in the request.
+OpenGyoza can either authorize or revoke the request, depending on the token's
 privileges. The token creation for DNS is the same three step process you used
 for agents and services, create a policy, create a token, apply the
 token. 
@@ -316,20 +318,20 @@ query_prefix "" {
 First, create the policy.
 
 ```sh 
-$ consul acl policy create -name "dns-requests" -rules @dns-request-policy.hcl 
+$ gyoza acl policy create -name "dns-requests" -rules @dns-request-policy.hcl 
 ```
 
 Next, create the token.
 
 ```sh 
-$ consul acl token create -description "Token for DNS Requests" -policy-name dns-requests 
+$ gyoza acl token create -description "Token for DNS Requests" -policy-name dns-requests 
 ```
 
-Finally, apply the token to the Consul agent serving DNS request in default token ACL
+Finally, apply the token to the OpenGyoza agent serving DNS request in default token ACL
 configuration parameter.
 
 ```sh
-$ consul acl set-agent-token -token "<your token here>" default "<dns token>"
+$ gyoza acl set-agent-token -token "<your token here>" default "<dns token>"
 ```
 
 The data file must contain a valid token. 
@@ -345,11 +347,11 @@ Note, if you have multiple agents serving DNS requests you can use the same
  policy to create individual tokens for all of them if they are using the same rules.
 
 
-## Consul KV Tokens
+## OpenGyoza KV Tokens
 
-The  process of creating tokens for Consul KV follows the same three step
+The  process of creating tokens for OpenGyoza KV follows the same three step
 process as nodes and services. First create a policy, then a token, and finally
-apply or use the token. However, unlike tokens for nodes and services Consul KV
+apply or use the token. However, unlike tokens for nodes and services OpenGyoza KV
 has many varied use cases. 
 
 - Services may need to access configuration data in the key-value store. 
@@ -358,7 +360,7 @@ has many varied use cases.
 update configuration values in the key-value store. . 
 
 The [rules for
-KV](https://www.consul.io/docs/agent/acl-rules.html#key-value-rules) have four
+KV](/docs/agent/acl-rules.html#key-value-rules) have four
 policy levels; `deny`, `write`, `read`, and `list`.  Let's review several
 examples of `read` and `write`.
 
@@ -375,7 +377,7 @@ key_prefix "redis/" {
 ```
 
 In the above example, we are allowing any key with the prefix `redis/` to be
-read. If you issued the command `consul kv get -recurse redis/ -token=<your
+read. If you issued the command `gyoza kv get -recurse redis/ -token=<your
 token> ` you would get a list of key/values for `redis/`. 
 
 This type of policy is good for allowing operators to recursively read
@@ -411,11 +413,11 @@ In the above example, we are setting a read privileges for a single key,
 This type of token allows an application to simply read from a key to get the
 value. This is useful for configuration parameter updates.
 
-## Consul UI Token
+## OpenGyoza UI Token
 
 Once you have bootstrapped the ACL system, access to the UI will be limited.
 The anonymous token grants UI access if no [default
-token](https://www.consul.io/docs/agent/options.html#acl_tokens_default) is set
+token](/docs/agent/options.html#acl_tokens_default) is set
 on the agents, and all operations will be denied, including viewing nodes and
 services. 
 
@@ -454,8 +456,6 @@ node_prefix "" {
 
 ## Summary
 
-In this guide you bootstrapped the ACL system for consul and applied tokens to agents and services. You assigned tokens for DNS, Consul KV, and the Consul UI. 
+In this guide you bootstrapped the ACL system for OpenGyoza and applied tokens to agents and services. You assigned tokens for DNS, OpenGyoza KV, and the OpenGyoza UI. 
 
-To learn more about Consul’s security model read the [internals documentation](https://www.consul.io/docs/internals/security.html). You can find commands relating to ACLs in our [reference documentation](https://www.consul.io/docs/commands/acl.html).
-
-
+To learn more about OpenGyoza’s security model read the [internals documentation](/docs/internals/security.html). You can find commands relating to ACLs in our [reference documentation](/docs/commands/acl.html).

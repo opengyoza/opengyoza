@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/hashicorp/consul/api"
+	"github.com/opengyoza/opengyoza/api"
 	multierror "github.com/hashicorp/go-multierror"
 )
 

@@ -5,11 +5,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/testrpc"
+	"github.com/opengyoza/opengyoza/testrpc"
 
-	"github.com/hashicorp/consul/agent"
-	"github.com/hashicorp/consul/agent/consul/autopilot"
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/agent"
+	"github.com/opengyoza/opengyoza/agent/consul/autopilot"
+	"github.com/opengyoza/opengyoza/agent/structs"
 	"github.com/mitchellh/cli"
 )
 

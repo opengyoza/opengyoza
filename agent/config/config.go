@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/hashicorp/consul/lib"
+	"github.com/opengyoza/opengyoza/lib"
 	"github.com/hashicorp/go-multierror"
 	"github.com/hashicorp/hcl"
 	"github.com/mitchellh/mapstructure"
@@ -80,7 +80,6 @@ func Parse(data string, format string) (c Config, err error) {
 	// todo(fs): but this approach works for now.
 	m := lib.PatchSliceOfMaps(raw, []string{
 		"checks",
-		"segments",
 		"service.checks",
 		"services",
 		"services.checks",
@@ -237,7 +236,6 @@ type Config struct {
 	NodeID                           *string                  `json:"node_id,omitempty" hcl:"node_id" mapstructure:"node_id"`
 	NodeMeta                         map[string]string        `json:"node_meta,omitempty" hcl:"node_meta" mapstructure:"node_meta"`
 	NodeName                         *string                  `json:"node_name,omitempty" hcl:"node_name" mapstructure:"node_name"`
-	NonVotingServer                  *bool                    `json:"non_voting_server,omitempty" hcl:"non_voting_server" mapstructure:"non_voting_server"`
 	Performance                      Performance              `json:"performance,omitempty" hcl:"performance" mapstructure:"performance"`
 	PidFile                          *string                  `json:"pid_file,omitempty" hcl:"pid_file" mapstructure:"pid_file"`
 	Ports                            Ports                    `json:"ports,omitempty" hcl:"ports" mapstructure:"ports"`
@@ -256,8 +254,6 @@ type Config struct {
 	RetryJoinMaxAttemptsLAN          *int                     `json:"retry_max,omitempty" hcl:"retry_max" mapstructure:"retry_max"`
 	RetryJoinMaxAttemptsWAN          *int                     `json:"retry_max_wan,omitempty" hcl:"retry_max_wan" mapstructure:"retry_max_wan"`
 	RetryJoinWAN                     []string                 `json:"retry_join_wan,omitempty" hcl:"retry_join_wan" mapstructure:"retry_join_wan"`
-	SegmentName                      *string                  `json:"segment,omitempty" hcl:"segment" mapstructure:"segment"`
-	Segments                         []Segment                `json:"segments,omitempty" hcl:"segments" mapstructure:"segments"`
 	SerfBindAddrLAN                  *string                  `json:"serf_lan,omitempty" hcl:"serf_lan" mapstructure:"serf_lan"`
 	SerfBindAddrWAN                  *string                  `json:"serf_wan,omitempty" hcl:"serf_wan" mapstructure:"serf_wan"`
 	ServerMode                       *bool                    `json:"server,omitempty" hcl:"server" mapstructure:"server"`
@@ -300,8 +296,6 @@ type Config struct {
 	CheckReapInterval          *string  `json:"check_reap_interval,omitempty" hcl:"check_reap_interval" mapstructure:"check_reap_interval"`
 	Consul                     Consul   `json:"consul,omitempty" hcl:"consul" mapstructure:"consul"`
 	Revision                   *string  `json:"revision,omitempty" hcl:"revision" mapstructure:"revision"`
-	SegmentLimit               *int     `json:"segment_limit,omitempty" hcl:"segment_limit" mapstructure:"segment_limit"`
-	SegmentNameLimit           *int     `json:"segment_name_limit,omitempty" hcl:"segment_name_limit" mapstructure:"segment_name_limit"`
 	SyncCoordinateIntervalMin  *string  `json:"sync_coordinate_interval_min,omitempty" hcl:"sync_coordinate_interval_min" mapstructure:"sync_coordinate_interval_min"`
 	SyncCoordinateRateTarget   *float64 `json:"sync_coordinate_rate_target,omitempty" hcl:"sync_coordinate_rate_target" mapstructure:"sync_coordinate_rate_target"`
 	Version                    *string  `json:"version,omitempty" hcl:"version" mapstructure:"version"`
@@ -359,13 +353,10 @@ type AdvertiseAddrsConfig struct {
 
 type Autopilot struct {
 	CleanupDeadServers      *bool   `json:"cleanup_dead_servers,omitempty" hcl:"cleanup_dead_servers" mapstructure:"cleanup_dead_servers"`
-	DisableUpgradeMigration *bool   `json:"disable_upgrade_migration,omitempty" hcl:"disable_upgrade_migration" mapstructure:"disable_upgrade_migration"`
 	LastContactThreshold    *string `json:"last_contact_threshold,omitempty" hcl:"last_contact_threshold" mapstructure:"last_contact_threshold"`
 	MaxTrailingLogs         *int    `json:"max_trailing_logs,omitempty" hcl:"max_trailing_logs" mapstructure:"max_trailing_logs"`
 	MinQuorum               *uint   `json:"min_quorum,omitempty" hcl:"min_quorum" mapstructure:"min_quorum"`
-	RedundancyZoneTag       *string `json:"redundancy_zone_tag,omitempty" hcl:"redundancy_zone_tag" mapstructure:"redundancy_zone_tag"`
 	ServerStabilizationTime *string `json:"server_stabilization_time,omitempty" hcl:"server_stabilization_time" mapstructure:"server_stabilization_time"`
-	UpgradeVersionTag       *string `json:"upgrade_version_tag,omitempty" hcl:"upgrade_version_tag" mapstructure:"upgrade_version_tag"`
 }
 
 // ServiceWeights defines the registration of weights used in DNS for a Service
@@ -662,14 +653,6 @@ type Limits struct {
 	RPCMaxConnsPerClient  *int     `json:"rpc_max_conns_per_client,omitempty" hcl:"rpc_max_conns_per_client" mapstructure:"rpc_max_conns_per_client"`
 	RPCRate               *float64 `json:"rpc_rate,omitempty" hcl:"rpc_rate" mapstructure:"rpc_rate"`
 	KVMaxValueSize        *uint64  `json:"kv_max_value_size,omitempty" hcl:"kv_max_value_size" mapstructure:"kv_max_value_size"`
-}
-
-type Segment struct {
-	Advertise   *string `json:"advertise,omitempty" hcl:"advertise" mapstructure:"advertise"`
-	Bind        *string `json:"bind,omitempty" hcl:"bind" mapstructure:"bind"`
-	Name        *string `json:"name,omitempty" hcl:"name" mapstructure:"name"`
-	Port        *int    `json:"port,omitempty" hcl:"port" mapstructure:"port"`
-	RPCListener *bool   `json:"rpc_listener,omitempty" hcl:"rpc_listener" mapstructure:"rpc_listener"`
 }
 
 type ACL struct {

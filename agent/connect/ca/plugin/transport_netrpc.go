@@ -4,7 +4,7 @@ import (
 	"crypto/x509"
 	"net/rpc"
 
-	"github.com/hashicorp/consul/agent/connect/ca"
+	"github.com/opengyoza/opengyoza/agent/connect/ca"
 )
 
 // providerPluginRPCServer implements a net/rpc backed transport for

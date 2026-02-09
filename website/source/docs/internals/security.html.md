@@ -73,7 +73,7 @@ non-default options that potentially present additional security risks.
   from 1.3.0 on. This feature was also back-ported to patch releases 0.9.4,
   1.1.1, and 1.2.4 [as described here](https://www.hashicorp.com/blog/protecting-consul-from-rce-risk-in-specific-configurations).
 
-* **Remote exec enabled.** Consul includes a [`consul exec`
+* **Remote exec enabled.** Consul includes a [`gyoza exec`
   feature](/docs/commands/exec.html) allowing execution of arbitrary commands
   across the cluster. This is disabled by default since 0.8.0. We recommend
   leaving it disabled. If enabled, extreme care must be taken to ensure correct

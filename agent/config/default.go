@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/hashicorp/consul/agent/checks"
-	"github.com/hashicorp/consul/agent/consul"
-	"github.com/hashicorp/consul/version"
+	"github.com/opengyoza/opengyoza/agent/checks"
+	"github.com/opengyoza/opengyoza/agent/consul"
+	"github.com/opengyoza/opengyoza/version"
 	"github.com/hashicorp/raft"
 )
 
@@ -193,12 +193,6 @@ func NonUserSource() Source {
 		ae_interval = "1m"
 		sync_coordinate_rate_target = 64
 		sync_coordinate_interval_min = "15s"
-
-		# segment_limit is the maximum number of network segments that may be declared.
-		segment_limit = 64
-
-		# SegmentNameLimit is the maximum segment name length.
-		segment_name_limit = 64
 	`,
 	}
 }

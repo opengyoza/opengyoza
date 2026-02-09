@@ -17,15 +17,15 @@ import (
 	metrics "github.com/armon/go-metrics"
 	uuid "github.com/hashicorp/go-uuid"
 
-	"github.com/hashicorp/consul/agent/config"
-	"github.com/hashicorp/consul/agent/connect"
-	"github.com/hashicorp/consul/agent/consul"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/logger"
-	"github.com/hashicorp/consul/sdk/freeport"
-	"github.com/hashicorp/consul/sdk/testutil"
-	"github.com/hashicorp/consul/sdk/testutil/retry"
+	"github.com/opengyoza/opengyoza/agent/config"
+	"github.com/opengyoza/opengyoza/agent/connect"
+	"github.com/opengyoza/opengyoza/agent/consul"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/logger"
+	"github.com/opengyoza/opengyoza/sdk/freeport"
+	"github.com/opengyoza/opengyoza/sdk/testutil"
+	"github.com/opengyoza/opengyoza/sdk/testutil/retry"
 )
 
 func init() {

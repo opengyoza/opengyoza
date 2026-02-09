@@ -4,26 +4,26 @@ page_title: "Commands: Snapshot Restore"
 sidebar_current: "docs-commands-snapshot-restore"
 ---
 
-# Consul Snapshot Restore
+# OpenGyoza Snapshot Restore
 
-Command: `consul snapshot restore`
+Command: `gyoza snapshot restore`
 
 The `snapshot restore` command is used to restore an atomic, point-in-time
-snapshot of the state of the Consul servers which includes key/value entries,
+snapshot of the state of the OpenGyoza servers which includes key/value entries,
 service catalog, prepared queries, sessions, and ACLs. The snapshot is read
 from the given file.
 
 Restores involve a potentially dangerous low-level Raft operation that is not
 designed to handle server failures during a restore. This command is primarily
 intended to be used when recovering from a disaster, restoring into a fresh
-cluster of Consul servers.
+cluster of OpenGyoza servers.
 
 If ACLs are enabled, a management token must be supplied in order to perform
 a snapshot restore.
 
 ## Usage
 
-Usage: `consul snapshot restore [options] FILE`
+Usage: `gyoza snapshot restore [options] FILE`
 
 #### API Options
 
@@ -35,7 +35,7 @@ Usage: `consul snapshot restore [options] FILE`
 To restore a snapshot from the file "backup.snap":
 
 ```text
-$ consul snapshot restore backup.snap
+$ gyoza snapshot restore backup.snap
 Restored snapshot
 ```
 

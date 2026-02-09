@@ -6,10 +6,10 @@ import (
 	"log"
 	"os"
 
-	"github.com/hashicorp/consul/command"
-	"github.com/hashicorp/consul/lib"
-	_ "github.com/hashicorp/consul/service_os"
 	"github.com/mitchellh/cli"
+	"github.com/opengyoza/opengyoza/command"
+	"github.com/opengyoza/opengyoza/lib"
+	_ "github.com/opengyoza/opengyoza/service_os"
 )
 
 func init() {
@@ -46,8 +46,8 @@ func realMain() int {
 		Args:         args,
 		Commands:     cmds,
 		Autocomplete: true,
-		Name:         "consul",
-		HelpFunc:     cli.FilteredHelpFunc(names, cli.BasicHelpFunc("consul")),
+		Name:         "gyoza",
+		HelpFunc:     cli.FilteredHelpFunc(names, cli.BasicHelpFunc("gyoza")),
 	}
 
 	exitCode, err := cli.Run()

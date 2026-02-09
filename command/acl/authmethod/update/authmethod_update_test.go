@@ -7,19 +7,19 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hashicorp/consul/agent"
-	"github.com/hashicorp/consul/agent/connect"
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/command/acl"
-	"github.com/hashicorp/consul/logger"
-	"github.com/hashicorp/consul/sdk/testutil"
-	"github.com/hashicorp/consul/testrpc"
+	"github.com/opengyoza/opengyoza/agent"
+	"github.com/opengyoza/opengyoza/agent/connect"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/command/acl"
+	"github.com/opengyoza/opengyoza/logger"
+	"github.com/opengyoza/opengyoza/sdk/testutil"
+	"github.com/opengyoza/opengyoza/testrpc"
 	"github.com/hashicorp/go-uuid"
 	"github.com/mitchellh/cli"
 	"github.com/stretchr/testify/require"
 
 	// activate testing auth method
-	_ "github.com/hashicorp/consul/agent/consul/authmethod/testauth"
+	_ "github.com/opengyoza/opengyoza/agent/consul/authmethod/testauth"
 )
 
 func TestAuthMethodUpdateCommand_noTabs(t *testing.T) {

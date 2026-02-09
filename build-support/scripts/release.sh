@@ -18,8 +18,8 @@ Usage: ${SCRIPT_NAME}  [<options ...>]
 
 Description:
    
-   This script will do a full release build of Consul. Building each component
-   is done within a docker container. In addition to building Consul this
+   This script will do a full release build of OpenGyoza. Building each component
+   is done within a docker container. In addition to building OpenGyoza this
    script will do a few more things.
    
       * Update version/version*.go files
@@ -49,7 +49,7 @@ Options:
    -g | --gpg-key    KEY         Alternative GPG key to use for signing operations.
                                  Defaults to ${HASHICORP_GPG_KEY}
 
-   -v | --version    VERSION     The version of Consul to be built. If not specified
+   -v | --version    VERSION     The version of OpenGyoza to be built. If not specified
                                  the version will be parsed from the source.
    
    -d | --date       DATE        The release date. Defaults to today.

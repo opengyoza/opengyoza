@@ -11,8 +11,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/api/watch"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/api/watch"
 	"golang.org/x/net/http2"
 )
 

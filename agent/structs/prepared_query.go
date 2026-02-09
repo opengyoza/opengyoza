@@ -3,8 +3,8 @@ package structs
 import (
 	"strconv"
 
-	"github.com/hashicorp/consul/agent/cache"
-	"github.com/hashicorp/consul/types"
+	"github.com/opengyoza/opengyoza/agent/cache"
+	"github.com/opengyoza/opengyoza/types"
 	"github.com/mitchellh/hashstructure"
 )
 

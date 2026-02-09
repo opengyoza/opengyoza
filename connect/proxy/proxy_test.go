@@ -7,14 +7,14 @@ import (
 	"os"
 	"testing"
 
-	"github.com/hashicorp/consul/testrpc"
+	"github.com/opengyoza/opengyoza/testrpc"
 
-	"github.com/hashicorp/consul/agent"
-	agConnect "github.com/hashicorp/consul/agent/connect"
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/connect"
-	"github.com/hashicorp/consul/sdk/freeport"
-	"github.com/hashicorp/consul/sdk/testutil/retry"
+	"github.com/opengyoza/opengyoza/agent"
+	agConnect "github.com/opengyoza/opengyoza/agent/connect"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/connect"
+	"github.com/opengyoza/opengyoza/sdk/freeport"
+	"github.com/opengyoza/opengyoza/sdk/testutil/retry"
 	"github.com/stretchr/testify/require"
 )
 

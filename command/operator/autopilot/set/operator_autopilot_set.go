@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/command/flags"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/command/flags"
 	"github.com/mitchellh/cli"
 )
 
@@ -28,9 +28,6 @@ type cmd struct {
 	minQuorum               flags.UintValue
 	lastContactThreshold    flags.DurationValue
 	serverStabilizationTime flags.DurationValue
-	redundancyZoneTag       flags.StringValue
-	disableUpgradeMigration flags.BoolValue
-	upgradeVersionTag       flags.StringValue
 }
 
 func (c *cmd) init() {
@@ -53,15 +50,6 @@ func (c *cmd) init() {
 			"'healthy' state before being added to the cluster. Only takes effect if all "+
 			"servers are running Raft protocol version 3 or higher. Must be a duration "+
 			"value such as `10s`.")
-	c.flags.Var(&c.redundancyZoneTag, "redundancy-zone-tag",
-		"(Enterprise-only) Controls the node_meta tag name used for separating servers into "+
-			"different redundancy zones.")
-	c.flags.Var(&c.disableUpgradeMigration, "disable-upgrade-migration",
-		"(Enterprise-only) Controls whether Consul will avoid promoting new servers until "+
-			"it can perform a migration. Must be one of `true|false`.")
-	c.flags.Var(&c.upgradeVersionTag, "upgrade-version-tag",
-		"(Enterprise-only) The node_meta tag to use for version info when performing upgrade "+
-			"migrations. If left blank, the Consul version will be used.")
 
 	c.http = &flags.HTTPFlags{}
 	flags.Merge(c.flags, c.http.ClientFlags())
@@ -95,9 +83,6 @@ func (c *cmd) Run(args []string) int {
 
 	// Update the config values based on the set flags.
 	c.cleanupDeadServers.Merge(&conf.CleanupDeadServers)
-	c.redundancyZoneTag.Merge(&conf.RedundancyZoneTag)
-	c.disableUpgradeMigration.Merge(&conf.DisableUpgradeMigration)
-	c.upgradeVersionTag.Merge(&conf.UpgradeVersionTag)
 	c.minQuorum.Merge(&conf.MinQuorum)
 
 	trailing := uint(conf.MaxTrailingLogs)

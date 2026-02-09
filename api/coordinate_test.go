@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/sdk/testutil/retry"
+	"github.com/opengyoza/opengyoza/sdk/testutil/retry"
 	"github.com/hashicorp/serf/coordinate"
 	"github.com/stretchr/testify/require"
 )

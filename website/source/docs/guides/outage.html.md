@@ -15,17 +15,17 @@ Depending on your
 may take only a single server failure for cluster unavailability. Recovery
 requires an operator to intervene, but the process is straightforward.
 
-This guide is for recovery from a Consul outage due to a majority
+This guide is for recovery from an OpenGyoza outage due to a majority
 of server nodes in a datacenter being lost. There are several types
 of outages, depending on the number of server nodes and number of failed
 server nodes. We will outline how to recover from:
 
-* Failure of a Single Server Cluster. This is when you have a single Consul
+* Failure of a Single Server Cluster. This is when you have a single OpenGyoza
 server and it fails.
 * Failure of a Server in a Multi-Server Cluster. This is when one server fails,
-the Consul cluster has 3 or more servers.
+the OpenGyoza cluster has 3 or more servers.
 * Failure of Multiple Servers in a Multi-Server Cluster. This when more than one
-Consul server fails in a cluster of 3 or more servers. This scenario is potentially
+OpenGyoza server fails in a cluster of 3 or more servers. This scenario is potentially
 the most serious, because it can result in data loss.
 
 
@@ -38,11 +38,11 @@ single server configuration requires the
 flag.
 
 ```sh
-consul agent -bootstrap-expect=1
+gyoza agent -bootstrap-expect=1
 ```
 
 If the server cannot be recovered, you need to bring up a new
-server using the [deployment guide](https://www.consul.io/docs/guides/deployment-guide.html). 
+server using the [deployment guide](/docs/guides/deployment-guide.html). 
 
 In the case of an unrecoverable server failure in a single server cluster and
 no backup procedure, data loss is inevitable since data was not replicated
@@ -56,40 +56,40 @@ comes online as agents perform [anti-entropy](/docs/internals/anti-entropy.html)
 If you think the failed server is recoverable, the easiest option is to bring
 it back online and have it rejoin the cluster with the same IP address, returning
 the cluster to a fully healthy state. Similarly, even if you need to rebuild a
-new Consul server to replace the failed node, you may wish to do that immediately.
+new OpenGyoza server to replace the failed node, you may wish to do that immediately.
 Keep in mind that the rebuilt server needs to have the same IP address as the failed
 server. Again, once this server is online and has rejoined, the cluster will return
 to a fully healthy state.
 
 ```sh
-consul agent -bootstrap-expect=3 -bind=192.172.2.4 -auto-rejoin=192.172.2.3
+gyoza agent -bootstrap-expect=3 -bind=192.172.2.4 -auto-rejoin=192.172.2.3
 ```
 
 Both of these strategies involve a potentially lengthy time to reboot or rebuild
 a failed server. If this is impractical or if building a new server with the same
 IP isn't an option, you need to remove the failed server. Usually, you can issue
-a [`consul force-leave`](/docs/commands/force-leave.html) command to remove the failed
+a [`gyoza force-leave`](/docs/commands/force-leave.html) command to remove the failed
 server if it's still a member of the cluster.
 
 ```sh
-consul force-leave <node.name.consul>
+gyoza force-leave <node.name.consul>
 ```
 
-If [`consul force-leave`](/docs/commands/force-leave.html) isn't able to remove the
-server, you have two methods available to remove it, depending on your version of Consul:
+If [`gyoza force-leave`](/docs/commands/force-leave.html) isn't able to remove the
+server, you have two methods available to remove it, depending on your version of OpenGyoza:
 
-* In Consul 0.7 and later, you can use the [`consul operator`](/docs/commands/operator.html#raft-remove-peer) command to remove the stale peer server on the fly with no downtime if the cluster has a leader.
+* In Consul 0.7 and later (OpenGyoza base), you can use the [`gyoza operator`](/docs/commands/operator.html#raft-remove-peer) command to remove the stale peer server on the fly with no downtime if the cluster has a leader.
 
 * In versions of Consul prior to 0.7, you can manually remove the stale peer
 server using the `raft/peers.json` recovery file on all remaining servers. See
 the [section below](#peers.json) for details on this procedure. This process
-requires a Consul downtime to complete.
+requires an OpenGyoza downtime to complete.
 
-In Consul 0.7 and later, you can use the [`consul operator`](/docs/commands/operator.html#raft-list-peers)
+In Consul 0.7 and later (OpenGyoza base), you can use the [`gyoza operator`](/docs/commands/operator.html#raft-list-peers)
 command to inspect the Raft configuration:
 
 ```
-$ consul operator raft list-peers
+$ gyoza operator raft list-peers
 Node     ID              Address         State     Voter RaftProtocol
 alice    10.0.1.8:8300   10.0.1.8:8300   follower  true  3
 bob      10.0.1.6:8300   10.0.1.6:8300   leader    true  3
@@ -111,10 +111,10 @@ The cluster should be able to elect a leader once the remaining servers are all
 restarted with an identical `raft/peers.json` configuration.
 
 Any new servers you introduce later can be fresh with totally clean data directories
-and joined using Consul's `join` command.
+and joined using OpenGyoza's `join` command.
 
 ```sh
-consul agent -join=192.172.2.3
+gyoza agent -join=192.172.2.3
 ```
 
 In extreme cases, it should be possible to recover with just a single remaining
@@ -123,7 +123,7 @@ server by starting that single server with itself as the only peer in the
 
 Prior to Consul 0.7 it wasn't always possible to recover from certain
 types of outages with `raft/peers.json` because this was ingested before any Raft
-log entries were played back. In Consul 0.7 and later, the `raft/peers.json`
+log entries were played back. In Consul 0.7 and later (OpenGyoza base), the `raft/peers.json`
 recovery file is final, and a snapshot is taken after it is ingested, so you are
 guaranteed to start with your recovered configuration. This does implicitly commit
 all Raft log entries, so should only be used to recover from an outage, but it
@@ -136,9 +136,9 @@ To begin, stop all remaining servers. You can attempt a graceful leave,
 but it will not work in most cases. Do not worry if the leave exits with an
 error. The cluster is in an unhealthy state, so this is expected.
 
-In Consul 0.7 and later, the `peers.json` file is no longer present
+In Consul 0.7 and later (OpenGyoza base), the `peers.json` file is no longer present
 by default and is only used when performing recovery. This file will be deleted
-after Consul starts and ingests this file. Consul 0.7 also uses a new, automatically-
+after OpenGyoza starts and ingests this file. Consul 0.7 (OpenGyoza base) also uses a new, automatically-
 created `raft/peers.info` file to avoid ingesting the `raft/peers.json` file on the
 first start after upgrading. Be sure to leave `raft/peers.info` in place for proper
 operation.
@@ -150,13 +150,13 @@ any automated processes that will put the peers file in place on a
 periodic basis.
 
 The next step is to go to the [`-data-dir`](/docs/agent/options.html#_data_dir)
-of each Consul server. Inside that directory, there will be a `raft/`
+of each OpenGyoza server. Inside that directory, there will be a `raft/`
 sub-directory. We need to create a `raft/peers.json` file. The format of this file
 depends on what the server has configured for its
 [Raft protocol](/docs/agent/options.html#_raft_protocol) version.
 
 For Raft protocol version 2 and earlier, this should be formatted as a JSON
-array containing the address and port of each Consul server in the cluster, like
+array containing the address and port of each OpenGyoza server in the cluster, like
 this:
 
 ```json
@@ -169,7 +169,7 @@ this:
 
 For Raft protocol version 3 and later, this should be formatted as a JSON
 array containing the node ID, address:port, and suffrage information of each
-Consul server in the cluster, like this:
+OpenGyoza server in the cluster, like this:
 
 ```
 [
@@ -206,7 +206,7 @@ Simply create entries for all servers. You must confirm that servers you do not 
 indeed failed and will not later rejoin the cluster. Ensure that this file is the same across all
 remaining server nodes.
 
-At this point, you can restart all the remaining servers. In Consul 0.7 and
+At this point, you can restart all the remaining servers. In Consul 0.7 and later (OpenGyoza base),
 later you will see them ingest recovery file:
 
 ```text
@@ -224,7 +224,7 @@ If any servers managed to perform a graceful leave, you may need to have them
 rejoin the cluster using the [`join`](/docs/commands/join.html) command:
 
 ```text
-$ consul join <Node Address>
+$ gyoza join <Node Address>
 Successfully joined cluster by contacting 1 nodes.
 ```
 
@@ -238,11 +238,11 @@ nodes should claim leadership and emit a log like:
 [INFO] consul: cluster leadership acquired
 ```
 
-In Consul 0.7 and later, you can use the [`consul operator`](/docs/commands/operator.html#raft-list-peers)
+In Consul 0.7 and later (OpenGyoza base), you can use the [`gyoza operator`](/docs/commands/operator.html#raft-list-peers)
 command to inspect the Raft configuration:
 
 ```
-$ consul operator raft list-peers
+$ gyoza operator raft list-peers
 Node     ID              Address         State     Voter  RaftProtocol
 alice    10.0.1.8:8300   10.0.1.8:8300   follower  true   3
 bob      10.0.1.6:8300   10.0.1.6:8300   leader    true   3
@@ -251,7 +251,7 @@ carol    10.0.1.7:8300   10.0.1.7:8300   follower  true   3
 
 ## Summary
 
-In this guided we reviewed how to recover from a Consul server outage. Depending on the
+In this guide we reviewed how to recover from an OpenGyoza server outage. Depending on the
 quorum size and number of failed servers, the recovery process will vary. In the event of
 complete failure it is beneficial to have a
-[backup process](https://www.consul.io/docs/guides/deployment-guide.html#backups).
+[backup process](/docs/guides/deployment-guide.html#backups).

@@ -7,8 +7,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/testrpc"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/testrpc"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
 )
@@ -164,7 +164,7 @@ func TestConfig_Apply(t *testing.T) {
 	_, err := a.srv.ConfigApply(resp, req)
 	require.NoError(err)
 	if resp.Code != 200 {
-		t.Fatalf(resp.Body.String())
+		t.Fatal(resp.Body.String())
 	}
 
 	// Get the remaining entry.
@@ -241,7 +241,7 @@ func TestConfig_Apply_CAS(t *testing.T) {
 	_, err := a.srv.ConfigApply(resp, req)
 	require.NoError(err)
 	if resp.Code != 200 {
-		t.Fatalf(resp.Body.String())
+		t.Fatal(resp.Body.String())
 	}
 
 	// Get the entry remaining entry.

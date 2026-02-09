@@ -5,9 +5,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/hashicorp/consul/agent/metadata"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/lib"
+	"github.com/opengyoza/opengyoza/agent/metadata"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/lib"
 	"github.com/hashicorp/serf/serf"
 )
 
@@ -18,7 +18,6 @@ func (c *Client) setupSerf(conf *serf.Config, ch chan serf.Event, path string) (
 	conf.NodeName = c.config.NodeName
 	conf.Tags["role"] = "node"
 	conf.Tags["dc"] = c.config.Datacenter
-	conf.Tags["segment"] = c.config.Segment
 	conf.Tags["id"] = string(c.config.NodeID)
 	conf.Tags["vsn"] = fmt.Sprintf("%d", c.config.ProtocolVersion)
 	conf.Tags["vsn_min"] = fmt.Sprintf("%d", ProtocolVersionMin)
@@ -45,7 +44,6 @@ func (c *Client) setupSerf(conf *serf.Config, ch chan serf.Event, path string) (
 		dc:       c.config.Datacenter,
 		nodeID:   c.config.NodeID,
 		nodeName: c.config.NodeName,
-		segment:  c.config.Segment,
 	}
 
 	conf.SnapshotPath = filepath.Join(c.config.DataDir, path)
@@ -143,8 +141,6 @@ func (c *Client) localEvent(event serf.UserEvent) {
 			c.config.UserEventHandler(event)
 		}
 	default:
-		if !c.handleEnterpriseUserEvents(event) {
-			c.logger.Printf("[WARN] consul: Unhandled local event: %v", event)
-		}
+		c.logger.Printf("[WARN] consul: Unhandled local event: %v", event)
 	}
 }

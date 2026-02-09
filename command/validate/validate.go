@@ -4,8 +4,8 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/hashicorp/consul/agent/config"
-	"github.com/hashicorp/consul/command/flags"
+	"github.com/opengyoza/opengyoza/agent/config"
+	"github.com/opengyoza/opengyoza/command/flags"
 	"github.com/mitchellh/cli"
 )
 

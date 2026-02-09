@@ -3,7 +3,7 @@ package consul
 import (
 	"time"
 
-	"github.com/hashicorp/consul/agent/router"
+	"github.com/opengyoza/opengyoza/agent/router"
 	"github.com/hashicorp/serf/serf"
 )
 

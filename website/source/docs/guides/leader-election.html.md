@@ -3,7 +3,7 @@ layout: "docs"
 page_title: "Application Leader Election with Sessions"
 sidebar_current: "docs-guides-leader"
 description: |-
-  This guide describes how to build client-side leader election using Consul. If you are interested in the leader election used internally to Consul, please refer to the consensus protocol documentation instead.
+  This guide describes how to build client-side leader election using OpenGyoza. If you are interested in the leader election used internally to OpenGyoza, please refer to the consensus protocol documentation instead.
 ---
 
 # Application Leader Election with Sessions
@@ -12,11 +12,11 @@ For some applications, like HDFS, it is necessary to set one instance as
 a leader. This ensures the application data is current and stable.
 
 This guide describes how to build client-side leader elections for service 
-instances, using Consul. Consul's support for
+instances, using OpenGyoza. OpenGyoza's support for
 [sessions](/docs/internals/sessions.html) allows you to build a system that can gracefully handle failures.
 
 If you
-are interested in the leader election used internally by Consul, please refer to the
+are interested in the leader election used internally by OpenGyoza, please refer to the
 [consensus protocol](/docs/internals/consensus.html) documentation instead.
 
 ## Contending Service Instances 
@@ -28,7 +28,7 @@ key to coordinate. A good pattern is simply:
 service/<service name>/leader
 ```
 
-This key will be used for all requests to the Consul KV API.
+This key will be used for all requests to the OpenGyoza KV API.
 
 We will use the same, simple pattern for the MySQL services for the remainder of the guide.
 
@@ -61,7 +61,7 @@ using the PUT method on a [KV entry](/api/kv.html) with the
 
 The `<body>` of the PUT should be a
 JSON object representing the local instance. This value is opaque to
-Consul, but it should contain whatever information clients require to
+OpenGyoza, but it should contain whatever information clients require to
 communicate with your application (e.g., it could be a JSON object
 that contains the node's name and the application's port).
 
@@ -88,7 +88,7 @@ has not declared the node unhealthy. Additional checks can be specified if desir
 Watching for changes is done via a blocking query against the key. If they ever
 notice that the `Session` field in the response is blank, there is no leader, and then should
 retry lock acquisition. Each attempt to acquire the key should be separated by a timed
-wait. This is because Consul may be enforcing a [`lock-delay`](/docs/internals/sessions.html).
+wait. This is because OpenGyoza may be enforcing a [`lock-delay`](/docs/internals/sessions.html).
 
 ### Release the Session
 
@@ -107,7 +107,7 @@ As with leader election, all instances that are participating should agree on th
 
 ### Retrieve the Key  
 
-Instances have a very simple role, they simply read the Consul KV key to discover the current leader. If the key has an associated `Session`, then there is a leader.
+Instances have a very simple role, they simply read the OpenGyoza KV key to discover the current leader. If the key has an associated `Session`, then there is a leader.
 
 ```sh
 $ curl -X GET http://localhost:8500/v1/kv/service/mysql/leader

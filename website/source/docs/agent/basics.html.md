@@ -3,14 +3,14 @@ layout: "docs"
 page_title: "Agent"
 sidebar_current: "docs-agent-running"
 description: |-
-  The Consul agent is the core process of Consul. The agent maintains membership information, registers services, runs checks, responds to queries, and more. The agent must run on every node that is part of a Consul cluster.
+  The OpenGyoza agent is the core process of OpenGyoza. The agent maintains membership information, registers services, runs checks, responds to queries, and more. The agent must run on every node that is part of an OpenGyoza cluster.
 ---
 
-# Consul Agent
+# OpenGyoza Agent
 
-The Consul agent is the core process of Consul. The agent maintains membership
+The OpenGyoza agent is the core process of OpenGyoza. The agent maintains membership
 information, registers services, runs checks, responds to queries,
-and more. The agent must run on every node that is part of a Consul cluster.
+and more. The agent must run on every node that is part of an OpenGyoza cluster.
 
 Any agent may run in one of two modes: client or server. A server
 node takes on the additional responsibility of being part of the [consensus quorum](/docs/internals/consensus.html).
@@ -23,18 +23,18 @@ of their own.
 
 ## Running an Agent
 
-The agent is started with the [`consul agent`](/docs/commands/agent.html) command. This
+The agent is started with the [`gyoza agent`](/docs/commands/agent.html) command. This
 command blocks, running forever or until told to quit. You can test a local agent by following the [Getting Started guides](https://learn.hashicorp.com/consul/getting-started/install?utm_source=consul.io&utm_medium=docs).
 
 The agent command takes a variety
 of [`configuration options`](/docs/agent/options.html#command-line-options), but most have sane defaults.
 
-When running [`consul agent`](/docs/commands/agent.html), you should see output similar to this:
+When running [`gyoza agent`](/docs/commands/agent.html), you should see output similar to this:
 
 ```text
-$ consul agent -data-dir=/tmp/consul
-==> Starting Consul agent...
-==> Consul agent running!
+$ gyoza agent -data-dir=/tmp/gyoza
+==> Starting OpenGyoza agent...
+==> OpenGyoza agent running!
        Node name: 'Armons-MacBook-Air'
       Datacenter: 'dc1'
           Server: false (bootstrap: false)
@@ -47,14 +47,14 @@ $ consul agent -data-dir=/tmp/consul
 ...
 ```
 
-There are several important messages that [`consul agent`](/docs/commands/agent.html) outputs:
+There are several important messages that [`gyoza agent`](/docs/commands/agent.html) outputs:
 
 * **Node name**: This is a unique name for the agent. By default, this
   is the hostname of the machine, but you may customize it using the
   [`-node`](/docs/agent/options.html#_node) flag.
 
 * **Datacenter**: This is the datacenter in which the agent is configured to run.
- Consul has first-class support for multiple datacenters; however, to work efficiently,
+ OpenGyoza has first-class support for multiple datacenters; however, to work efficiently,
  each node must be configured to report its datacenter. The [`-datacenter`](/docs/agent/options.html#_datacenter)
  flag can be used to set the datacenter. For single-DC configurations, the agent
  will default to "dc1".
@@ -68,15 +68,15 @@ There are several important messages that [`consul agent`](/docs/commands/agent.
 * **Client Addr**: This is the address used for client interfaces to the agent.
   This includes the ports for the HTTP and DNS interfaces. By default, this binds only
   to localhost. If you change this address or port, you'll have to specify a `-http-addr`
-  whenever you run commands such as [`consul members`](/docs/commands/members.html) to
+  whenever you run commands such as [`gyoza members`](/docs/commands/members.html) to
   indicate how to reach the agent. Other applications can also use the HTTP address and port
-  [to control Consul](/api/index.html).
+  [to control OpenGyoza](/api/index.html).
 
 * **Cluster Addr**: This is the address and set of ports used for communication between
-  Consul agents in a cluster. Not all Consul agents in a cluster have to
+  OpenGyoza agents in a cluster. Not all OpenGyoza agents in a cluster have to
   use the same port, but this address **MUST** be reachable by all other nodes.
 
-When running under `systemd` on Linux, Consul notifies systemd by sending
+When running under `systemd` on Linux, OpenGyoza notifies systemd by sending
 `READY=1` to the `$NOTIFY_SOCKET` when a LAN join has completed. For
 this either the `join` or `retry_join` option has to be set and the
 service definition file has to have `Type=notify` set.
@@ -105,7 +105,7 @@ from the load balancer pool.
 
 ## Lifecycle
 
-Every agent in the Consul cluster goes through a lifecycle. Understanding
+Every agent in the OpenGyoza cluster goes through a lifecycle. Understanding
 this lifecycle is useful for building a mental model of an agent's interactions
 with a cluster and how the cluster treats a node.
 
@@ -130,7 +130,7 @@ services provided by a node are immediately deregistered. If the agent was
 a server, replication to it will stop.
 
 To prevent an accumulation of dead nodes (nodes in either _failed_ or _left_
-states), Consul will automatically remove dead nodes out of the catalog. This
+states), OpenGyoza will automatically remove dead nodes out of the catalog. This
 process is called _reaping_. This is currently done on a configurable
 interval of 72 hours (changing the reap interval is *not* recommended due to
 its consequences during outage situations). Reaping is similar to leaving,

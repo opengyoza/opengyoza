@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/types"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/types"
 	"github.com/hashicorp/go-memdb"
 	uuid "github.com/hashicorp/go-uuid"
 )
@@ -466,7 +466,7 @@ func (s *Store) ensureNodeTxn(tx *memdb.Txn, idx uint64, node *structs.Node) err
 		}
 	}
 	// TODO: else Node.ID == "" should be forbidden in future Consul releases
-	// See https://github.com/hashicorp/consul/pull/3983 for context
+	// See https://github.com/opengyoza/opengyoza/pull/3983 for context
 
 	// Check for an existing node by name to support nodes with no IDs.
 	if n == nil {
@@ -480,7 +480,7 @@ func (s *Store) ensureNodeTxn(tx *memdb.Txn, idx uint64, node *structs.Node) err
 		}
 		// WARNING, for compatibility reasons with tests, we do not check
 		// for case insensitive matches, which may lead to DB corruption
-		// See https://github.com/hashicorp/consul/pull/3983 for context
+		// See https://github.com/opengyoza/opengyoza/pull/3983 for context
 	}
 
 	// Get the indexes.
@@ -1986,7 +1986,7 @@ func (s *Store) checkServiceNodes(ws memdb.WatchSet, serviceName string, connect
 	// thousands of watch chans for large services which may need many goroutines.
 	// It also avoids the performance cliff that is hit when watchLimit is hit
 	// (~682 service instances). See
-	// https://github.com/hashicorp/consul/issues/4984
+	// https://github.com/opengyoza/opengyoza/issues/4984
 	watchOptimized := false
 	idx := uint64(0)
 	if len(serviceNames) > 0 {

@@ -4,15 +4,15 @@ page_title: "Commands: ACL Auth Method List"
 sidebar_current: "docs-commands-acl-auth-method-list"
 ---
 
-# Consul ACL Auth Method List
+# OpenGyoza ACL Auth Method List
 
-Command: `consul acl auth-method list`
+Command: `gyoza acl auth-method list`
 
 The `acl auth-method list`s command lists all auth methods. By default it will not show metadata.
 
 ## Usage
 
-Usage: `consul acl auth-method list`
+Usage: `gyoza acl auth-method list`
 
 #### API Options
 
@@ -29,7 +29,7 @@ Usage: `consul acl auth-method list`
 Default listing.
 
 ```sh
-$ consul acl auth-method list
+$ gyoza acl auth-method list
 minikube:
    Type:         kubernetes
    Description:  minikube auth method
@@ -41,7 +41,7 @@ minikube-two:
 Show Metadata.
 
 ```sh
-$ consul acl auth-method list -meta
+$ gyoza acl auth-method list -meta
 minikube:
    Type:         kubernetes
    Description:  minikube auth method

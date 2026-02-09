@@ -36,7 +36,7 @@ of an intention. The full data model of an intention can be found in the
 [API documentation](#).
 
 ```
-$ consul intention create -deny web db
+$ gyoza intention create -deny web db
 Created: web => db (deny)
 ```
 
@@ -55,7 +55,7 @@ An intention source or destination may also be the special wildcard
 value `*`. This matches _any_ value and is used as a catch-all. Example:
 
 ```
-$ consul intention create -deny web '*'
+$ gyoza intention create -deny web '*'
 Created: web => * (deny)
 ```
 
@@ -68,13 +68,13 @@ is unused by Consul but can be used by external systems or for visibility
 in the UI.
 
 ```
-$ consul intention create \
+$ gyoza intention create \
   -deny \
   -meta description='Hello there' \
   web db
 ...
 
-$ consul intention get web db
+$ gyoza intention get web db
 Source:             web
 Destination:        db
 Action:             deny

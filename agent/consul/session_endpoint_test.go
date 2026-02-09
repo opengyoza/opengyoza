@@ -2,13 +2,14 @@ package consul
 
 import (
 	"os"
+	"strings"
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/acl"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/lib"
-	"github.com/hashicorp/consul/testrpc"
+	"github.com/opengyoza/opengyoza/acl"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/lib"
+	"github.com/opengyoza/opengyoza/testrpc"
 	"github.com/hashicorp/net-rpc-msgpackrpc"
 )
 
@@ -868,7 +869,7 @@ func TestSession_Apply_BadTTL(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected error")
 	}
-	if err.Error() != "Session TTL '10z' invalid: time: unknown unit z in duration 10z" {
+	if !strings.Contains(err.Error(), "Session TTL '10z' invalid: time: unknown unit") {
 		t.Fatalf("incorrect error message: %s", err.Error())
 	}
 

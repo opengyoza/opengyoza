@@ -3,8 +3,8 @@ package state
 import (
 	"fmt"
 
-	"github.com/hashicorp/consul/agent/consul/discoverychain"
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/consul/discoverychain"
+	"github.com/opengyoza/opengyoza/agent/structs"
 	memdb "github.com/hashicorp/go-memdb"
 )
 

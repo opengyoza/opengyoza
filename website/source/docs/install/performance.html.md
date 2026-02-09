@@ -1,25 +1,29 @@
 ---
 layout: "docs"
-page_title: "Server Performance"
+page_title: "Server Performance (OpenGyoza)"
 sidebar_current: "docs-install-performance"
 description: |-
-  Consul requires different amounts of compute resources, depending on cluster size and expected workload. This guide provides guidance on choosing compute resources.
+  OpenGyoza requires different amounts of compute resources, depending on cluster size and expected workload. This guide provides guidance on choosing compute resources.
 ---
 
 # Server Performance
 
-Since Consul servers run a [consensus protocol](/docs/internals/consensus.html) to
+Since OpenGyoza servers run a [consensus protocol](/docs/internals/consensus.html) to
 process all write operations and are contacted on nearly all read operations, server
-performance is critical for overall throughput and health of a Consul cluster. Servers
+performance is critical for overall throughput and health of an OpenGyoza cluster. Servers
 are generally I/O bound for writes because the underlying Raft log store performs a sync
 to disk every time an entry is appended. Servers are generally CPU bound for reads since
 reads work from a fully in-memory data store that is optimized for concurrent access.
 
+~> **Note:** Metric names and DNS domains keep the `consul` prefix for compatibility.
+Version references (for example, Consul 0.7) refer to upstream Consul releases
+that OpenGyoza tracks.
+
 <a name="minimum"></a>
 ## Minimum Server Requirements
 
-In Consul 0.7, the default server [performance parameters](/docs/agent/options.html#performance)
-were tuned to allow Consul to run reliably (but relatively slowly) on a server cluster of three
+In upstream Consul 0.7, the default server [performance parameters](/docs/agent/options.html#performance)
+were tuned to allow OpenGyoza to run reliably (but relatively slowly) on a server cluster of three
 [AWS t2.micro](https://aws.amazon.com/ec2/instance-types/) instances. These thresholds
 were determined empirically using a leader instance that was under sufficient read, write,
 and network load to cause it to permanently be at zero CPU credits, forcing it to the baseline
@@ -43,9 +47,9 @@ The default performance configuration is equivalent to this:
 <a name="production"></a>
 ## Production Server Requirements
 
-When running Consul 0.7 and later in production, it is recommended to configure the server
-[performance parameters](/docs/agent/options.html#performance) back to Consul's original
-high-performance settings. This will let Consul servers detect a failed leader and complete
+When running OpenGyoza (Consul 0.7 and later) in production, it is recommended to configure the server
+[performance parameters](/docs/agent/options.html#performance) back to the original
+high-performance settings. This will let OpenGyoza servers detect a failed leader and complete
 leader elections much more quickly than the default configuration which extends key Raft
 timeouts by a factor of 5, so it can be quite slow during these events.
 
@@ -95,42 +99,42 @@ these are missing or late due to the leader not having sufficient CPU to send
 them on time, the other servers will detect it as failed and hold a new
 election.
 
-It's best to benchmark with a realistic workload when choosing a production server for Consul.
+It's best to benchmark with a realistic workload when choosing a production server for OpenGyoza.
 Here are some general recommendations:
 
-* Consul will make use of multiple cores, and at least 2 cores are recommended.
+* OpenGyoza will make use of multiple cores, and at least 2 cores are recommended.
 
 * <a name="last-contact"></a>Spurious leader elections can be caused by networking issues between
 the servers or insufficient CPU resources. Users in cloud environments often bump their servers
 up to the next instance class with improved networking and CPU until leader elections stabilize,
-and in Consul 0.7 or later the [performance parameters](/docs/agent/options.html#performance)
+and in upstream Consul 0.7 or later the [performance parameters](/docs/agent/options.html#performance)
 configuration now gives you tools to trade off performance instead of upsizing servers. You can
 use the [`consul.raft.leader.lastContact` telemetry](/docs/agent/telemetry.html#last-contact)
 to observe how the Raft timing is performing and guide the decision to de-tune Raft performance
 or add more powerful servers.
 
-* For DNS-heavy workloads, configuring all Consul agents in a cluster with the
+* For DNS-heavy workloads, configuring all OpenGyoza agents in a cluster with the
 [`allow_stale`](/docs/agent/options.html#allow_stale) configuration option will allow reads to
-scale across all Consul servers, not just the leader. Consul 0.7 and later enables stale reads
+scale across all OpenGyoza servers, not just the leader. Upstream Consul 0.7 and later enables stale reads
 for DNS by default. See [Stale Reads](https://learn.hashicorp.com/consul/security-networking/dns-caching#stale-reads) in the
 [DNS Caching](https://learn.hashicorp.com/consul/security-networking/dns-caching) guide for more details. It's also good to set
 reasonable, non-zero [DNS TTL values](https://learn.hashicorp.com/consul/security-networking/dns-caching#ttl-values) if your clients will
 respect them.
 
-* In other applications that perform high volumes of reads against Consul, consider using the
+* In other applications that perform high volumes of reads against OpenGyoza, consider using the
 [stale consistency mode](/api/features/consistency.html#stale) available to allow reads to scale
 across all the servers and not just be forwarded to the leader.
 
-* In Consul 0.9.3 and later, a new [`limits`](/docs/agent/options.html#limits) configuration is
-available on Consul clients to limit the RPC request rate they are allowed to make against the
-Consul servers. After hitting the limit, requests will start to return rate limit errors until
+* In upstream Consul 0.9.3 and later, a new [`limits`](/docs/agent/options.html#limits) configuration is
+available on OpenGyoza clients to limit the RPC request rate they are allowed to make against the
+OpenGyoza servers. After hitting the limit, requests will start to return rate limit errors until
 time has passed and more requests are allowed. Configuring this across the cluster can help with
 enforcing a max desired application load level on the servers, and can help mitigate abusive
 applications.
 
 ## Memory Requirements
 
-Consul server agents operate on a working set of data comprised of key/value
+OpenGyoza server agents operate on a working set of data comprised of key/value
 entries, the service catalog, prepared queries, access control lists, and
 sessions in memory. These data are persisted through Raft to disk in the form
 of a snapshot and log of changes since the previous snapshot for durability.
@@ -140,15 +144,15 @@ enough RAM for your server agents to contain between 2 to 4 times the working
 set size. You can determine the working set size by noting the value of
 `consul.runtime.alloc_bytes` in the [Telemetry data](/docs/agent/telemetry.html).
 
-> NOTE: Consul is not designed to serve as a general purpose database, and you
+> NOTE: OpenGyoza is not designed to serve as a general purpose database, and you
 > should keep this in mind when choosing what data are populated to the
 > key/value store.
 
 ## Read/Write Tuning
 
-Consul is write limited by disk I/O and read limited by CPU. Memory requirements will be dependent on the total size of KV pairs stored and should be sized according to that data (as should the hard drive storage). The limit on a key’s value size is `512KB`.
+OpenGyoza is write limited by disk I/O and read limited by CPU. Memory requirements will be dependent on the total size of KV pairs stored and should be sized according to that data (as should the hard drive storage). The limit on a key’s value size is `512KB`.
 
--> Consul is write limited by disk I/O and read limited by CPU.
+-> OpenGyoza is write limited by disk I/O and read limited by CPU.
 
 For **write-heavy** workloads, the total RAM available for overhead must approximately be equal to
 
@@ -156,15 +160,13 @@ For **write-heavy** workloads, the total RAM available for overhead must approxi
 
 Since writes must be synced to disk (persistent storage) on a quorum of servers before they are committed, deploying a disk with high write throughput (or an SSD) will enhance performance on the write side. ([Documentation](/docs/agent/options.html#\_data\_dir))
 
-For a **read-heavy** workload, configure all Consul server agents with the `allow_stale` DNS option, or query the API with the `stale` [consistency mode](/api/features/consistency.html). By default, all queries made to the server are RPC forwarded to and serviced by the leader. By enabling stale reads, any server will respond to any query, thereby reducing overhead on the leader. Typically, the stale response is `100ms` or less from consistent mode but it drastically improves performance and reduces latency under high load.
+For a **read-heavy** workload, configure all OpenGyoza server agents with the `allow_stale` DNS option, or query the API with the `stale` [consistency mode](/api/features/consistency.html). By default, all queries made to the server are RPC forwarded to and serviced by the leader. By enabling stale reads, any server will respond to any query, thereby reducing overhead on the leader. Typically, the stale response is `100ms` or less from consistent mode but it drastically improves performance and reduces latency under high load.
 
-If the leader server is out of memory or the disk is full, the server eventually stops responding, loses its election and cannot move past its last commit time. However, by configuring `max_stale` and setting it to a large value, Consul will continue to respond to queries during such outage scenarios. ([max_stale documentation](/docs/agent/options.html#max_stale)).
+If the leader server is out of memory or the disk is full, the server eventually stops responding, loses its election and cannot move past its last commit time. However, by configuring `max_stale` and setting it to a large value, OpenGyoza will continue to respond to queries during such outage scenarios. ([max_stale documentation](/docs/agent/options.html#max_stale)).
 
 It should be noted that `stale` is not appropriate for coordination where strong consistency is important (i.e. locking or application leader election). For critical cases, the optional `consistent` API query mode is required for true linearizability; the trade off is that this turns a read into a full quorum write so requires more resources and takes longer.
 
-**Read-heavy** clusters may take advantage of the [enhanced reading](/docs/enterprise/read-scale/index.html) feature (Enterprise) for better scalability. This feature allows additional servers to be introduced as non-voters. Being a non-voter, the server will still participate in data replication, but it will not block the leader from committing log entries.
-
-Consul’s agents use network sockets for communicating with the other nodes (gossip) and with the server agent. In addition, file descriptors are also opened for watch handlers, health checks, and log files. For a **write heavy** cluster, the `ulimit` size must be increased from the default  value (`1024`) to prevent the leader from running out of file descriptors.
+OpenGyoza’s agents use network sockets for communicating with the other nodes (gossip) and with the server agent. In addition, file descriptors are also opened for watch handlers, health checks, and log files. For a **write heavy** cluster, the `ulimit` size must be increased from the default  value (`1024`) to prevent the leader from running out of file descriptors.
 
 To prevent any CPU spikes from a misconfigured client, RPC requests to the server should be [rate limited](/docs/agent/options.html#limits)
 
@@ -187,8 +189,7 @@ longer smearing results in artificially slow rotations for small clusters.
 
 Smearing requests over 30s is sufficient to bring RPC load to a reasonable level
 in all but the very largest clusters, but the extra CPU load from cryptographic
-operations could impact the server's normal work. To limit that, Consul since
-1.4.1 exposes two ways to limit the impact Certificate signing has on the leader
+operations could impact the server's normal work. To limit that, OpenGyoza (Consul 1.4.1 and later) exposes two ways to limit the impact certificate signing has on the leader:
 [`csr_max_per_second`](/docs/agent/options.html#ca_csr_max_per_second) and
 [`csr_max_concurrent`](/docs/agent/options.html#ca_csr_max_concurrent).
 

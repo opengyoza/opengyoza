@@ -3,8 +3,8 @@ package cachetype
 import (
 	"fmt"
 
-	"github.com/hashicorp/consul/agent/cache"
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/cache"
+	"github.com/opengyoza/opengyoza/agent/structs"
 )
 
 // Recommended name for registration.

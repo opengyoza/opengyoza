@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hashicorp/consul/agent/metadata"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/lib"
+	"github.com/opengyoza/opengyoza/agent/metadata"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/lib"
 	"github.com/hashicorp/raft"
 	"github.com/hashicorp/serf/serf"
 )
@@ -44,12 +44,6 @@ func (s *Server) setupSerf(conf *serf.Config, ch chan serf.Event, path string, w
 	}
 	conf.Tags["role"] = "consul"
 	conf.Tags["dc"] = s.config.Datacenter
-	conf.Tags["segment"] = segment
-	if segment == "" {
-		for _, s := range s.config.Segments {
-			conf.Tags["sl_"+s.Name] = net.JoinHostPort(s.Advertise, fmt.Sprintf("%d", s.Port))
-		}
-	}
 	conf.Tags["id"] = string(s.config.NodeID)
 	conf.Tags["vsn"] = fmt.Sprintf("%d", s.config.ProtocolVersion)
 	conf.Tags["vsn_min"] = fmt.Sprintf("%d", ProtocolVersionMin)
@@ -63,9 +57,6 @@ func (s *Server) setupSerf(conf *serf.Config, ch chan serf.Event, path string, w
 	}
 	if s.config.BootstrapExpect != 0 {
 		conf.Tags["expect"] = fmt.Sprintf("%d", s.config.BootstrapExpect)
-	}
-	if s.config.NonVoter {
-		conf.Tags["nonvoter"] = "1"
 	}
 	if s.config.UseTLS {
 		conf.Tags["use_tls"] = "1"
@@ -204,9 +195,7 @@ func (s *Server) localEvent(event serf.UserEvent) {
 			s.config.UserEventHandler(event)
 		}
 	default:
-		if !s.handleEnterpriseUserEvents(event) {
-			s.logger.Printf("[WARN] consul: Unhandled local event: %v", event)
-		}
+		s.logger.Printf("[WARN] consul: Unhandled local event: %v", event)
 	}
 }
 
@@ -214,7 +203,7 @@ func (s *Server) localEvent(event serf.UserEvent) {
 func (s *Server) lanNodeJoin(me serf.MemberEvent) {
 	for _, m := range me.Members {
 		ok, serverMeta := metadata.IsConsulServer(m)
-		if !ok || serverMeta.Segment != "" {
+		if !ok {
 			continue
 		}
 		s.logger.Printf("[INFO] consul: Adding LAN server %s", serverMeta)
@@ -359,7 +348,7 @@ func (s *Server) maybeBootstrap() {
 func (s *Server) lanNodeFailed(me serf.MemberEvent) {
 	for _, m := range me.Members {
 		ok, serverMeta := metadata.IsConsulServer(m)
-		if !ok || serverMeta.Segment != "" {
+		if !ok {
 			continue
 		}
 		s.logger.Printf("[INFO] consul: Removing LAN server %s", serverMeta)

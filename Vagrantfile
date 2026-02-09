@@ -14,7 +14,7 @@ Vagrant.configure(2) do |config|
 		vmCfg = configureLinuxProvisioners(vmCfg)
 
 		vmCfg.vm.synced_folder '.',
-			'/opt/gopath/src/github.com/hashicorp/consul'
+			'/opt/gopath/src/github.com/opengyoza/opengyoza'
 
         vmCfg.vm.network "forwarded_port", guest: 8500, host: 8500, auto_correct: true
 	end

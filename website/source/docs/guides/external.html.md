@@ -3,19 +3,21 @@ layout: "docs"
 page_title: "External Services"
 sidebar_current: "docs-guides-external"
 description: |-
-  Very few infrastructures are entirely self-contained. Most rely on a multitude of external service providers. Consul supports this by allowing for the definition of external services, services that are not provided by a local node.
+  Very few infrastructures are entirely self-contained. Most rely on a multitude of external service providers. OpenGyoza supports this by allowing for the definition of external services, services that are not provided by a local node.
 ---
 
 # Registering an External Service
 
 Very few infrastructures are entirely self-contained. Most rely on a multitude
-of external service providers. Consul supports this by allowing for the definition
+of external service providers. OpenGyoza supports this by allowing for the definition
 of external services, services that are not provided by a local node. There's also a
 companion project called [Consul ESM](https://github.com/hashicorp/consul-esm) which
 is a daemon that functions as an external service monitor that can help run health
 checks for external services.
 
-Most services are registered in Consul through the use of a
+~> **Note:** The DNS domain remains `.consul` for compatibility.
+
+Most services are registered in OpenGyoza through the use of a
 [service definition](/docs/agent/services.html). However, this approach registers
 the local node as the service provider. In the case of external services, we must
 instead register the service with the catalog rather than as part of a standard
@@ -23,7 +25,7 @@ node service definition.
 
 Once registered, the DNS interface will be able to return the appropriate A
 records or CNAME records for the service. The service will also appear in standard
-queries against the API. Consul must be configured with a list of 
+queries against the API. OpenGyoza must be configured with a list of 
 [recursors](/docs/agent/options.html#recursors) for it to be able to resolve 
 external service addresses.
 
@@ -37,7 +39,7 @@ $ curl -X PUT -d '{"Datacenter": "dc1", "Node": "google",
    http://127.0.0.1:8500/v1/catalog/register
 ```
 
-Add an upstream DNS server to the list of recursors to Consul's configuration. Example with Google's public DNS server:
+Add an upstream DNS server to the list of recursors in your OpenGyoza configuration. Example with Google's public DNS server:
 ```text
 "recursors":["8.8.8.8"]
 ```

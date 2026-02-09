@@ -4,15 +4,15 @@ page_title: "Commands: ACL Policy List"
 sidebar_current: "docs-commands-acl-policy-list"
 ---
 
-# Consul ACL Policy List
+# OpenGyoza ACL Policy List
 
-Command: `consul acl policy list`
+Command: `gyoza acl policy list`
 
 The `acl policy list` command lists all policies. By default it will not show metadata.
 
 ## Usage
 
-Usage: `consul acl policy list`
+Usage: `gyoza acl policy list`
 
 #### API Options
 
@@ -29,7 +29,7 @@ Usage: `consul acl policy list`
 Default listing.
 
 ```sh
-$ consul acl policy list
+$ gyoza acl policy list
 global-management:
    ID:           00000000-0000-0000-0000-000000000001
    Description:  Builtin Policy that grants unlimited access
@@ -43,7 +43,7 @@ acl-replication:
 Show Metadata.
 
 ```sh
-$ consul acl policy list -meta
+$ gyoza acl policy list -meta
 global-management:
    ID:           00000000-0000-0000-0000-000000000001
    Description:  Builtin Policy that grants unlimited access

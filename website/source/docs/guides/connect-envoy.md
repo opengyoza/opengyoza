@@ -8,12 +8,15 @@ description: |-
 
 # Using Connect with Envoy Proxy
 
-Consul Connect has first class support for using
+OpenGyoza Connect has first class support for using
 [Envoy](https://www.envoyproxy.io/) as a proxy. This guide will describe how to
-setup a development-mode Consul server and two services that use Envoy proxies
+setup a development-mode OpenGyoza server and two services that use Envoy proxies
 on a single machine with [Docker](https://www.docker.com/).  The aim of this
 guide is to demonstrate a minimal working setup and the moving parts involved,
 it is not intended for production deployments.
+
+~> **Note:** The examples use the upstream `consul` Docker image and naming. You
+can substitute your OpenGyoza-built image and use `gyoza` where applicable.
 
 For reference documentation on how the integration works and is configured,
 please see our [Envoy documentation](/docs/connect/proxies/envoy.html).
@@ -23,7 +26,7 @@ please see our [Envoy documentation](/docs/connect/proxies/envoy.html).
 We'll start all containers using Docker's `host` network mode and will have a
 total of five containers running by the end of this guide.
 
- 1. A single Consul server
+ 1. A single OpenGyoza server
  2. An example TCP `echo` service as a destination
  3. An Envoy sidecar proxy for the `echo` service
  4. An Envoy sidecar proxy for the `client` service
@@ -37,8 +40,8 @@ yourself.
 ## Building an Envoy Image
 
 Starting Envoy requires a bootstrap configuration file that points Envoy to the
-local agent for discovering the rest of it's configuration. The Consul binary
-includes the [`consul connect envoy` command](/docs/commands/connect/envoy.html)
+local agent for discovering the rest of it's configuration. The OpenGyoza binary
+includes the [`gyoza connect envoy` command](/docs/commands/connect/envoy.html)
 which can generate the bootstrap configuration for Envoy and optionally run it
 directly.
 
@@ -47,7 +50,7 @@ requires some additional steps to generate bootstrap configuration and inject it
 into the container.
 
 Instead, we'll use Docker multi-stage builds (added in version 17.05) to make a
-local image that has both `envoy` and `consul` binaries.
+local image that has both `envoy` and `gyoza` binaries.
 
 We'll create a local Docker image to use that contains both binaries. First
 create a `Dockerfile` containing the following:
@@ -59,7 +62,7 @@ COPY --from=0 /bin/consul /bin/consul
 ENTRYPOINT ["dumb-init", "consul", "connect", "envoy"]
 ```
 
-This takes the Consul binary from the latest release image and copies it into a
+This takes the OpenGyoza (Consul-compatible) binary from the latest release image and copies it into a
 new image based on the official Envoy image.
 
 This can be built locally with:
@@ -71,9 +74,9 @@ docker build -t consul-envoy .
 We will use the `consul-envoy` image we just made to configure and run Envoy
 processes later.
 
-## Deploying a Consul Server
+## Deploying an OpenGyoza Server
 
-Next we need a Consul server. We'll work with a single Consul server in `-dev`
+Next we need an OpenGyoza server. We'll work with a single OpenGyoza server in `-dev`
 mode for simplicity.
 
 -> **Note:** `-dev` mode enables the gRPC server on port 8502 by default. For a
@@ -81,7 +84,7 @@ production agent you'll need to [explicitly configure the gRPC
 port](/docs/agent/options.html#grpc_port).
 
 In order to start a proxy instance, a [proxy service
-definition](/docs/connect/proxies.html) must exist on the local Consul agent.
+definition](/docs/connect/proxies.html) must exist on the local OpenGyoza agent.
 We'll create one using the [sidecar service
 registration](/docs/connect/proxies/sidecar-service.html) syntax.
 
@@ -112,7 +115,7 @@ services {
 }
 ```
 
-The Consul container can now be started with that configuration.
+The OpenGyoza container can now be started with that configuration.
 
 ```sh
 $ docker run --rm -d -v$(pwd)/envoy_demo.hcl:/etc/consul/envoy_demo.hcl \
@@ -128,7 +131,7 @@ continue in the same terminal. Log output can be seen using the name we gave.
 docker logs -f consul-agent
 ```
 
-Note that the Consul server has registered two services `client` and `echo`, but
+Note that the OpenGyoza server has registered two services `client` and `echo`, but
 also registered two proxies `client-sidecar-proxy` and `echo-sidecar-proxy`.
 Next we'll need to run those services and proxies.
 
@@ -166,7 +169,7 @@ from Envoy you can add `-- -l debug` to the end of the commands above. This
 passes the `-l` (log level) option directly through to Envoy. With debug level
 logs you should see the config being delivered to the proxy in the output.
 
-The [`consul connect envoy` command](/docs/commands/connect/envoy.html) here is
+The [`gyoza connect envoy` command](/docs/commands/connect/envoy.html) here is
 connecting to the local agent, getting the proxy configuration from the proxy
 service registration and generating the required Envoy bootstrap configuration
 before `exec`ing the envoy binary directly to run it with the generated
@@ -193,7 +196,7 @@ This configuration causes the `client-sidecar-proxy` to start a TCP proxy
 listening on `localhost:9191` and proxying to the `echo` service. Importantly,
 the listener will use the correct `client` service mTLS certificate to authorize
 the connection. It discovers the IP addresses of instances of the echo service
-via Consul service discovery.
+via OpenGyoza service discovery.
 
 We can now see this working if we run netcat.
 
@@ -249,6 +252,6 @@ Connect.
 For more details on how the Envoy integration works, please see the [Envoy
 reference documentation](/docs/connect/proxies/envoy.html).
 
-To see how to get Consul Connect working in different environments like
+To see how to get OpenGyoza Connect working in different environments like
 Kubernetes see the [Connect Getting
 Started](/docs/connect/index.html#getting-started-with-connect) overview.

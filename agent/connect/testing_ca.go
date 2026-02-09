@@ -13,7 +13,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/structs"
 	"github.com/hashicorp/go-uuid"
 	"github.com/mitchellh/go-testing-interface"
 )

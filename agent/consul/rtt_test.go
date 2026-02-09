@@ -8,9 +8,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/lib"
-	"github.com/hashicorp/consul/testrpc"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/lib"
+	"github.com/opengyoza/opengyoza/sdk/testutil/retry"
+	"github.com/opengyoza/opengyoza/testrpc"
 	"github.com/hashicorp/net-rpc-msgpackrpc"
 )
 
@@ -127,7 +128,13 @@ func seedCoordinates(t *testing.T, codec rpc.ClientCodec, server *Server) {
 			t.Fatalf("err: %v", err)
 		}
 	}
-	time.Sleep(2 * server.config.CoordinateUpdatePeriod)
+	retry.Run(t, func(r *retry.R) {
+		_, coords, err := server.fsm.State().Coordinate("node1", nil)
+		r.Check(err)
+		if len(coords) == 0 {
+			r.Fatalf("coordinates not yet available")
+		}
+	})
 }
 
 func TestRTT_sortNodesByDistanceFrom(t *testing.T) {

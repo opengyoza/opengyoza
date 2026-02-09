@@ -7,11 +7,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hashicorp/consul/agent"
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/logger"
-	"github.com/hashicorp/consul/sdk/testutil"
-	"github.com/hashicorp/consul/testrpc"
+	"github.com/opengyoza/opengyoza/agent"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/logger"
+	"github.com/opengyoza/opengyoza/sdk/testutil"
+	"github.com/opengyoza/opengyoza/testrpc"
 	"github.com/mitchellh/cli"
 	"github.com/stretchr/testify/require"
 )

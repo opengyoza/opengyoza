@@ -4,8 +4,8 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/command/flags"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/command/flags"
 	"github.com/mitchellh/cli"
 )
 
@@ -60,9 +60,6 @@ func (c *cmd) Run(args []string) int {
 	c.UI.Output(fmt.Sprintf("MaxTrailingLogs = %v", config.MaxTrailingLogs))
 	c.UI.Output(fmt.Sprintf("MinQuorum = %v", config.MinQuorum))
 	c.UI.Output(fmt.Sprintf("ServerStabilizationTime = %v", config.ServerStabilizationTime.String()))
-	c.UI.Output(fmt.Sprintf("RedundancyZoneTag = %q", config.RedundancyZoneTag))
-	c.UI.Output(fmt.Sprintf("DisableUpgradeMigration = %v", config.DisableUpgradeMigration))
-	c.UI.Output(fmt.Sprintf("UpgradeVersionTag = %q", config.UpgradeVersionTag))
 
 	return 0
 }

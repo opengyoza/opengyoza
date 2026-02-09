@@ -5,7 +5,7 @@ import (
 	"crypto/x509"
 	"encoding/json"
 
-	"github.com/hashicorp/consul/agent/connect/ca"
+	"github.com/opengyoza/opengyoza/agent/connect/ca"
 	"google.golang.org/grpc"
 )
 

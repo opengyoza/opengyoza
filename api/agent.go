@@ -122,17 +122,10 @@ type AgentMember struct {
 	DelegateCur uint8
 }
 
-// AllSegments is used to select for all segments in MembersOpts.
-const AllSegments = "_all"
-
 // MembersOpts is used for querying member information.
 type MembersOpts struct {
 	// WAN is whether to show members from the WAN.
 	WAN bool
-
-	// Segment is the LAN segment to show members for. Setting this to the
-	// AllSegments value above will show members in all segments.
-	Segment string
 }
 
 // AgentServiceRegistration is used to register a new service
@@ -523,10 +516,9 @@ func (a *Agent) Members(wan bool) ([]*AgentMember, error) {
 }
 
 // MembersOpts returns the known gossip members and can be passed
-// additional options for WAN/segment filtering.
+// additional options for WAN filtering.
 func (a *Agent) MembersOpts(opts MembersOpts) ([]*AgentMember, error) {
 	r := a.c.newRequest("GET", "/v1/agent/members")
-	r.params.Set("segment", opts.Segment)
 	if opts.WAN {
 		r.params.Set("wan", "1")
 	}

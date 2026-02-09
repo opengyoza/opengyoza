@@ -3,7 +3,7 @@ package structs
 import (
 	"time"
 
-	"github.com/hashicorp/consul/acl"
+	"github.com/opengyoza/opengyoza/acl"
 	lru "github.com/hashicorp/golang-lru"
 )
 

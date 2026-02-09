@@ -5,9 +5,9 @@ import (
 	"log"
 	"sync"
 
-	"github.com/hashicorp/consul/agent/cache"
-	"github.com/hashicorp/consul/agent/local"
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/cache"
+	"github.com/opengyoza/opengyoza/agent/local"
+	"github.com/opengyoza/opengyoza/agent/structs"
 )
 
 var (

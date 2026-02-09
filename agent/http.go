@@ -20,11 +20,11 @@ import (
 
 	"github.com/NYTimes/gziphandler"
 	metrics "github.com/armon/go-metrics"
-	"github.com/hashicorp/consul/acl"
-	"github.com/hashicorp/consul/agent/cache"
-	"github.com/hashicorp/consul/agent/consul"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/api"
+	"github.com/opengyoza/opengyoza/acl"
+	"github.com/opengyoza/opengyoza/agent/cache"
+	"github.com/opengyoza/opengyoza/agent/consul"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/api"
 	cleanhttp "github.com/hashicorp/go-cleanhttp"
 	"github.com/mitchellh/mapstructure"
 	"github.com/pkg/errors"
@@ -448,7 +448,7 @@ func (s *HTTPServer) wrap(handler endpoint, methods []string) http.HandlerFunc {
 				fmt.Fprint(resp, err.Error())
 			case isNotFound(err):
 				resp.WriteHeader(http.StatusNotFound)
-				fmt.Fprintf(resp, err.Error())
+				fmt.Fprint(resp, err.Error())
 			case isTooManyRequests(err):
 				resp.WriteHeader(http.StatusTooManyRequests)
 				fmt.Fprint(resp, err.Error())

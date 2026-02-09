@@ -1,24 +1,24 @@
 ---
 layout: "docs"
-page_title: "Consul Reference Architecture"
+page_title: "OpenGyoza Reference Architecture"
 sidebar_current: "docs-guides-reference-architecture"
 description: |-
   This document provides recommended practices and a reference
-  architecture for HashiCorp Consul production deployments.
+  architecture for OpenGyoza production deployments.
 ea_version: 1.4
 ---
 
-# Consul Reference Architecture
+# OpenGyoza Reference Architecture
 
-As applications are migrated to dynamically provisioned infrastructure, scaling services and managing the communications between them becomes challenging. Consul’s service discovery capabilities provide the connectivity between dynamic applications. Consul also monitors the health of each node and its applications to ensure that only healthy service instances are discovered. Consul’s distributed runtime configuration store allows updates across global infrastructure.
+As applications are migrated to dynamically provisioned infrastructure, scaling services and managing the communications between them becomes challenging. OpenGyoza’s service discovery capabilities provide the connectivity between dynamic applications. OpenGyoza also monitors the health of each node and its applications to ensure that only healthy service instances are discovered. OpenGyoza’s distributed runtime configuration store allows updates across global infrastructure.
 
-This document provides recommended practices and a reference architecture, including system requirements, datacenter design, networking, and performance optimizations for Consul production deployments.
+This document provides recommended practices and a reference architecture, including system requirements, datacenter design, networking, and performance optimizations for OpenGyoza production deployments.
 
 ## Infrastructure Requirements
 
-### Consul Servers
+### OpenGyoza Servers
 
-Consul server agents are responsible for maintaining the cluster state, responding to RPC queries (read operations), and for processing all write operations. Given that Consul server agents do most of the heavy lifting, server sizing is critical for the overall performance efficiency and health of the Consul cluster.
+OpenGyoza server agents are responsible for maintaining the cluster state, responding to RPC queries (read operations), and for processing all write operations. Given that OpenGyoza server agents do most of the heavy lifting, server sizing is critical for the overall performance efficiency and health of the OpenGyoza cluster.
 
 The following table provides high-level server guidelines. Of particular
 note is the strong recommendation to avoid non-fixed performance CPUs,
@@ -51,11 +51,11 @@ For more information on server requirements, review the [server performance](/do
 
 ## Datacenter Design
 
-A Consul cluster (typically three or five servers plus client agents) may be deployed in a single physical datacenter or it may span multiple datacenters. For a large cluster with high runtime reads and writes, deploying servers in the same physical location improves performance. In cloud environments, a single datacenter may be deployed across multiple availability zones i.e. each server in a separate availability zone on a single host. Consul also supports multi-datacenter deployments via separate clusters joined by WAN links. In some cases, one may also deploy two or more Consul clusters in the same LAN environment.
+An OpenGyoza cluster (typically three or five servers plus client agents) may be deployed in a single physical datacenter or it may span multiple datacenters. For a large cluster with high runtime reads and writes, deploying servers in the same physical location improves performance. In cloud environments, a single datacenter may be deployed across multiple availability zones i.e. each server in a separate availability zone on a single host. OpenGyoza also supports multi-datacenter deployments via separate clusters joined by WAN links. In some cases, one may also deploy two or more OpenGyoza clusters in the same LAN environment.
 
 ### Single Datacenter
 
-A single Consul cluster is recommended for applications deployed in the same datacenter. Consul supports traditional three-tier applications as well as microservices.
+A single OpenGyoza cluster is recommended for applications deployed in the same datacenter. OpenGyoza supports traditional three-tier applications as well as microservices.
 
 Typically, there must be three or five servers to balance between availability and performance. These servers together run the Raft-driven consistent state store for catalog, session, prepared query, ACL, and KV updates.
 
@@ -65,31 +65,27 @@ The recommended maximum cluster size for a single datacenter is 5,000 nodes. For
 
 One must take care to use service tags in a way that assists with the kinds of queries that will be run against the cluster. If two services (e.g. blue and green) are running on the same cluster, appropriate service tags must be used to identify between them. If a query is made without tags, nodes running both blue and green services may show up in the results of the query.
 
-In cases where a full mesh among all agents cannot be established due to network segmentation, Consul’s own [network segments](/docs/enterprise/network-segments/index.html) can be used. Network segments is a Consul Enterprise feature that allows the creation of multiple tenants which share Raft servers in the same cluster. Each tenant has its own gossip pool and doesn’t communicate with the agents outside this pool. The KV store, however, is shared between all tenants. If Consul network segments cannot be used, isolation between agents can be accomplished by creating discrete [Consul datacenters](/docs/guides/datacenters.html).
+In cases where a full mesh among all agents cannot be established, isolation
+between agents can be accomplished by creating discrete
+[OpenGyoza datacenters](/docs/guides/datacenters.html).
 
 ### Multiple Datacenters
 
-Consul clusters in different datacenters running the same service can be joined by WAN links. The clusters operate independently and only communicate over the WAN on port `8302`. Unless explicitly configured via CLI or API, the Consul server will only return results from the local datacenter. Consul does not replicate data between multiple datacenters. The [consul-replicate](https://github.com/hashicorp/consul-replicate) tool can be used to replicate the KV data periodically.
+OpenGyoza clusters in different datacenters running the same service can be joined by WAN links. The clusters operate independently and only communicate over the WAN on port `8302`. Unless explicitly configured via CLI or API, the OpenGyoza server will only return results from the local datacenter. OpenGyoza does not replicate data between multiple datacenters. The [consul-replicate](https://github.com/hashicorp/consul-replicate) tool can be used to replicate the KV data periodically.
 
 -> A good practice is to enable TLS server name checking to avoid accidental cross-joining of agents.
 
-Advanced federation can be achieved with the [network areas](/api/operator/area.html) feature in Consul Enterprise.
-
-A typical use case is where datacenter1 (dc1) hosts share services like LDAP (or ACL datacenter) which are leveraged by all other datacenters. However, due to compliance issues, servers in dc2 must not connect with servers in dc3. This cannot be accomplished with the basic WAN federation. Basic federation requires that all the servers in dc1, dc2 and dc3 are connected in a full mesh and opens both gossip (`8302 tcp/udp`) and RPC (`8300`) ports for communication.
-
-Network areas allows peering between datacenters to make the services discoverable over WAN. With network areas, servers in dc1 can communicate with those in dc2 and dc3. However, no connectivity needs to be established between dc2 and dc3 which meets the compliance requirement of the organization in this use case. Servers that are part of the network area communicate over RPC only. This removes the overhead of sharing and maintaining the symmetric key used by the gossip protocol across datacenters. It also reduces the attack surface at the gossip ports since they no longer need to be opened in security gateways or firewalls.
-
 #### Prepared Queries
 
-Consul’s [prepared queries](/api/query.html) allow clients to do a datacenter failover for service discovery. For example, if a service `payment` in the local datacenter dc1 goes down, a prepared query lets users define a geographic fallback order to the nearest datacenter to check for healthy instances of the same service.
+OpenGyoza’s [prepared queries](/api/query.html) allow clients to do a datacenter failover for service discovery. For example, if a service `payment` in the local datacenter dc1 goes down, a prepared query lets users define a geographic fallback order to the nearest datacenter to check for healthy instances of the same service.
 
-~> **NOTE** Consul clusters must be WAN linked for a prepared query to work across datacenters.
+~> **NOTE** OpenGyoza clusters must be WAN linked for a prepared query to work across datacenters.
 
 Prepared queries, by default, resolve the query in the local datacenter first. Querying KV store features is not supported by the prepared query. Prepared queries work with ACL. Prepared query config/templates are maintained consistently in Raft and are executed on the servers.
 
 #### Connect
 
-Consul [Connect](/docs/guides/connect-production.html) supports multi-datacenter connections and replicates [intentions](/docs/connect/intentions.html). This allows WAN federated DCs to provide connections from source and destination proxies in any DC.
+OpenGyoza [Connect](/docs/guides/connect-production.html) supports multi-datacenter connections and replicates [intentions](/docs/connect/intentions.html). This allows WAN federated DCs to provide connections from source and destination proxies in any DC.
 
 ## Network Connectivity
 
@@ -105,18 +101,16 @@ In a larger network that spans L3 segments, traffic typically traverses through 
 |---------------|------|------|-------------|
 | Server RPC    | 8300 |      | Used by servers to handle incoming requests from other agents. TCP only. |
 | Serf LAN      | 8301 |      | Used to handle gossip in the LAN. Required by all agents. TCP and UDP. |
-| Serf WAN      | 8302 | `-1` to disable (available in Consul 1.0.7) | Used by servers to gossip over the LAN and WAN to other servers. TCP and UDP. |
+| Serf WAN      | 8302 | `-1` to disable (available in OpenGyoza 1.0.7) | Used by servers to gossip over the LAN and WAN to other servers. TCP and UDP. |
 | HTTP API      | 8500 | `-1` to disable | Used by clients to talk to the HTTP API. TCP only. |
 | DNS Interface | 8600 | `-1` to disable | Used to resolve DNS queries. TCP and UDP. |
-
--> As mentioned in the [datacenter design section](#datacenter-design), network areas and network segments can be used to prevent opening up firewall ports between different subnets.
 
 By default agents will only listen for HTTP and DNS traffic on the local interface.
 
 ## Next steps
 
 - Read [Deployment Guide](/docs/guides/deployment-guide.html) to learn
-  the steps required to install and configure a single HashiCorp Consul cluster.
+  the steps required to install and configure a single OpenGyoza cluster.
 
 - Read [Server Performance](/docs/install/performance.html) to learn about
   additional configuration that benefits production deployments.

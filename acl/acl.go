@@ -1,9 +1,6 @@
 package acl
 
-import (
-	"github.com/armon/go-radix"
-	"github.com/hashicorp/consul/sentinel"
-)
+import "github.com/armon/go-radix"
 
 var (
 	// allowAll is a singleton policy which allows all
@@ -17,10 +14,6 @@ var (
 	// actions, including management
 	manageAll Authorizer
 )
-
-// DefaultPolicyEnforcementLevel will be used if the user leaves the level
-// blank when configuring an ACL.
-const DefaultPolicyEnforcementLevel = "hard-mandatory"
 
 func init() {
 	// Setup the singletons
@@ -78,7 +71,7 @@ type Authorizer interface {
 	KeyRead(string) bool
 
 	// KeyWrite checks for permission to write a given key
-	KeyWrite(string, sentinel.ScopeFn) bool
+	KeyWrite(string) bool
 
 	// KeyWritePrefix checks for permission to write to an
 	// entire key prefix. This means there must be no sub-policies
@@ -97,7 +90,7 @@ type Authorizer interface {
 
 	// NodeWrite checks for permission to create or update (register) a
 	// given node.
-	NodeWrite(string, sentinel.ScopeFn) bool
+	NodeWrite(string) bool
 
 	// OperatorRead determines if the read-only Consul operator functions
 	// can be used.
@@ -120,7 +113,7 @@ type Authorizer interface {
 
 	// ServiceWrite checks for permission to create or update a given
 	// service
-	ServiceWrite(string, sentinel.ScopeFn) bool
+	ServiceWrite(string) bool
 
 	// SessionRead checks for permission to read sessions for a given node.
 	SessionRead(string) bool
@@ -185,7 +178,7 @@ func (s *StaticAuthorizer) KeyList(string) bool {
 	return s.defaultAllow
 }
 
-func (s *StaticAuthorizer) KeyWrite(string, sentinel.ScopeFn) bool {
+func (s *StaticAuthorizer) KeyWrite(string) bool {
 	return s.defaultAllow
 }
 
@@ -205,7 +198,7 @@ func (s *StaticAuthorizer) NodeRead(string) bool {
 	return s.defaultAllow
 }
 
-func (s *StaticAuthorizer) NodeWrite(string, sentinel.ScopeFn) bool {
+func (s *StaticAuthorizer) NodeWrite(string) bool {
 	return s.defaultAllow
 }
 
@@ -229,7 +222,7 @@ func (s *StaticAuthorizer) ServiceRead(string) bool {
 	return s.defaultAllow
 }
 
-func (s *StaticAuthorizer) ServiceWrite(string, sentinel.ScopeFn) bool {
+func (s *StaticAuthorizer) ServiceWrite(string) bool {
 	return s.defaultAllow
 }
 
@@ -279,9 +272,6 @@ func RootAuthorizer(id string) Authorizer {
 type RulePolicy struct {
 	// aclPolicy is used for simple acl rules(allow/deny/manage)
 	aclPolicy string
-
-	// sentinelPolicy has the code part of a policy
-	sentinelPolicy Sentinel
 }
 
 // PolicyAuthorizer is used to wrap a set of ACL policies to provide
@@ -291,10 +281,6 @@ type PolicyAuthorizer struct {
 	// parent is used to resolve policy if we have
 	// no matching rule.
 	parent Authorizer
-
-	// sentinel is an interface for validating and executing sentinel code
-	// policies.
-	sentinel sentinel.Evaluator
 
 	// aclRule contains the acl management policy.
 	aclRule string
@@ -408,7 +394,7 @@ func enforce(rule string, requiredPermission string) (allow, recurse bool) {
 
 // NewPolicyAuthorizer is used to construct a policy based ACL from a set of policies
 // and a parent policy to resolve missing cases.
-func NewPolicyAuthorizer(parent Authorizer, policies []*Policy, sentinel sentinel.Evaluator) (*PolicyAuthorizer, error) {
+func NewPolicyAuthorizer(parent Authorizer, policies []*Policy) (*PolicyAuthorizer, error) {
 	p := &PolicyAuthorizer{
 		parent:             parent,
 		agentRules:         radix.New(),
@@ -419,7 +405,6 @@ func NewPolicyAuthorizer(parent Authorizer, policies []*Policy, sentinel sentine
 		sessionRules:       radix.New(),
 		eventRules:         radix.New(),
 		preparedQueryRules: radix.New(),
-		sentinel:           sentinel,
 	}
 
 	policy := MergePolicies(policies)
@@ -437,8 +422,7 @@ func NewPolicyAuthorizer(parent Authorizer, policies []*Policy, sentinel sentine
 	// Load the key policy (exact matches)
 	for _, kp := range policy.Keys {
 		policyRule := RulePolicy{
-			aclPolicy:      kp.Policy,
-			sentinelPolicy: kp.Sentinel,
+			aclPolicy: kp.Policy,
 		}
 		insertPolicyIntoRadix(kp.Prefix, p.keyRules, policyRule, nil)
 	}
@@ -446,8 +430,7 @@ func NewPolicyAuthorizer(parent Authorizer, policies []*Policy, sentinel sentine
 	// Load the key policy (prefix matches)
 	for _, kp := range policy.KeyPrefixes {
 		policyRule := RulePolicy{
-			aclPolicy:      kp.Policy,
-			sentinelPolicy: kp.Sentinel,
+			aclPolicy: kp.Policy,
 		}
 		insertPolicyIntoRadix(kp.Prefix, p.keyRules, nil, policyRule)
 	}
@@ -455,8 +438,7 @@ func NewPolicyAuthorizer(parent Authorizer, policies []*Policy, sentinel sentine
 	// Load the node policy (exact matches)
 	for _, np := range policy.Nodes {
 		policyRule := RulePolicy{
-			aclPolicy:      np.Policy,
-			sentinelPolicy: np.Sentinel,
+			aclPolicy: np.Policy,
 		}
 		insertPolicyIntoRadix(np.Name, p.nodeRules, policyRule, nil)
 	}
@@ -464,8 +446,7 @@ func NewPolicyAuthorizer(parent Authorizer, policies []*Policy, sentinel sentine
 	// Load the node policy (prefix matches)
 	for _, np := range policy.NodePrefixes {
 		policyRule := RulePolicy{
-			aclPolicy:      np.Policy,
-			sentinelPolicy: np.Sentinel,
+			aclPolicy: np.Policy,
 		}
 		insertPolicyIntoRadix(np.Name, p.nodeRules, nil, policyRule)
 	}
@@ -473,8 +454,7 @@ func NewPolicyAuthorizer(parent Authorizer, policies []*Policy, sentinel sentine
 	// Load the service policy (exact matches)
 	for _, sp := range policy.Services {
 		policyRule := RulePolicy{
-			aclPolicy:      sp.Policy,
-			sentinelPolicy: sp.Sentinel,
+			aclPolicy: sp.Policy,
 		}
 		insertPolicyIntoRadix(sp.Name, p.serviceRules, policyRule, nil)
 
@@ -489,8 +469,7 @@ func NewPolicyAuthorizer(parent Authorizer, policies []*Policy, sentinel sentine
 		}
 
 		policyRule = RulePolicy{
-			aclPolicy:      intention,
-			sentinelPolicy: sp.Sentinel,
+			aclPolicy: intention,
 		}
 		insertPolicyIntoRadix(sp.Name, p.intentionRules, policyRule, nil)
 	}
@@ -498,8 +477,7 @@ func NewPolicyAuthorizer(parent Authorizer, policies []*Policy, sentinel sentine
 	// Load the service policy (prefix matches)
 	for _, sp := range policy.ServicePrefixes {
 		policyRule := RulePolicy{
-			aclPolicy:      sp.Policy,
-			sentinelPolicy: sp.Sentinel,
+			aclPolicy: sp.Policy,
 		}
 		insertPolicyIntoRadix(sp.Name, p.serviceRules, nil, policyRule)
 
@@ -514,8 +492,7 @@ func NewPolicyAuthorizer(parent Authorizer, policies []*Policy, sentinel sentine
 		}
 
 		policyRule = RulePolicy{
-			aclPolicy:      intention,
-			sentinelPolicy: sp.Sentinel,
+			aclPolicy: intention,
 		}
 		insertPolicyIntoRadix(sp.Name, p.intentionRules, nil, policyRule)
 	}
@@ -673,7 +650,6 @@ func (p *PolicyAuthorizer) IntentionWrite(prefix string) bool {
 	if rule, ok := getPolicy(prefix, p.intentionRules); ok {
 		pr := rule.(RulePolicy)
 		if allow, recurse := enforce(pr.aclPolicy, PolicyWrite); !recurse {
-			// TODO (ACL-V2) - should we do sentinel enforcement here
 			return allow
 		}
 	}
@@ -711,20 +687,17 @@ func (p *PolicyAuthorizer) KeyList(key string) bool {
 }
 
 // KeyWrite returns if a key is allowed to be written
-func (p *PolicyAuthorizer) KeyWrite(key string, scope sentinel.ScopeFn) bool {
+func (p *PolicyAuthorizer) KeyWrite(key string) bool {
 	// Look for a matching rule
 	if rule, ok := getPolicy(key, p.keyRules); ok {
 		pr := rule.(RulePolicy)
 		if allow, recurse := enforce(pr.aclPolicy, PolicyWrite); !recurse {
-			if allow {
-				return p.executeCodePolicy(&pr.sentinelPolicy, scope)
-			}
-			return false
+			return allow
 		}
 	}
 
 	// No matching rule, use the parent.
-	return p.parent.KeyWrite(key, scope)
+	return p.parent.KeyWrite(key)
 }
 
 // KeyWritePrefix returns if a prefix is allowed to be written
@@ -839,7 +812,6 @@ func (p *PolicyAuthorizer) NodeRead(name string) bool {
 	if rule, ok := getPolicy(name, p.nodeRules); ok {
 		pr := rule.(RulePolicy)
 		if allow, recurse := enforce(pr.aclPolicy, PolicyRead); !recurse {
-			// TODO (ACL-V2) - Should we do sentinel enforcement here
 			return allow
 		}
 	}
@@ -849,7 +821,7 @@ func (p *PolicyAuthorizer) NodeRead(name string) bool {
 }
 
 // NodeWrite checks if writing (registering) a node is allowed
-func (p *PolicyAuthorizer) NodeWrite(name string, scope sentinel.ScopeFn) bool {
+func (p *PolicyAuthorizer) NodeWrite(name string) bool {
 	// Check for an exact rule or catch-all
 	if rule, ok := getPolicy(name, p.nodeRules); ok {
 		pr := rule.(RulePolicy)
@@ -859,7 +831,7 @@ func (p *PolicyAuthorizer) NodeWrite(name string, scope sentinel.ScopeFn) bool {
 	}
 
 	// No matching rule, use the parent.
-	return p.parent.NodeWrite(name, scope)
+	return p.parent.NodeWrite(name)
 }
 
 // PreparedQueryRead checks if reading (listing) of a prepared query is
@@ -905,7 +877,7 @@ func (p *PolicyAuthorizer) ServiceRead(name string) bool {
 }
 
 // ServiceWrite checks if writing (registering) a service is allowed
-func (p *PolicyAuthorizer) ServiceWrite(name string, scope sentinel.ScopeFn) bool {
+func (p *PolicyAuthorizer) ServiceWrite(name string) bool {
 	// Check for an exact rule or catch-all
 	if rule, ok := getPolicy(name, p.serviceRules); ok {
 		pr := rule.(RulePolicy)
@@ -915,7 +887,7 @@ func (p *PolicyAuthorizer) ServiceWrite(name string, scope sentinel.ScopeFn) boo
 	}
 
 	// No matching rule, use the parent.
-	return p.parent.ServiceWrite(name, scope)
+	return p.parent.ServiceWrite(name)
 }
 
 // SessionRead checks for permission to read sessions for a given node.
@@ -942,23 +914,4 @@ func (p *PolicyAuthorizer) SessionWrite(node string) bool {
 
 	// No matching rule, use the parent.
 	return p.parent.SessionWrite(node)
-}
-
-// executeCodePolicy will run the associated code policy if code policies are
-// enabled.
-func (p *PolicyAuthorizer) executeCodePolicy(policy *Sentinel, scope sentinel.ScopeFn) bool {
-	if p.sentinel == nil {
-		return true
-	}
-
-	if policy.Code == "" || scope == nil {
-		return true
-	}
-
-	enforcement := policy.EnforcementLevel
-	if enforcement == "" {
-		enforcement = DefaultPolicyEnforcementLevel
-	}
-
-	return p.sentinel.Execute(policy.Code, enforcement, scope())
 }

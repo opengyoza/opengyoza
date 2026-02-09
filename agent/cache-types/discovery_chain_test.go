@@ -4,9 +4,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/agent/cache"
-	"github.com/hashicorp/consul/agent/consul/discoverychain"
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/cache"
+	"github.com/opengyoza/opengyoza/agent/consul/discoverychain"
+	"github.com/opengyoza/opengyoza/agent/structs"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )

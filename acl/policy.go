@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/hashicorp/consul/sentinel"
 	"github.com/hashicorp/hcl"
 	"github.com/hashicorp/hcl/hcl/ast"
 	hclprinter "github.com/hashicorp/hcl/hcl/printer"
@@ -52,12 +51,6 @@ type Policy struct {
 	Operator              string                 `hcl:"operator"`
 }
 
-// Sentinel defines a snippet of Sentinel code that can be attached to a policy.
-type Sentinel struct {
-	Code             string
-	EnforcementLevel string
-}
-
 // AgentPolicy represents a policy for working with agent endpoints on nodes
 // with specific name prefixes.
 type AgentPolicy struct {
@@ -73,7 +66,6 @@ func (a *AgentPolicy) GoString() string {
 type KeyPolicy struct {
 	Prefix   string `hcl:",key"`
 	Policy   string
-	Sentinel Sentinel
 }
 
 func (k *KeyPolicy) GoString() string {
@@ -84,7 +76,6 @@ func (k *KeyPolicy) GoString() string {
 type NodePolicy struct {
 	Name     string `hcl:",key"`
 	Policy   string
-	Sentinel Sentinel
 }
 
 func (n *NodePolicy) GoString() string {
@@ -95,7 +86,6 @@ func (n *NodePolicy) GoString() string {
 type ServicePolicy struct {
 	Name     string `hcl:",key"`
 	Policy   string
-	Sentinel Sentinel
 
 	// Intentions is the policy for intentions where this service is the
 	// destination. This may be empty, in which case the Policy determines
@@ -152,33 +142,7 @@ func isPolicyValid(policy string) bool {
 	}
 }
 
-// isSentinelValid makes sure the given sentinel block is valid, and will skip
-// out if the evaluator is nil.
-func isSentinelValid(sentinel sentinel.Evaluator, basicPolicy string, sp Sentinel) error {
-	// Sentinel not enabled at all, or for this policy.
-	if sentinel == nil {
-		return nil
-	}
-	if sp.Code == "" {
-		return nil
-	}
-
-	// We only allow sentinel code on write policies at this time.
-	if basicPolicy != PolicyWrite {
-		return fmt.Errorf("code is only allowed for write policies")
-	}
-
-	// Validate the sentinel parts.
-	switch sp.EnforcementLevel {
-	case "", "soft-mandatory", "hard-mandatory":
-		// OK
-	default:
-		return fmt.Errorf("unsupported enforcement level %q", sp.EnforcementLevel)
-	}
-	return sentinel.Compile(sp.Code)
-}
-
-func parseCurrent(rules string, sentinel sentinel.Evaluator) (*Policy, error) {
+func parseCurrent(rules string) (*Policy, error) {
 	p := &Policy{}
 
 	if err := hcl.Decode(p, rules); err != nil {
@@ -207,16 +171,10 @@ func parseCurrent(rules string, sentinel sentinel.Evaluator) (*Policy, error) {
 		if kp.Policy != PolicyList && !isPolicyValid(kp.Policy) {
 			return nil, fmt.Errorf("Invalid key policy: %#v", kp)
 		}
-		if err := isSentinelValid(sentinel, kp.Policy, kp.Sentinel); err != nil {
-			return nil, fmt.Errorf("Invalid key Sentinel policy: %#v, got error:%v", kp, err)
-		}
 	}
 	for _, kp := range p.KeyPrefixes {
 		if kp.Policy != PolicyList && !isPolicyValid(kp.Policy) {
 			return nil, fmt.Errorf("Invalid key_prefix policy: %#v", kp)
-		}
-		if err := isSentinelValid(sentinel, kp.Policy, kp.Sentinel); err != nil {
-			return nil, fmt.Errorf("Invalid key_prefix Sentinel policy: %#v, got error:%v", kp, err)
 		}
 	}
 
@@ -225,16 +183,10 @@ func parseCurrent(rules string, sentinel sentinel.Evaluator) (*Policy, error) {
 		if !isPolicyValid(np.Policy) {
 			return nil, fmt.Errorf("Invalid node policy: %#v", np)
 		}
-		if err := isSentinelValid(sentinel, np.Policy, np.Sentinel); err != nil {
-			return nil, fmt.Errorf("Invalid node Sentinel policy: %#v, got error:%v", np, err)
-		}
 	}
 	for _, np := range p.NodePrefixes {
 		if !isPolicyValid(np.Policy) {
 			return nil, fmt.Errorf("Invalid node_prefix policy: %#v", np)
-		}
-		if err := isSentinelValid(sentinel, np.Policy, np.Sentinel); err != nil {
-			return nil, fmt.Errorf("Invalid node_prefix Sentinel policy: %#v, got error:%v", np, err)
 		}
 	}
 
@@ -246,9 +198,6 @@ func parseCurrent(rules string, sentinel sentinel.Evaluator) (*Policy, error) {
 		if sp.Intentions != "" && !isPolicyValid(sp.Intentions) {
 			return nil, fmt.Errorf("Invalid service intentions policy: %#v", sp)
 		}
-		if err := isSentinelValid(sentinel, sp.Policy, sp.Sentinel); err != nil {
-			return nil, fmt.Errorf("Invalid service Sentinel policy: %#v, got error:%v", sp, err)
-		}
 	}
 	for _, sp := range p.ServicePrefixes {
 		if !isPolicyValid(sp.Policy) {
@@ -256,9 +205,6 @@ func parseCurrent(rules string, sentinel sentinel.Evaluator) (*Policy, error) {
 		}
 		if sp.Intentions != "" && !isPolicyValid(sp.Intentions) {
 			return nil, fmt.Errorf("Invalid service_prefix intentions policy: %#v", sp)
-		}
-		if err := isSentinelValid(sentinel, sp.Policy, sp.Sentinel); err != nil {
-			return nil, fmt.Errorf("Invalid service_prefix Sentinel policy: %#v, got error:%v", sp, err)
 		}
 	}
 
@@ -311,7 +257,7 @@ func parseCurrent(rules string, sentinel sentinel.Evaluator) (*Policy, error) {
 	return p, nil
 }
 
-func parseLegacy(rules string, sentinel sentinel.Evaluator) (*Policy, error) {
+func parseLegacy(rules string) (*Policy, error) {
 	p := &Policy{}
 
 	type LegacyPolicy struct {
@@ -346,9 +292,6 @@ func parseLegacy(rules string, sentinel sentinel.Evaluator) (*Policy, error) {
 		if kp.Policy != PolicyList && !isPolicyValid(kp.Policy) {
 			return nil, fmt.Errorf("Invalid key policy: %#v", kp)
 		}
-		if err := isSentinelValid(sentinel, kp.Policy, kp.Sentinel); err != nil {
-			return nil, fmt.Errorf("Invalid key Sentinel policy: %#v, got error:%v", kp, err)
-		}
 
 		p.KeyPrefixes = append(p.KeyPrefixes, kp)
 	}
@@ -357,9 +300,6 @@ func parseLegacy(rules string, sentinel sentinel.Evaluator) (*Policy, error) {
 	for _, np := range lp.Nodes {
 		if !isPolicyValid(np.Policy) {
 			return nil, fmt.Errorf("Invalid node policy: %#v", np)
-		}
-		if err := isSentinelValid(sentinel, np.Policy, np.Sentinel); err != nil {
-			return nil, fmt.Errorf("Invalid node Sentinel policy: %#v, got error:%v", np, err)
 		}
 
 		p.NodePrefixes = append(p.NodePrefixes, np)
@@ -372,9 +312,6 @@ func parseLegacy(rules string, sentinel sentinel.Evaluator) (*Policy, error) {
 		}
 		if sp.Intentions != "" && !isPolicyValid(sp.Intentions) {
 			return nil, fmt.Errorf("Invalid service intentions policy: %#v", sp)
-		}
-		if err := isSentinelValid(sentinel, sp.Policy, sp.Sentinel); err != nil {
-			return nil, fmt.Errorf("Invalid service Sentinel policy: %#v, got error:%v", sp, err)
 		}
 
 		p.ServicePrefixes = append(p.ServicePrefixes, sp)
@@ -427,7 +364,7 @@ func parseLegacy(rules string, sentinel sentinel.Evaluator) (*Policy, error) {
 // NewPolicyFromSource is used to parse the specified ACL rules into an
 // intermediary set of policies, before being compiled into
 // the ACL
-func NewPolicyFromSource(id string, revision uint64, rules string, syntax SyntaxVersion, sentinel sentinel.Evaluator) (*Policy, error) {
+func NewPolicyFromSource(id string, revision uint64, rules string, syntax SyntaxVersion) (*Policy, error) {
 	if rules == "" {
 		// Hot path for empty source
 		return &Policy{ID: id, Revision: revision}, nil
@@ -437,9 +374,9 @@ func NewPolicyFromSource(id string, revision uint64, rules string, syntax Syntax
 	var err error
 	switch syntax {
 	case SyntaxLegacy:
-		policy, err = parseLegacy(rules, sentinel)
+		policy, err = parseLegacy(rules)
 	case SyntaxCurrent:
-		policy, err = parseCurrent(rules, sentinel)
+		policy, err = parseCurrent(rules)
 	default:
 		return nil, fmt.Errorf("Invalid rules version: %d", syntax)
 	}
@@ -697,7 +634,6 @@ func MergePolicies(policies []*Policy) *Policy {
 
 			if takesPrecedenceOver(sp.Policy, existing.Policy) {
 				existing.Policy = sp.Policy
-				existing.Sentinel = sp.Sentinel
 			}
 
 			if takesPrecedenceOver(sp.Intentions, existing.Intentions) {
@@ -715,7 +651,6 @@ func MergePolicies(policies []*Policy) *Policy {
 
 			if takesPrecedenceOver(sp.Policy, existing.Policy) {
 				existing.Policy = sp.Policy
-				existing.Sentinel = sp.Sentinel
 			}
 
 			if takesPrecedenceOver(sp.Intentions, existing.Intentions) {

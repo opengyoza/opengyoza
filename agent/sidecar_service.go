@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/hashicorp/consul/ipaddr"
+	"github.com/opengyoza/opengyoza/ipaddr"
 
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/structs"
 )
 
 func (a *Agent) sidecarServiceID(serviceID string) string {

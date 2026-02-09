@@ -1,9 +1,7 @@
 package structs
 
 import (
-	"net"
-
-	"github.com/hashicorp/consul/agent/consul/autopilot"
+	"github.com/opengyoza/opengyoza/agent/consul/autopilot"
 	"github.com/hashicorp/raft"
 )
 
@@ -84,21 +82,4 @@ type AutopilotSetConfigRequest struct {
 // RequestDatacenter returns the datacenter for a given request.
 func (op *AutopilotSetConfigRequest) RequestDatacenter() string {
 	return op.Datacenter
-}
-
-// (Enterprise-only) NetworkSegment is the configuration for a network segment, which is an
-// isolated serf group on the LAN.
-type NetworkSegment struct {
-	// Name is the name of the segment.
-	Name string
-
-	// Bind is the bind address for this segment.
-	Bind *net.TCPAddr
-
-	// Advertise is the advertise address of this segment.
-	Advertise *net.TCPAddr
-
-	// RPCListener is whether to bind a separate RPC listener on the bind address
-	// for this segment.
-	RPCListener bool
 }

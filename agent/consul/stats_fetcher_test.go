@@ -6,10 +6,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/agent/metadata"
-	"github.com/hashicorp/consul/sdk/testutil/retry"
-	"github.com/hashicorp/consul/testrpc"
-	"github.com/hashicorp/consul/types"
+	"github.com/opengyoza/opengyoza/agent/metadata"
+	"github.com/opengyoza/opengyoza/sdk/testutil/retry"
+	"github.com/opengyoza/opengyoza/testrpc"
+	"github.com/opengyoza/opengyoza/types"
 )
 
 func TestStatsFetcher(t *testing.T) {

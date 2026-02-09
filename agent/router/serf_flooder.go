@@ -6,7 +6,7 @@ import (
 	"net"
 	"strings"
 
-	"github.com/hashicorp/consul/agent/metadata"
+	"github.com/opengyoza/opengyoza/agent/metadata"
 	"github.com/hashicorp/serf/serf"
 )
 
@@ -21,8 +21,8 @@ type FloodPortFn func(*metadata.Server) (int, bool)
 // FloodJoins attempts to make sure all Consul servers in the local Serf
 // instance are joined in the global Serf instance. It assumes names in the
 // local area are of the form <node> and those in the global area are of the
-// form <node>.<dc> as is done for WAN and general network areas in Consul
-// Enterprise.
+// form <node>.<dc> as is done for WAN and any additional network areas when
+// configured.
 func FloodJoins(logger *log.Logger, addrFn FloodAddrFn, portFn FloodPortFn,
 	localDatacenter string, localSerf *serf.Serf, globalSerf *serf.Serf) {
 

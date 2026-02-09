@@ -3,8 +3,8 @@ package router
 import (
 	"log"
 
-	"github.com/hashicorp/consul/agent/metadata"
-	"github.com/hashicorp/consul/types"
+	"github.com/opengyoza/opengyoza/agent/metadata"
+	"github.com/opengyoza/opengyoza/types"
 	"github.com/hashicorp/serf/serf"
 )
 

@@ -15,8 +15,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/command/flags"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/command/flags"
 	multierror "github.com/hashicorp/go-multierror"
 	"github.com/mitchellh/cli"
 )

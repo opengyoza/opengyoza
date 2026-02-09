@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/lib"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/lib"
 )
 
 const (

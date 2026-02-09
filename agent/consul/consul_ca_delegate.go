@@ -1,8 +1,8 @@
 package consul
 
 import (
-	"github.com/hashicorp/consul/agent/consul/state"
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/consul/state"
+	"github.com/opengyoza/opengyoza/agent/structs"
 )
 
 // consulCADelegate providers callbacks for the Consul CA provider

@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/agent"
-	"github.com/hashicorp/consul/connect/proxy"
+	"github.com/opengyoza/opengyoza/agent"
+	"github.com/opengyoza/opengyoza/connect/proxy"
 	"github.com/mitchellh/cli"
 	"github.com/stretchr/testify/require"
 )

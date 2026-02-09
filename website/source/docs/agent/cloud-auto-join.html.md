@@ -22,7 +22,7 @@ encoded. If the values contain spaces, equals, backslashes or double quotes then
 they need to be double quoted and the usual escaping rules apply.
 
 ```sh
-$ consul agent -retry-join 'provider=my-cloud config=val config2="some other val" ...'
+$ gyoza agent -retry-join 'provider=my-cloud config=val config2="some other val" ...'
 ```
 
 or via a configuration file:
@@ -50,7 +50,7 @@ This returns the first private IP address of all servers in the given
 region which have the given `tag_key` and `tag_value`.
 
 ```sh
-$ consul agent -retry-join "provider=aws tag_key=... tag_value=..."
+$ gyoza agent -retry-join "provider=aws tag_key=... tag_value=..."
 ```
 
 ```json
@@ -88,7 +88,7 @@ which have the given `tag_key` and `tag_value` in the tenant and subscription, o
 the given `resource_group` of a `vm_scale_set` for Virtual Machine Scale Sets.
 
 ```sh
-$ consul agent -retry-join "provider=azure tag_name=... tag_value=... tenant_id=... client_id=... subscription_id=... secret_access_key=..."
+$ gyoza agent -retry-join "provider=azure tag_name=... tag_value=... tenant_id=... client_id=... subscription_id=... secret_access_key=..."
 ```
 
 ```json
@@ -129,7 +129,7 @@ This returns the first private IP address of all servers in the given
 project which have the given `tag_value`.
 
 ```sh
-$ consul agent -retry-join "provider=gce project_name=... tag_value=..."
+$ gyoza agent -retry-join "provider=gce project_name=... tag_value=..."
 ```
 
 ```json
@@ -164,7 +164,7 @@ This returns the first private IP address of all servers for the given
 datacenter with the given `tag_value`.
 
 ```sh
-$ consul agent -retry-join "provider=softlayer datacenter=... tag_value=... username=... api_key=..."
+$ gyoza agent -retry-join "provider=softlayer datacenter=... tag_value=... username=... api_key=..."
 ```
 
 ```json
@@ -185,12 +185,12 @@ This returns the first private IP address of all servers for the given
 `region` with the given `tag_key` and `tag_value`.
 
 ```sh
-$ consul agent -retry-join "provider=aliyun region=... tag_key=consul tag_value=... access_key_id=... access_key_secret=..."
+$ gyoza agent -retry-join "provider=aliyun region=... tag_key=gyoza tag_value=... access_key_id=... access_key_secret=..."
 ```
 
 ```json
 {
-    "retry_join": ["provider=aliyun region=... tag_key=consul tag_value=... access_key_id=... access_key_secret=..."]
+    "retry_join": ["provider=aliyun region=... tag_key=gyoza tag_value=... access_key_id=... access_key_secret=..."]
 }
 ```
 
@@ -210,7 +210,7 @@ This returns the first private IP address of all servers for the given
 `region` with the given `tag_name`.
 
 ```sh
-$ consul agent -retry-join "provider=digitalocean region=... tag_name=... api_token=..."
+$ gyoza agent -retry-join "provider=digitalocean region=... tag_name=... api_token=..."
 ```
 
 ```json
@@ -230,12 +230,12 @@ This returns the first private IP address of all servers for the given
 `region` with the given `tag_key` and `tag_value`.
 
 ```sh
-$ consul agent -retry-join "provider=os tag_key=consul tag_value=server username=... password=... auth_url=..."
+$ gyoza agent -retry-join "provider=os tag_key=gyoza tag_value=server username=... password=... auth_url=..."
 ```
 
 ```json
 {
-    "retry_join": ["provider=os tag_key=consul tag_value=server username=... password=... auth_url=..."]
+    "retry_join": ["provider=os tag_key=gyoza tag_value=server username=... password=... auth_url=..."]
 }
 ```
 
@@ -257,7 +257,7 @@ This returns the first private IP address of all servers for the given
 `region` with the given `tag_name`.
 
 ```sh
-$ consul agent -retry-join "provider=scaleway organization=my-org tag_name=consul-server token=... region=..."
+$ gyoza agent -retry-join "provider=scaleway organization=my-org tag_name=consul-server token=... region=..."
 ```
 
 ```json
@@ -277,7 +277,7 @@ $ consul agent -retry-join "provider=scaleway organization=my-org tag_name=consu
 This returns the first PrimaryIP addresses for all servers with the given `tag_key` and `tag_value`.
 
 ```sh
-$ consul agent -retry-join "provider=triton account=testaccount url=https://us-sw-1.api.joyentcloud.com key_id=... tag_key=consul-role tag_value=server"
+$ gyoza agent -retry-join "provider=triton account=testaccount url=https://us-sw-1.api.joyentcloud.com key_id=... tag_key=consul-role tag_value=server"
 ```
 
 ```json
@@ -299,7 +299,7 @@ $ consul agent -retry-join "provider=triton account=testaccount url=https://us-s
 This returns the first private IP address of all servers for the given region with the given `tag_name` and `category_name`.
 
 ```sh
-$ consul agent -retry-join "provider=vsphere category_name=consul-role tag_name=consul-server host=... user=... password=... insecure_ssl=[true|false]"
+$ gyoza agent -retry-join "provider=vsphere category_name=consul-role tag_name=consul-server host=... user=... password=... insecure_ssl=[true|false]"
 ```
 
 ```json
@@ -322,7 +322,7 @@ $ consul agent -retry-join "provider=vsphere category_name=consul-role tag_name=
 This returns the first private IP address (or the IP address of `address type`) of all servers with the given `project` and `auth_token`.
 
 ```sh
-$ consul agent -retry-join "provider=packet auth_token=token project=uuid url=... address_type=..."
+$ gyoza agent -retry-join "provider=packet auth_token=token project=uuid url=... address_type=..."
 ```
 
 ```json
@@ -356,7 +356,7 @@ the `consul.hashicorp.com/auto-join-port` annotation to set the port. The value
 may be an integer or a named port.
 
 ```sh
-$ consul agent -retry-join "provider=k8s label_selector=\"app=consul,component=server\""
+$ gyoza agent -retry-join "provider=k8s label_selector=\"app=consul,component=server\""
 ```
 
 ```json

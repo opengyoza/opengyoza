@@ -12,12 +12,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/testrpc"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/testrpc"
 	"github.com/hashicorp/raft"
 	"github.com/pascaldekloe/goe/verify"
 
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/structs"
 )
 
 func TestTxnEndpoint_Bad_JSON(t *testing.T) {

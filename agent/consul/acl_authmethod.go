@@ -3,12 +3,12 @@ package consul
 import (
 	"fmt"
 
-	"github.com/hashicorp/consul/agent/consul/authmethod"
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/consul/authmethod"
+	"github.com/opengyoza/opengyoza/agent/structs"
 	"github.com/hashicorp/go-bexpr"
 
 	// register this as a builtin auth method
-	_ "github.com/hashicorp/consul/agent/consul/authmethod/kubeauth"
+	_ "github.com/opengyoza/opengyoza/agent/consul/authmethod/kubeauth"
 )
 
 type authMethodValidatorEntry struct {

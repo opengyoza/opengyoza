@@ -7,18 +7,18 @@ description: >
   Authority (CA) configuration.
 ---
 
-# Consul Connect Certificate Authority (CA)
+# OpenGyoza Connect Certificate Authority (CA)
 
-Command: `consul connect ca`
+Command: `gyoza connect ca`
 
-The CA connect command is used to interact with Consul Connect's Certificate Authority
+The CA connect command is used to interact with OpenGyoza Connect's Certificate Authority
 subsystem. The command can be used to view or modify the current CA configuration. See the
 [Connect CA documentation](/docs/connect/ca.html) for more information.
 
 ```text
-Usage: consul connect ca <subcommand> [options] [args]
+Usage: gyoza connect ca <subcommand> [options] [args]
 
-  This command has subcommands for interacting with Consul Connect's
+  This command has subcommands for interacting with OpenGyoza Connect's
   Certificate Authority (CA).
 
   Here are some simple examples, and more detailed examples are available
@@ -26,11 +26,11 @@ Usage: consul connect ca <subcommand> [options] [args]
 
   Get the configuration:
 
-      $ consul connect ca get-config
+      $ gyoza connect ca get-config
 
   Update the configuration:
 
-      $ consul connect ca set-config -config-file ca.json
+      $ gyoza connect ca set-config -config-file ca.json
 
   For more examples, ask for subcommand help or view the documentation.
 
@@ -43,7 +43,7 @@ Subcommands:
 
 This command displays the current CA configuration.
 
-Usage: `consul connect ca get-config [options]`
+Usage: `gyoza connect ca get-config [options]`
 
 #### API Options
 
@@ -54,7 +54,7 @@ The output looks like this:
 
 ```
 {
-	"Provider": "consul",
+	"Provider": "gyoza",
 	"Config": {},
 	"CreateIndex": 5,
 	"ModifyIndex": 197
@@ -67,7 +67,7 @@ Modifies the current CA configuration. If this results in a new root certificate
 being used, the [Root Rotation](/docs/connect/ca.html#root-certificate-rotation) process
 will be triggered.
 
-Usage: `consul connect ca set-config [options]`
+Usage: `gyoza connect ca set-config [options]`
 
 #### API Options
 

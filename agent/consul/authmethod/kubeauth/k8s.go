@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/hashicorp/consul/agent/consul/authmethod"
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/consul/authmethod"
+	"github.com/opengyoza/opengyoza/agent/structs"
 	cleanhttp "github.com/hashicorp/go-cleanhttp"
 	"gopkg.in/square/go-jose.v2/jwt"
 	authv1 "k8s.io/api/authentication/v1"

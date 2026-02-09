@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hashicorp/consul/acl"
-	"github.com/hashicorp/consul/agent/cache"
+	"github.com/opengyoza/opengyoza/acl"
+	"github.com/opengyoza/opengyoza/agent/cache"
 	"github.com/mitchellh/hashstructure"
 )
 
@@ -898,7 +898,7 @@ func canReadDiscoveryChain(entry discoveryChainConfigEntry, rule acl.Authorizer)
 func canWriteDiscoveryChain(entry discoveryChainConfigEntry, rule acl.Authorizer) bool {
 	name := entry.GetName()
 
-	if !rule.ServiceWrite(name, nil) {
+	if !rule.ServiceWrite(name) {
 		return false
 	}
 

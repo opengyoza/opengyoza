@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	consulapi "github.com/hashicorp/consul/api"
+	consulapi "github.com/opengyoza/opengyoza/api"
 	"github.com/mitchellh/mapstructure"
 )
 
@@ -163,7 +163,7 @@ func ParseExempt(params map[string]interface{}, exempt []string) (*Plan, error) 
 		}
 		config, err := parseHttpHandlerConfig(params["http_handler_config"])
 		if err != nil {
-			return nil, fmt.Errorf(fmt.Sprintf("Failed to parse 'http_handler_config': %v", err))
+			return nil, fmt.Errorf("Failed to parse 'http_handler_config': %v", err)
 		}
 		plan.Exempt["http_handler_config"] = config
 		delete(params, "http_handler_config")
@@ -280,7 +280,7 @@ func parseHttpHandlerConfig(configParams interface{}) (*HttpHandlerConfig, error
 	if config.TimeoutRaw == "" {
 		config.Timeout = DefaultTimeout
 	} else if timeout, err := time.ParseDuration(config.TimeoutRaw); err != nil {
-		return nil, fmt.Errorf(fmt.Sprintf("Failed to parse timeout: %v", err))
+		return nil, fmt.Errorf("Failed to parse timeout: %v", err)
 	} else {
 		config.Timeout = timeout
 	}

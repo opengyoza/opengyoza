@@ -92,10 +92,15 @@ func TestStore_RegularTokens(t *testing.T) {
 			t.Parallel()
 
 			s := new(Store)
-			require.True(t, s.UpdateUserToken(tt.set.user, tt.set.userSource))
-			require.True(t, s.UpdateAgentToken(tt.set.agent, tt.set.agentSource))
-			require.True(t, s.UpdateReplicationToken(tt.set.repl, tt.set.replSource))
-			require.True(t, s.UpdateAgentMasterToken(tt.set.master, tt.set.masterSource))
+			expectUserChange := tt.set.user != "" || tt.set.userSource != TokenSourceUnset
+			expectAgentChange := tt.set.agent != "" || tt.set.agentSource != TokenSourceUnset
+			expectReplChange := tt.set.repl != "" || tt.set.replSource != TokenSourceUnset
+			expectMasterChange := tt.set.master != "" || tt.set.masterSource != TokenSourceUnset
+
+			require.Equal(t, expectUserChange, s.UpdateUserToken(tt.set.user, tt.set.userSource))
+			require.Equal(t, expectAgentChange, s.UpdateAgentToken(tt.set.agent, tt.set.agentSource))
+			require.Equal(t, expectReplChange, s.UpdateReplicationToken(tt.set.repl, tt.set.replSource))
+			require.Equal(t, expectMasterChange, s.UpdateAgentMasterToken(tt.set.master, tt.set.masterSource))
 
 			// If they don't change then they return false.
 			require.False(t, s.UpdateUserToken(tt.set.user, tt.set.userSource))

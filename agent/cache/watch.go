@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/hashicorp/consul/lib"
+	"github.com/opengyoza/opengyoza/lib"
 )
 
 // UpdateEvent is a struct summarizing an update to a cache entry

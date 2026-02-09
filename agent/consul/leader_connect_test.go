@@ -8,13 +8,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/agent/connect"
-	ca "github.com/hashicorp/consul/agent/connect/ca"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/agent/token"
-	tokenStore "github.com/hashicorp/consul/agent/token"
-	"github.com/hashicorp/consul/sdk/testutil/retry"
-	"github.com/hashicorp/consul/testrpc"
+	"github.com/opengyoza/opengyoza/agent/connect"
+	ca "github.com/opengyoza/opengyoza/agent/connect/ca"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/token"
+	tokenStore "github.com/opengyoza/opengyoza/agent/token"
+	"github.com/opengyoza/opengyoza/sdk/testutil/retry"
+	"github.com/opengyoza/opengyoza/testrpc"
 	uuid "github.com/hashicorp/go-uuid"
 	msgpackrpc "github.com/hashicorp/net-rpc-msgpackrpc"
 	"github.com/stretchr/testify/assert"
@@ -197,12 +197,14 @@ func TestLeader_SecondaryCA_IntermediateRefresh(t *testing.T) {
 	}
 
 	var updatedRoot *structs.CARoot
-	{
+	retry.Run(t, func(r *retry.R) {
 		rootList, activeRoot, err := getTestRoots(s1, "dc1")
-		require.NoError(err)
-		require.Len(rootList.Roots, 2)
+		r.Check(err)
+		if len(rootList.Roots) < 2 {
+			r.Fatalf("expected at least 2 roots, got %d", len(rootList.Roots))
+		}
 		updatedRoot = activeRoot
-	}
+	})
 
 	// Wait for dc2's intermediate to be refreshed.
 	var intermediatePEM string
@@ -1102,9 +1104,15 @@ func TestLeader_CARootPruning(t *testing.T) {
 			Datacenter: "dc1",
 			Config:     newConfig,
 		}
-		var reply interface{}
-
-		require.NoError(msgpackrpc.CallWithCodec(codec, "ConnectCA.ConfigurationSet", args, &reply))
+		retry.Run(t, func(r *retry.R) {
+			if !s1.IsLeader() {
+				r.Fatal("s1 not leader")
+			}
+			var reply interface{}
+			if err := msgpackrpc.CallWithCodec(codec, "ConnectCA.ConfigurationSet", args, &reply); err != nil {
+				r.Fatalf("err: %v", err)
+			}
+		})
 	}
 
 	// Should have 2 roots now.

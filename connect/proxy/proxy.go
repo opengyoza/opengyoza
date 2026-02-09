@@ -4,9 +4,9 @@ import (
 	"crypto/x509"
 	"log"
 
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/connect"
-	"github.com/hashicorp/consul/lib"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/connect"
+	"github.com/opengyoza/opengyoza/lib"
 )
 
 // Proxy implements the built-in connect proxy.

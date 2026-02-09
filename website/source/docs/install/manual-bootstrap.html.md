@@ -3,13 +3,13 @@ layout: "docs"
 page_title: "Manual Bootstrapping"
 sidebar_current: "docs-install-bootstrapping"
 description: |-
-  When deploying Consul to a datacenter for the first time, there is an initial bootstrapping that must be done. As of Consul 0.4, an automatic bootstrapping is available and is the recommended approach. However, older versions only support a manual bootstrap that is documented here.
+  When deploying OpenGyoza to a datacenter for the first time, there is an initial bootstrapping that must be done. As of upstream Consul 0.4, an automatic bootstrapping is available and is the recommended approach. However, older versions only support a manual bootstrap that is documented here.
 ---
 
 # Manually Bootstrapping a Datacenter
 
-When deploying Consul to a datacenter for the first time, there is an initial
-bootstrapping that must be done. As of Consul 0.4, an
+When deploying OpenGyoza to a datacenter for the first time, there is an initial
+bootstrapping that must be done. As of upstream Consul 0.4, an
 [automatic bootstrapping](/docs/guides/bootstrapping.html) is available and is
 the recommended approach. However, older versions only support a manual
 bootstrap that is documented here.
@@ -27,6 +27,8 @@ to assert leadership of the cluster without agreement from any other server.
 This is necessary because at this point, there are no other servers running in
 the datacenter! Lets call this first server `Node A`. When starting `Node A`
 something like the following will be logged:
+
+Log output still uses the upstream `consul` tag for compatibility.
 
 ```text
 2014/02/22 19:23:32 [INFO] consul: cluster leadership acquired
@@ -51,14 +53,14 @@ operation is symmetric it does not matter which node initiates it. From
 `Node B` and `Node C` you can do the following:
 
 ```text
-$ consul join <Node A Address>
+$ gyoza join <Node A Address>
 Successfully joined cluster by contacting 1 nodes.
 ```
 
 Alternatively, from `Node A` you can do the following:
 
 ```text
-$ consul join <Node B Address> <Node C Address>
+$ gyoza join <Node B Address> <Node C Address>
 Successfully joined cluster by contacting 2 nodes.
 ```
 
@@ -70,9 +72,9 @@ Once the join is successful, `Node A` should output something like:
 [INFO] raft: Added peer 127.0.0.3:8300, starting replication
 ```
 
-As a sanity check, the `consul info` command is a useful tool. It can be used to
+As a sanity check, the `gyoza info` command is a useful tool. It can be used to
 verify `raft.num_peers` is now 2, and you can view the latest log index under
-`raft.last_log_index`. When running `consul info` on the followers, you should
+`raft.last_log_index`. When running `gyoza info` on the followers, you should
 see `raft.last_log_index` converge to the same value as the leader begins
 replication. That value represents the last log entry that has been stored on
 disk.

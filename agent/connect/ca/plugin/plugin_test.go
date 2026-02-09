@@ -6,8 +6,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/hashicorp/consul/agent/connect"
-	"github.com/hashicorp/consul/agent/connect/ca"
+	"github.com/opengyoza/opengyoza/agent/connect"
+	"github.com/opengyoza/opengyoza/agent/connect/ca"
 	"github.com/hashicorp/go-plugin"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"

@@ -4,9 +4,9 @@ page_title: "Commands: ACL Set Agent Token"
 sidebar_current: "docs-commands-acl-set-agent-token"
 ---
 
-# Consul ACL Set Agent Token
+# OpenGyoza ACL Set Agent Token
 
-Command: `consul acl set-agent-token`
+Command: `gyoza acl set-agent-token`
 
 This command updates the ACL tokens currently in use by the agent. It can be used to introduce
 ACL tokens to the agent for the first time, or to update tokens that were initially loaded from
@@ -15,7 +15,7 @@ agent is restarted.
 
 ## Usage
 
-Usage: consul acl set-agent-token [options] TYPE TOKEN
+Usage: gyoza acl set-agent-token [options] TYPE TOKEN
 
 
 ### Token Types
@@ -45,5 +45,5 @@ Usage: consul acl set-agent-token [options] TYPE TOKEN
 Set the `default` token:
 
 ```
-$ consul acl set-agent-token default c4d0f8df-3aba-4ab6-a7a0-35b760dc29a1
+$ gyoza acl set-agent-token default c4d0f8df-3aba-4ab6-a7a0-35b760dc29a1
 ```

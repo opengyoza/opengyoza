@@ -4,18 +4,18 @@ page_title: "Commands: Debug"
 sidebar_current: "docs-commands-debug"
 ---
 
-# Consul Debug
+# OpenGyoza Debug
 
-Command: `consul debug`
+Command: `gyoza debug`
 
-The `consul debug` command monitors a Consul agent for the specified period of
+The `gyoza debug` command monitors an OpenGyoza agent for the specified period of
 time, recording information about the agent, cluster, and environment to an archive
 written to the current directory.
 
-Providing support for complex issues encountered by Consul operators often
+Providing support for complex issues encountered by OpenGyoza operators often
 requires a large amount of debugging information to be retrieved. This command
 aims to shortcut that coordination and provide a simple workflow for accessing
-data about Consul agent, cluster, and environment to enable faster
+data about OpenGyoza agent, cluster, and environment to enable faster
 isolation and debugging of issues.
 
 This command requires an `operator:read` ACL token in order to retrieve the
@@ -28,7 +28,7 @@ captured data.
 ## Security and Privacy
 
 By default, ACL tokens, private keys, and other sensitive material related
-to Consul is sanitized and not available in this archive. However, other
+to OpenGyoza is sanitized and not available in this archive. However, other
 information about the environment the target agent is running in is available
 in plain text within the archive.
 
@@ -41,7 +41,7 @@ or otherwise.
 
 ## Usage
 
-`Usage: consul debug [options]`
+`Usage: gyoza debug [options]`
 
 By default, the debug command will capture an archive at the current path for
 all targets for 2 minutes.
@@ -83,7 +83,7 @@ information when `debug` is running. By default, it captures all information.
 
 ## Examples
 
-This command can be run from any host with the Consul binary, but requires
+This command can be run from any host with the OpenGyoza binary, but requires
 network access to the target agent in order to retrieve data. Once retrieved,
 the data is written to the the specified path (defaulting to the current
 directory) on the host where the command runs.
@@ -92,15 +92,15 @@ By default the command will capture all available data from the default
 agent address on loopback for 2 minutes at 30 second intervals.
 
 ```text
-$ consul debug
+$ gyoza debug
 ...
 ```
 
 In this example, the archive is collected from a different agent on the
-network using the standard Consul CLI flag to change the API address.
+network using the standard OpenGyoza CLI flag to change the API address.
 
 ```text
-$ consul debug -http-addr=10.0.1.10:8500
+$ gyoza debug -http-addr=10.0.1.10:8500
 ...
 ```
 
@@ -108,7 +108,7 @@ The capture flag can be specified to only record a subset of data
 about the agent and environment.
 
 ```text
-$ consul debug -capture agent -capture host -capture logs
+$ gyoza debug -capture agent -capture host -capture logs
 ...
 ```
 
@@ -117,6 +117,6 @@ information (such as metrics) can be specified with the `-interval`
 and `-duration` flags.
 
 ```text
-$ consul debug -interval=15s -duration=1m
+$ gyoza debug -interval=15s -duration=1m
 ...
 ```

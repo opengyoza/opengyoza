@@ -501,7 +501,7 @@ function build_release {
    
    if is_set "${do_build}"
    then
-      status_stage "==> Building Consul for version ${vers}"
+      status_stage "==> Building Gyoza + Consul shim for version ${vers}"
       build_consul_release "${sdir}" "${GO_BUILD_TAG}"
       if test $? -ne 0
       then

@@ -6,9 +6,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/hashicorp/consul/acl"
-	"github.com/hashicorp/consul/agent/consul/state"
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/acl"
+	"github.com/opengyoza/opengyoza/agent/consul/state"
+	"github.com/opengyoza/opengyoza/agent/structs"
 	"github.com/hashicorp/go-memdb"
 )
 
@@ -139,7 +139,7 @@ func (c *Coordinate) Update(args *structs.CoordinateUpdateRequest, reply *struct
 		return err
 	}
 	if rule != nil && c.srv.config.ACLEnforceVersion8 {
-		if !rule.NodeWrite(args.Node, nil) {
+		if !rule.NodeWrite(args.Node) {
 			return acl.ErrPermissionDenied
 		}
 	}

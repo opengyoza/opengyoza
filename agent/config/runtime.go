@@ -7,11 +7,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/lib"
-	"github.com/hashicorp/consul/tlsutil"
-	"github.com/hashicorp/consul/types"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/lib"
+	"github.com/opengyoza/opengyoza/tlsutil"
+	"github.com/opengyoza/opengyoza/types"
 	"golang.org/x/time/rate"
 )
 
@@ -31,8 +31,6 @@ type RuntimeConfig struct {
 
 	CheckDeregisterIntervalMin time.Duration
 	CheckReapInterval          time.Duration
-	SegmentLimit               int
-	SegmentNameLimit           int
 	SyncCoordinateRateTarget   float64
 	SyncCoordinateIntervalMin  time.Duration
 	Revision                   string
@@ -177,13 +175,6 @@ type RuntimeConfig struct {
 	// hcl: autopilot { cleanup_dead_servers = (true|false) }
 	AutopilotCleanupDeadServers bool
 
-	// AutopilotDisableUpgradeMigration will disable Autopilot's upgrade migration
-	// strategy of waiting until enough newer-versioned servers have been added to the
-	// cluster before promoting them to voters. (Enterprise-only)
-	//
-	// hcl: autopilot { disable_upgrade_migration = (true|false)
-	AutopilotDisableUpgradeMigration bool
-
 	// AutopilotLastContactThreshold is the limit on the amount of time a server can go
 	// without leader contact before being considered unhealthy.
 	//
@@ -202,27 +193,12 @@ type RuntimeConfig struct {
 	//hcl: autopilot { min_quorum = int }
 	AutopilotMinQuorum uint
 
-	// AutopilotRedundancyZoneTag is the Meta tag to use for separating servers
-	// into zones for redundancy. If left blank, this feature will be disabled.
-	// (Enterprise-only)
-	//
-	// hcl: autopilot { redundancy_zone_tag = string }
-	AutopilotRedundancyZoneTag string
-
 	// AutopilotServerStabilizationTime is the minimum amount of time a server must be
 	// in a stable, healthy state before it can be added to the cluster. Only
 	// applicable with Raft protocol version 3 or higher.
 	//
 	// hcl: autopilot { server_stabilization_time = "duration" }
 	AutopilotServerStabilizationTime time.Duration
-
-	// AutopilotUpgradeVersionTag is the node tag to use for version info when
-	// performing upgrade migrations. If left blank, the Consul version will be used.
-	//
-	// (Enterprise-only)
-	//
-	// hcl: autopilot { upgrade_version_tag = string }
-	AutopilotUpgradeVersionTag string
 
 	// DNSAllowStale is used to enable lookups with stale
 	// data. This gives horizontal read scalability since
@@ -876,13 +852,6 @@ type RuntimeConfig struct {
 	// flag: -node-meta "key:value" -node-meta "key:value" ...
 	NodeMeta map[string]string
 
-	// NonVotingServer is whether this server will act as a non-voting member
-	// of the cluster to help provide read scalability. (Enterprise-only)
-	//
-	// hcl: non_voting_server = (true|false)
-	// flag: -non-voting-server
-	NonVotingServer bool
-
 	// PidFile is the file to store our PID in.
 	//
 	// hcl: pid_file = string
@@ -1053,38 +1022,6 @@ type RuntimeConfig struct {
 	// hcl: retry_join_wan = []string
 	// flag: -retry-join-wan string -retry-join-wan string
 	RetryJoinWAN []string
-
-	// SegmentName is the network segment for this client to join.
-	// (Enterprise-only)
-	//
-	// hcl: segment = string
-	SegmentName string
-
-	// Segments is the list of network segments for this server to
-	// initialize.
-	//
-	// hcl: segment = [
-	//   {
-	//     # name is the name of the segment
-	//     name = string
-	//
-	//     # bind is the bind ip address for this segment.
-	//     bind = string
-	//
-	//     # port is the bind port for this segment.
-	//     port = int
-	//
-	//     # advertise is the advertise ip address for this segment.
-	//     # Defaults to the bind address if not set.
-	//     advertise = string
-	//
-	//     # rpc_listener controls whether or not to bind a separate
-	//     # RPC listener to the bind address.
-	//     rpc_listener = (true|false)
-	//   },
-	//   ...
-	// ]
-	Segments []structs.NetworkSegment
 
 	// SerfAdvertiseAddrLAN is the TCP address which is used for advertising
 	// the LAN Gossip pool for both client and server. The address is the

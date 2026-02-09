@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"reflect"
 	"sort"
+	"strconv"
 	"strings"
 	"testing"
 
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/lib"
-	"github.com/hashicorp/consul/types"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/lib"
+	"github.com/opengyoza/opengyoza/types"
 	"github.com/hashicorp/go-memdb"
 	uuid "github.com/hashicorp/go-uuid"
 	"github.com/pascaldekloe/goe/verify"
@@ -537,7 +538,7 @@ func deprecatedEnsureNodeWithoutIDCanRegister(t *testing.T, s *Store, nodeName s
 		Node:    nodeName,
 		Address: "1.1.1.9",
 		Meta: map[string]string{
-			"version": string(txIdx),
+			"version": strconv.FormatUint(txIdx, 10),
 		},
 	}
 	if err := s.EnsureNode(txIdx, in); err != nil {
@@ -985,7 +986,7 @@ func TestStateStore_EnsureNode(t *testing.T) {
 	}
 
 	// All the remaining tests are deprecated, please remove them on next Consul major release
-	// See https://github.com/hashicorp/consul/pull/3983 for context
+	// See https://github.com/opengyoza/opengyoza/pull/3983 for context
 
 	// Deprecated behavior is following
 	deprecatedEnsureNodeWithoutIDCanRegister(t, s, "new-node-without-id", 13)
@@ -3207,7 +3208,7 @@ func TestStateStore_ConnectQueryBlocking(t *testing.T) {
 			wantAfterWatchSetSize: 2,
 		},
 		{
-			// See https://github.com/hashicorp/consul/issues/5506. The issue is cause
+			// See https://github.com/opengyoza/opengyoza/issues/5506. The issue is cause
 			// if the target service exists and is registered meaning it has a
 			// service-specific index. This index is then used for the connect query
 			// even though it is not updated by changes to the actual proxy or it's
@@ -3237,7 +3238,7 @@ func TestStateStore_ConnectQueryBlocking(t *testing.T) {
 			wantAfterWatchSetSize: 2,
 		},
 		{
-			// See https://github.com/hashicorp/consul/issues/5506. This is the edge
+			// See https://github.com/opengyoza/opengyoza/issues/5506. This is the edge
 			// case that the simple solution wouldn't catch.
 			name: "unblocks on different service name proxy-service registration when service is present",
 			setupFn: func(s *Store) {

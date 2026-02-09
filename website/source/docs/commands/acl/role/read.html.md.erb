@@ -4,15 +4,15 @@ page_title: "Commands: ACL Role Read"
 sidebar_current: "docs-commands-acl-role-read"
 ---
 
-# Consul ACL Role Read
+# OpenGyoza ACL Role Read
 
-Command: `consul acl role read`
+Command: `gyoza acl role read`
 
 The `acl role read` command reads and displays a roles details.
 
 ## Usage
 
-Usage: `consul acl role read [options] [args]`
+Usage: `gyoza acl role read [options] [args]`
 
 #### API Options
 
@@ -34,7 +34,7 @@ Usage: `consul acl role read [options] [args]`
 Get role details:
 
 ```sh
-$ consul acl role read -id 57147d87-6bf7-f794-1a6e-7d038c4e4ae9
+$ gyoza acl role read -id 57147d87-6bf7-f794-1a6e-7d038c4e4ae9
 ID:           57147d87-6bf7-f794-1a6e-7d038c4e4ae9
 Name:         crawler
 Description:  web crawler role
@@ -45,7 +45,7 @@ Policies:
 Get role details by name:
 
 ```sh
-$ consul acl role read -name archiver
+$ gyoza acl role read -name archiver
 ID:           a365fdc9-ac71-e754-0645-7ab6bd747301
 Name:         archiver
 Description:  archiver role

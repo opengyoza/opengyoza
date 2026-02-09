@@ -308,8 +308,8 @@ func minRaftProtocol(members []serf.Member, serverFunc func(serf.Member) (*Serve
 	return minVersion, nil
 }
 
-// handlePromotions is a helper shared with Consul Enterprise that attempts to
-// apply desired server promotions to the Raft configuration.
+// handlePromotions attempts to apply desired server promotions to the Raft
+// configuration.
 func (a *Autopilot) handlePromotions(promotions []raft.Server) error {
 	// This used to wait to only promote to maintain an odd quorum of
 	// servers, but this was at odds with the dead server cleanup when doing

@@ -14,8 +14,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/sdk/testutil"
-	"github.com/hashicorp/consul/sdk/testutil/retry"
+	"github.com/opengyoza/opengyoza/sdk/testutil"
+	"github.com/opengyoza/opengyoza/sdk/testutil/retry"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -613,7 +613,7 @@ func TestAPI_ClientTLSOptions(t *testing.T) {
 
 		// Should fail
 		_, err = client.Agent().Self()
-		if err == nil || !strings.Contains(err.Error(), "bad certificate") {
+		if err == nil || (!strings.Contains(err.Error(), "bad certificate") && !strings.Contains(err.Error(), "certificate required")) {
 			t.Fatal(err)
 		}
 	})

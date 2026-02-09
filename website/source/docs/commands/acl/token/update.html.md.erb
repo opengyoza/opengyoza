@@ -4,16 +4,16 @@ page_title: "Commands: ACL Token Update"
 sidebar_current: "docs-commands-acl-token-update"
 ---
 
-# Consul ACL Token Update
+# OpenGyoza ACL Token Update
 
-Command: `consul acl token update`
+Command: `gyoza acl token update`
 
 The `acl token update` command will update a token. Some parts of the token like whether the
 token is local to the datacenter cannot be changed.
 
 ## Usage
 
-Usage: `consul acl token update [options]`
+Usage: `gyoza acl token update [options]`
 
 #### API Options
 
@@ -53,7 +53,7 @@ Usage: `consul acl token update [options]`
 Update the anonymous token:
 
 ```sh
-$ consul acl token update -id anonymous -policy-id 06acc
+$ gyoza acl token update -id anonymous -policy-id 06acc
 Token updated successfully.
 AccessorID:   00000000-0000-0000-0000-000000000002
 SecretID:     anonymous
@@ -67,7 +67,7 @@ Policies:
 Update a token description and take the policies from the existing token:
 
 ```sh
-$ consul acl token update -id 986193 -description "WonderToken" -merge-policies
+$ gyoza acl token update -id 986193 -description "WonderToken" -merge-policies
 Token updated successfully.
 AccessorID:   986193b5-e2b5-eb26-6264-b524ea60cc6d
 SecretID:     ec15675e-2999-d789-832e-8c4794daa8d7

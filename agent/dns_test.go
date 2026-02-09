@@ -2,7 +2,6 @@ package agent
 
 import (
 	"fmt"
-	"math/rand"
 	"net"
 	"reflect"
 	"sort"
@@ -10,12 +9,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/agent/config"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/lib"
-	"github.com/hashicorp/consul/sdk/testutil/retry"
-	"github.com/hashicorp/consul/testrpc"
+	"github.com/opengyoza/opengyoza/agent/config"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/lib"
+	"github.com/opengyoza/opengyoza/sdk/testutil/retry"
+	"github.com/opengyoza/opengyoza/testrpc"
 	"github.com/hashicorp/serf/coordinate"
 	"github.com/miekg/dns"
 	"github.com/pascaldekloe/goe/verify"
@@ -27,8 +26,6 @@ const (
 	configUDPAnswerLimit   = 4
 	defaultNumUDPResponses = 3
 	testUDPTruncateLimit   = 8
-
-	pctNodesWithIPv6 = 0.5
 
 	// generateNumNodes is the upper bounds for the number of hosts used
 	// in testing below.  Generate an arbitrarily large number of hosts.
@@ -4203,9 +4200,10 @@ func testDNSServiceLookupResponseLimits(t *testing.T, answerLimit int, qType uin
 	defer a.Shutdown()
 	testrpc.WaitForTestAgent(t, a.RPC, "dc1")
 
+	useIPv6 := qType == dns.TypeAAAA
 	for i := 0; i < generateNumNodes; i++ {
 		nodeAddress := fmt.Sprintf("127.0.0.%d", i+1)
-		if rand.Float64() < pctNodesWithIPv6 {
+		if useIPv6 {
 			nodeAddress = fmt.Sprintf("fe80::%d", i+1)
 		}
 		args := &structs.RegisterRequest{
@@ -4287,15 +4285,16 @@ func checkDNSService(t *testing.T, generateNumNodes int, aRecordLimit int, qType
 		node_name = "test-node"
 		dns_config {
 			a_record_limit = `+fmt.Sprintf("%d", aRecordLimit)+`
-			udp_answer_limit = `+fmt.Sprintf("%d", aRecordLimit)+`
+			udp_answer_limit = `+fmt.Sprintf("%d", udpAnswerLimit)+`
 		}
 	`)
 	defer a.Shutdown()
 	testrpc.WaitForTestAgent(t, a.RPC, "dc1")
 
+	useIPv6 := qType == dns.TypeAAAA
 	for i := 0; i < generateNumNodes; i++ {
 		nodeAddress := fmt.Sprintf("127.0.0.%d", i+1)
-		if rand.Float64() < pctNodesWithIPv6 {
+		if useIPv6 {
 			nodeAddress = fmt.Sprintf("fe80::%d", i+1)
 		}
 		args := &structs.RegisterRequest{
@@ -4330,6 +4329,18 @@ func checkDNSService(t *testing.T, generateNumNodes int, aRecordLimit int, qType
 			return fmt.Errorf("err: %v", err)
 		}
 	}
+
+	retry.Run(t, func(r *retry.R) {
+		args := &structs.ServiceSpecificRequest{
+			Datacenter:  "dc1",
+			ServiceName: "api-tier",
+		}
+		out := new(structs.IndexedServiceNodes)
+		r.Check(a.RPC("Catalog.ServiceNodes", args, out))
+		if len(out.ServiceNodes) != generateNumNodes {
+			r.Fatalf("expected %d service nodes, got %d", generateNumNodes, len(out.ServiceNodes))
+		}
+	})
 
 	// Look up the service directly and via prepared query.
 	questions := []string{

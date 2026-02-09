@@ -4,12 +4,12 @@ page_title: "Commands: Snapshot Save"
 sidebar_current: "docs-commands-snapshot-save"
 ---
 
-# Consul Snapshot Save
+# OpenGyoza Snapshot Save
 
-Command: `consul snapshot save`
+Command: `gyoza snapshot save`
 
 The `snapshot save` command is used to retrieve an atomic, point-in-time snapshot
-of the state of the Consul servers which includes key/value entries,
+of the state of the OpenGyoza servers which includes key/value entries,
 service catalog, prepared queries, sessions, and ACLs. The snapshot is saved to
 the given file.
 
@@ -18,7 +18,7 @@ a snapshot save.
 
 ## Usage
 
-Usage: `consul snapshot save [options] FILE`
+Usage: `gyoza snapshot save [options] FILE`
 
 #### API Options
 
@@ -30,7 +30,7 @@ Usage: `consul snapshot save [options] FILE`
 To create a snapshot from the leader server and save it to "backup.snap":
 
 ```text
-$ consul snapshot save backup.snap
+$ gyoza snapshot save backup.snap
 Saved and verified snapshot to index 8419
 ```
 
@@ -45,13 +45,13 @@ To create a potentially stale snapshot from any available server, use the stale
 consistency mode:
 
 ```text
-$ consul snapshot save -stale backup.snap
+$ gyoza snapshot save -stale backup.snap
 # ...
 ```
 
 This is useful for situations where a cluster is in a degraded state and no
 leader is available. To target a specific server for a snapshot, you can run
-the `consul snapshot save` command on that specific server.
+the `gyoza snapshot save` command on that specific server.
 
 Please see the [HTTP API](/api/snapshot.html) documentation for
 more details about snapshot internals.

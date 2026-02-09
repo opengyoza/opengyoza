@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/hashicorp/consul/agent/metadata"
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/metadata"
+	"github.com/opengyoza/opengyoza/agent/structs"
 	"github.com/hashicorp/go-version"
 	"github.com/hashicorp/hil"
 	"github.com/hashicorp/hil/ast"

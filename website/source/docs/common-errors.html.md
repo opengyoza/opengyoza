@@ -35,7 +35,7 @@ Error parsing server.json: invalid character '`' looking for beginning of value
 There is a syntax error in your configuration file. If the error message doesn't identify the exact location in the file where the problem is, try using [jq] to find it, for example:
 
 ```
-$ consul agent -server -config-file server.json
+$ gyoza agent -server -config-file server.json
 ==> Error parsing server.json: invalid character '`' looking for beginning of value
 $ cat server.json | jq .
 parse error: Invalid numeric literal at line 3, column 29
@@ -123,25 +123,13 @@ If you are using the Consul CLI, make sure you are specifying "https" in the `-h
 
 If you are interacting with the API, change the URI scheme to "https".
 
-## License warnings
-
-```
-License: expiration time: YYYY-MM-DD HH:MM:SS -0500 EST, time left: 29m0s
-```
-You have installed an Enterprise version of Consul. If you are an Enterprise customer, [provide a license key][license] to Consul before it shuts down. Otherwise, install the open-source Consul binary instead.
-
--> **Note:** Enterprise binaries can be identified on our [download site][releases] by the `+ent` suffix.
-
-
 [troubleshooting]: https://learn.hashicorp.com/consul/day-2-operations/advanced-operations/troubleshooting
-[node_name]: https://www.consul.io/docs/agent/options.html#node_name
-[retry_join]: https://www.consul.io/docs/agent/options.html#retry-join
-[license]: https://www.consul.io/docs/commands/license.html
-[releases]: https://releases.hashicorp.com/consul/
+[node_name]: /docs/agent/options.html#node_name
+[retry_join]: /docs/agent/options.html#retry-join
 [files]: https://easyengine.io/tutorials/linux/increase-open-files-limit
 [certificates]: https://learn.hashicorp.com/consul/advanced/day-1-operations/certificates
 [systemd]: https://learn.hashicorp.com/consul/advanced/day-1-operations/deployment-guide#configure-systemd
 [monitoring]: https://learn.hashicorp.com/consul/advanced/day-1-operations/monitoring
-[bind]: https://www.consul.io/docs/agent/options.html#_bind
+[bind]: /docs/agent/options.html#_bind
 [jq]: https://stedolan.github.io/jq/
 [go-sockaddr]: https://godoc.org/github.com/hashicorp/go-sockaddr/template

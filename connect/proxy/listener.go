@@ -11,9 +11,9 @@ import (
 	"time"
 
 	metrics "github.com/armon/go-metrics"
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/connect"
-	"github.com/hashicorp/consul/ipaddr"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/connect"
+	"github.com/opengyoza/opengyoza/ipaddr"
 )
 
 const (

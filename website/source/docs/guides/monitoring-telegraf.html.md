@@ -1,28 +1,31 @@
 ---
 layout: "docs"
-page_title: "Monitoring Consul with Telegraf"
+page_title: "Monitoring OpenGyoza with Telegraf"
 sidebar_current: "docs-guides-monitoring-telegraf"
 description: |-
-  Best practice approaches for monitoring a production Consul cluster with Telegraf
+  Best practice approaches for monitoring a production OpenGyoza cluster with Telegraf
 ---
 
-# Monitoring Consul with Telegraf
+# Monitoring OpenGyoza with Telegraf
 
-Consul makes a range of metrics in various formats available so operators can
+OpenGyoza makes a range of metrics in various formats available so operators can
 measure the health and stability of a cluster, and diagnose or predict potential
 issues.
 
 There are number of monitoring tools and options available, but for the purposes
 of this guide we are going to use the [telegraf_plugin][] in conjunction with
-the StatsD protocol supported by Consul.
+the StatsD protocol supported by OpenGyoza.
 
-You can read the full list of metrics available with Consul in the [telemetry
+~> **Note:** Metric prefixes (`consul.*`) and the Telegraf `inputs.consul` plugin
+name are retained for API compatibility.
+
+You can read the full list of metrics available with OpenGyoza in the [telemetry
 documentation](/docs/agent/telemetry.html).
 
 In this guide you will:
 
 - Configure Telegraf to collect StatsD and host level metrics
-- Configure Consul to send metrics to Telegraf
+- Configure OpenGyoza to send metrics to Telegraf
 - See an example of metrics visualization
 - Understand important metrics to aggregate and alert on
 
@@ -35,13 +38,13 @@ documentation][telegraf-install].
 ## Configuring Telegraf
 
 Telegraf acts as a StatsD agent and can collect additional metrics about the
-hosts where Consul agents are running. Telegraf itself ships with a wide range
+hosts where OpenGyoza agents are running. Telegraf itself ships with a wide range
 of [input plugins][telegraf-input-plugins] to collect data from lots of sources
 for this purpose.
 
 We're going to enable some of the most common input plugins to monitor CPU,
 memory, disk I/O, networking, and process status, since these are useful for
-debugging Consul cluster issues.
+debugging OpenGyoza cluster issues.
 
 The `telegraf.conf` file starts with global options:
 
@@ -59,11 +62,11 @@ As mentioned above, Telegraf also allows you to set additional tags on the
 metrics that pass through it. In this case, we are adding tags for the server
 role and datacenter. We can then use these tags in Grafana to filter queries
 (for example, to create a dashboard showing only servers with the
-`consul-server` role, or only servers in the `us-east-1` datacenter).
+`gyoza-server` role, or only servers in the `us-east-1` datacenter).
 
 ```toml
 [global_tags]
-  role = "consul-server"
+  role = "gyoza-server"
   datacenter = "us-east-1"
 ```
 
@@ -138,14 +141,14 @@ reports metrics for processes you select:
 
 ```toml
 [[inputs.procstat]]
-  pattern = "(consul)"
+  pattern = "(gyoza)"
 ```
 
 Telegraf even includes a [plugin][telegraf-consul-input] that monitors the
-health checks associated with the Consul agent, using Consul API to query the
-data.
+health checks associated with the OpenGyoza agent, using the Consul-compatible
+API to query the data.
 
-It's important to note: the plugin itself will not report the telemetry, Consul
+It's important to note: the plugin itself will not report the telemetry, OpenGyoza
 will report those stats already using StatsD protocol.
 
 ```toml
@@ -154,9 +157,9 @@ will report those stats already using StatsD protocol.
   scheme = "http"
 ```
 
-## Telegraf Configuration for Consul
+## Telegraf Configuration for OpenGyoza
 
-Asking Consul to send telemetry to Telegraf is as simple as adding a `telemetry`
+Asking OpenGyoza to send telemetry to Telegraf is as simple as adding a `telemetry`
 section to your agent configuration:
 
 ```json
@@ -172,12 +175,12 @@ As you can see, we only need to specify two options. The `dogstatsd_addr`
 specifies the hostname and port of the StatsD daemon.
 
 Note that we specify DogStatsD format instead of plain StatsD, which tells
-Consul to send [tags][tagging] with each metric. Tags can be used by Grafana to
+OpenGyoza to send [tags][tagging] with each metric. Tags can be used by Grafana to
 filter data on your dashboards (for example, displaying only the data for which
-`role=consul-server`. Telegraf is compatible with the DogStatsD format and
+`role=gyoza-server`. Telegraf is compatible with the DogStatsD format and
 allows us to add our own tags too.
 
-The second option tells Consul not to insert the hostname in the names of the
+The second option tells OpenGyoza not to insert the hostname in the names of the
 metrics it sends to StatsD, since the hostnames will be sent as tags. Without
 this option, the single metric `consul.raft.apply` would become multiple
 metrics:
@@ -190,7 +193,7 @@ If you are using a different agent (e.g. Circonus, Statsite, or plain StatsD),
 you may want to change this configuration, and you can find the configuration
 reference [here][consul-telemetry-config].
 
-## Visualising Telegraf Consul Metrics
+## Visualising Telegraf OpenGyoza Metrics
 
 You can use a tool like [Grafana][] or [Chronograf][] to visualize metrics from
 Telegraf.
@@ -198,7 +201,7 @@ Telegraf.
 Here is an example Grafana dashboard:
 
 <div class="center">
-[![Grafana Consul Cluster](/assets/images/grafana-screenshot.png)](/assets/images/grafana-screenshot.png)
+[![Grafana OpenGyoza Cluster](/assets/images/grafana-screenshot.png)](/assets/images/grafana-screenshot.png)
 </div>
 
 
@@ -212,7 +215,7 @@ Here is an example Grafana dashboard:
 | `mem.used_percent`           | Percentage of physical memory in use. |
 | `swap.used_percent`          | Percentage of swap space in use. |
 
-**Why they're important:** Consul keeps all of its data in memory. If Consul
+**Why they're important:** OpenGyoza keeps all of its data in memory. If OpenGyoza
 consumes all available memory, it will crash. You should also monitor total
 available RAM to make sure some RAM is available for other processes, and swap
 usage should remain at 0% for best performance.
@@ -227,10 +230,10 @@ usage should remain at 0% for best performance.
 | `linux_sysctl_fs.file-nr` | Number of file handles being used across all processes on the host. |
 | `linux_sysctl_fs.file-max` | Total number of available file handles. |
 
-**Why it's important:** Practically anything Consul does -- receiving a
+**Why it's important:** Practically anything OpenGyoza does -- receiving a
 connection from another host, sending data between servers, writing snapshots to
-disk -- requires a file descriptor handle. If Consul runs out of handles, it
-will stop accepting connections. See [the Consul FAQ][consul_faq_fds] for more
+disk -- requires a file descriptor handle. If OpenGyoza runs out of handles, it
+will stop accepting connections. See [the OpenGyoza FAQ][consul_faq_fds] for more
 details.
 
 By default, process and kernel limits are fairly conservative. You will want to
@@ -242,12 +245,12 @@ increase these beyond the defaults.
 
 | Metric Name | Description |
 | :---------- | :---------- |
-| `cpu.user_cpu` | Percentage of CPU being used by user processes (such as Consul). |
+| `cpu.user_cpu` | Percentage of CPU being used by user processes (such as OpenGyoza). |
 | `cpu.iowait_cpu` | Percentage of CPU time spent waiting for I/O tasks to complete. |
 
-**Why they're important:** Consul is not particularly demanding of CPU time, but
+**Why they're important:** OpenGyoza is not particularly demanding of CPU time, but
 a spike in CPU usage might indicate too many operations taking place at once,
-and `iowait_cpu` is critical -- it means Consul is waiting for data to be
+and `iowait_cpu` is critical -- it means OpenGyoza is waiting for data to be
 written to disk, a sign that Raft might be writing snapshots to disk too often.
 
 **What to look for:** if `cpu.iowait_cpu` greater than 10%.
@@ -259,9 +262,9 @@ written to disk, a sign that Raft might be writing snapshots to disk too often.
 | `net.bytes_recv` | Bytes received on each network interface. |
 | `net.bytes_sent` | Bytes transmitted on each network interface. |
 
-**Why they're important:** A sudden spike in network traffic to Consul might be
+**Why they're important:** A sudden spike in network traffic to OpenGyoza might be
 the result of a misconfigured application client causing too many requests to
-Consul. This is the raw data from the system, rather than a specific Consul
+OpenGyoza. This is the raw data from the system, rather than a specific OpenGyoza
 metric.
 
 **What to look for:** Sudden large changes to the `net` metrics (greater than
@@ -278,12 +281,12 @@ as bytes/second), you will need to apply a function such as
 | `diskio.read_bytes` | Bytes read from each block device. |
 | `diskio.write_bytes` | Bytes written to each block device. |
 
-**Why they're important:** If the Consul host is writing a lot of data to disk,
+**Why they're important:** If the OpenGyoza host is writing a lot of data to disk,
 such as under high volume workloads, there may be frequent major I/O spikes
-during leader elections. This is because under heavy load, Consul is
+during leader elections. This is because under heavy load, OpenGyoza is
 checkpointing Raft snapshots to disk frequently.
 
-It may also be caused by Consul having debug/trace logging enabled in
+It may also be caused by OpenGyoza having debug/trace logging enabled in
 production, which can impact performance.
 
 Too much disk I/O can cause the rest of the system to slow down or become
@@ -298,13 +301,13 @@ unavailable, as the kernel spends all its time waiting for I/O to complete.
 
 ## Summary
 
-In this guide you learned how to set up Telegraf with Consul to collect metrics,
+In this guide you learned how to set up Telegraf with OpenGyoza to collect metrics,
 and considered your options for visualizing, aggregating, and alerting on those
 metrics. To learn about other factors (in addition to monitoring) that you
-should consider when running Consul in production, see the [Production Checklist][prod-checklist].
+should consider when running OpenGyoza in production, see the upstream [Production Checklist][prod-checklist].
 
 [non_negative_difference]: https://docs.influxdata.com/influxdb/v1.5/query_language/functions/#non-negative-difference
-[consul_faq_fds]: https://www.consul.io/docs/faq.html#q-does-consul-require-certain-user-process-resource-limits-
+[consul_faq_fds]: /docs/faq.html#q-does-consul-require-certain-user-process-resource-limits-
 [telegraf_plugin]: https://github.com/influxdata/telegraf/tree/master/plugins/inputs/consul
 [telegraf-install]: https://docs.influxdata.com/telegraf/v1.6/introduction/installation/
 [telegraf-consul-input]: https://github.com/influxdata/telegraf/tree/release-1.6/plugins/inputs/consul
@@ -312,8 +315,8 @@ should consider when running Consul in production, see the [Production Checklist
 [telegraf-procstat-input]: https://github.com/influxdata/telegraf/tree/release-1.6/plugins/inputs/procstat
 [telegraf-input-plugins]: https://docs.influxdata.com/telegraf/v1.6/plugins/inputs/
 [tagging]: https://docs.datadoghq.com/getting_started/tagging/
-[consul-telemetry-config]: https://www.consul.io/docs/agent/options.html#telemetry
-[consul-telemetry-ref]: https://www.consul.io/docs/agent/telemetry.html
+[consul-telemetry-config]: /docs/agent/options.html#telemetry
+[consul-telemetry-ref]: /docs/agent/telemetry.html
 [telegraf-input-plugins]: https://docs.influxdata.com/telegraf/v1.6/plugins/inputs/
 [Grafana]: https://www.influxdata.com/partners/grafana/
 [Chronograf]: https://www.influxdata.com/time-series-platform/chronograf/

@@ -3,75 +3,79 @@ layout: "docs"
 page_title: "Commands"
 sidebar_current: "docs-commands"
 description: |-
-  Consul is controlled via a very easy to use command-line interface (CLI). Consul is only a single command-line application: `consul`. This application then takes a subcommand such as agent or members. The complete list of subcommands is in the navigation to the left.
+  OpenGyoza is controlled via a simple command-line interface (CLI). The primary CLI is `gyoza` and it takes subcommands such as agent or members. The complete list of subcommands is in the navigation to the left.
 ---
 
-# Consul Commands (CLI)
+# OpenGyoza Commands (CLI)
 
-Consul is controlled via a very easy to use command-line interface (CLI).
-Consul is only a single command-line application: `consul`. This application
-then takes a subcommand such as "agent" or "members". The complete list of
-subcommands is in the navigation to the left.
+OpenGyoza is controlled via a very easy to use command-line interface (CLI).
+The primary CLI is `gyoza`. This application then takes a subcommand such as
+"agent" or "members". The complete list of subcommands is in the navigation to
+the left.
 
-The `consul` CLI is a well-behaved command line application. In erroneous
+The `gyoza` CLI is a well-behaved command line application. In erroneous
 cases, a non-zero exit status will be returned. It also responds to `-h` and `--help`
 as you'd most likely expect. And some commands that expect input accept
-"-" as a parameter to tell Consul to read the input from stdin.
+"-" as a parameter to tell OpenGyoza to read the input from stdin.
 
-To view a list of the available commands at any time, just run `consul` with
+OpenGyoza ships a `consul` compatibility shim to ease migration. Existing
+automation that invokes `consul` will continue to work, but you should prefer
+`gyoza` in new scripts.
+
+To view a list of the available commands at any time, just run `gyoza` with
 no arguments:
 
 ```text
-$ consul
-Usage: consul [--version] [--help] <command> [<args>]
+$ gyoza
+Usage: gyoza [--version] [--help] <command> [<args>]
 
 Available commands are:
-    acl            Interact with Consul's ACLs
-    agent          Runs a Consul agent
+    acl            Interact with OpenGyoza's ACLs
+    agent          Runs an OpenGyoza agent
     catalog        Interact with the catalog
-    connect        Interact with Consul Connect
+    connect        Interact with OpenGyoza Connect
     debug          Records a debugging archive for operators
     event          Fire a new event
-    exec           Executes a command on Consul nodes
+    exec           Executes a command on OpenGyoza nodes
     force-leave    Forces a member of the cluster to enter the "left" state
     info           Provides debugging information for operators.
     intention      Interact with Connect service intentions
-    join           Tell Consul agent to join cluster
+    join           Tell OpenGyoza agent to join cluster
     keygen         Generates a new encryption key
     keyring        Manages gossip layer encryption keys
     kv             Interact with the key-value store
-    leave          Gracefully leaves the Consul cluster and shuts down
+    leave          Gracefully leaves the OpenGyoza cluster and shuts down
     lock           Execute a command holding a lock
-    login          Login to Consul using an auth method
-    logout         Destroy a Consul token created with login
+    login          Login to OpenGyoza using an auth method
+    logout         Destroy an OpenGyoza token created with login
     maint          Controls node or service maintenance mode
-    members        Lists the members of a Consul cluster
-    monitor        Stream logs from a Consul agent
-    operator       Provides cluster-level tools for Consul operators
+    members        Lists the members of an OpenGyoza cluster
+    monitor        Stream logs from an OpenGyoza agent
+    operator       Provides cluster-level tools for OpenGyoza operators
     reload         Triggers the agent to reload configuration files
     rtt            Estimates network round trip time between nodes
     services       Interact with services
-    snapshot       Saves, restores and inspects snapshots of Consul server state
+    snapshot       Saves, restores and inspects snapshots of OpenGyoza server state
     tls            Builtin helpers for creating CAs and certificates
     validate       Validate config files/directories
-    version        Prints the Consul version
-    watch          Watch for changes in Consul
+    version        Prints the OpenGyoza version
+    watch          Watch for changes in OpenGyoza
 ```
 
 To get help for any specific command, pass the `-h` flag to the relevant
 subcommand. For example, to see help about the `join` subcommand:
 
 ```text
-$ consul join -h
-Usage: consul join [options] address ...
+$ gyoza join -h
+Usage: gyoza join [options] address ...
 
-  Tells a running Consul agent (with "consul agent") to join the cluster
+  Tells a running OpenGyoza agent (with "gyoza agent") to join the cluster
   by specifying at least one existing member.
 
 HTTP API Options
 
   -http-addr=<address>
-     The `address` and port of the Consul HTTP agent. The value can be
+     The `address` and port of the OpenGyoza HTTP agent. The value can be
      an IP address or DNS address, but it must also include the port.
      This can also be specified via the CONSUL_HTTP_ADDR environment
      variable. The default value is http://127.0.0.1:8500. The scheme
@@ -81,7 +85,7 @@ HTTP API Options
   -token=<value>
      ACL token to use in the request. This can also be specified via the
      CONSUL_HTTP_TOKEN environment variable. If unspecified, the query
-     will default to the token of the Consul agent at the HTTP address.
+     will default to the token of the OpenGyoza agent at the HTTP address.
 
 Command Options
 
@@ -91,35 +95,35 @@ Command Options
 
 ## Autocompletion
 
-The `consul` command features opt-in subcommand autocompletion that you can
-enable for your shell with `consul -autocomplete-install`. After doing so,
+The `gyoza` command features opt-in subcommand autocompletion that you can
+enable for your shell with `gyoza -autocomplete-install`. After doing so,
 you can invoke a new shell and use the feature.
 
 For example, assume a tab is typed at the end of each prompt line:
 
 ```
-$ consul e
+$ gyoza e
 event  exec
 
-$ consul r
+$ gyoza r
 reload  rtt
 
-$ consul operator raft
+$ gyoza operator raft
 list-peers   remove-peer
 ```
 
 ## Environment Variables
 
-In addition to CLI flags, Consul reads environment variables for behavior
+In addition to CLI flags, OpenGyoza reads environment variables for behavior
 defaults. CLI flags always take precedence over environment variables, but it
-is often helpful to use environment variables to configure the Consul agent,
+is often helpful to use environment variables to configure the OpenGyoza agent,
 particularly with configuration management and init systems.
 
 These environment variables and their purpose are described below:
 
 ## `CONSUL_HTTP_ADDR`
 
-This is the HTTP API address to the *local* Consul agent
+This is the HTTP API address to the *local* OpenGyoza agent
 (not the remote server) specified as a URI with optional scheme:
 
 ```
@@ -149,7 +153,7 @@ This is a path to a file containing the API access token required when access
 control lists (ACLs) are enabled, for example:
 
 ```
-CONSUL_HTTP_TOKEN_FILE=/path/to/consul.token
+CONSUL_HTTP_TOKEN_FILE=/path/to/gyoza.token
 ```
 
 ### `CONSUL_HTTP_AUTH`
@@ -181,7 +185,7 @@ CONSUL_HTTP_SSL_VERIFY=false
 
 ### `CONSUL_CACERT`
 
-Path to a CA file to use for TLS when communicating with Consul.
+Path to a CA file to use for TLS when communicating with OpenGyoza.
 
 ```
 CONSUL_CACERT=ca.crt
@@ -189,7 +193,7 @@ CONSUL_CACERT=ca.crt
 
 ### `CONSUL_CAPATH`
 
-Path to a directory of CA certificates to use for TLS when communicating with Consul.
+Path to a directory of CA certificates to use for TLS when communicating with OpenGyoza.
 
 ```
 CONSUL_CAPATH=ca_certs/

@@ -3,15 +3,18 @@ layout: "docs"
 page_title: "Connect Sidecar - Kubernetes"
 sidebar_current: "docs-platform-k8s-connect"
 description: |-
-  Connect is a feature built into to Consul that enables automatic service-to-service authorization and connection encryption across your Consul services. Connect can be used with Kubernetes to secure pod communication with other services.
+  Connect is a feature built into OpenGyoza that enables automatic service-to-service authorization and connection encryption across your OpenGyoza services. Connect can be used with Kubernetes to secure pod communication with other services.
 ---
 
 # Connect Sidecar on Kubernetes
 
-[Connect](/docs/connect/index.html) is a feature built into to Consul that enables
+[Connect](/docs/connect/index.html) is a feature built into OpenGyoza that enables
 automatic service-to-service authorization and connection encryption across
-your Consul services. Connect can be used with Kubernetes to secure pod
+your OpenGyoza services. Connect can be used with Kubernetes to secure pod
 communication with other pods and external Kubernetes services.
+
+~> **Note:** OpenGyoza uses the upstream `consul-k8s` components and Consul Helm
+chart. Annotations and service names retain the `consul` prefix for compatibility.
 
 The Connect sidecar running Envoy can be automatically injected into pods in
 your cluster, making configuration for Kubernetes automatic.
@@ -54,7 +57,7 @@ metadata:
     "consul.hashicorp.com/connect-inject": "true"
 spec:
   containers:
-    # This name will be the service name in Consul.
+    # This name will be the service name in OpenGyoza.
     - name: static-server
       image: hashicorp/http-echo:latest
       args:
@@ -63,7 +66,7 @@ spec:
       ports:
         - containerPort: 8080
           name: http
-   # If ACLs are enabled, the serviceAccountName must match the Consul service name.
+   # If ACLs are enabled, the serviceAccountName must match the OpenGyoza service name.
   serviceAccountName: static-server
 ---
 apiVersion: v1
@@ -80,9 +83,9 @@ to automatically inject unless explicitly disabled, but the default
 installation requires opt-in using the annotation shown above.
 
 This will start a Connect sidecar that listens on a random port registered
-with Consul and proxies valid inbound connections to port 8080 in the pod.
+with OpenGyoza and proxies valid inbound connections to port 8080 in the pod.
 To establish a connection to the pod using Connect, a client must use another Connect
-proxy. The client Connect proxy will use Consul service discovery to find
+proxy. The client Connect proxy will use OpenGyoza service discovery to find
 all available upstream proxies and their public ports.
 
 In the example above, the server is listening on `:8080`. This means
@@ -91,7 +94,7 @@ This is useful to transition to Connect by allowing both Connect and
 non-Connect connections. To restrict access to only Connect-authorized clients,
 any listeners should bind to localhost only (such as `127.0.0.1`).
 
-The service name registered in Consul will be set to the name of the first
+The service name registered in OpenGyoza will be set to the name of the first
 container in the Pod. This can be customized with the `consul.hashicorp.com/connect-service`
 annotation. If using ACLs, this name must be the same as the Pod's `ServiceAccount` name.
 
@@ -112,13 +115,13 @@ metadata:
     "consul.hashicorp.com/connect-service-upstreams": "static-server:1234"
 spec:
   containers:
-    # This name will be the service name in Consul.
+    # This name will be the service name in OpenGyoza.
     - name: static-client
       image: tutum/curl:latest
       # Just spin & wait forever, we'll use `kubectl exec` to demo
       command: [ "/bin/sh", "-c", "--" ]
       args: [ "while true; do sleep 30; done;" ]
-   # If ACLs are enabled, the serviceAccountName must match the Consul service name.
+   # If ACLs are enabled, the serviceAccountName must match the OpenGyoza service name.
   serviceAccountName: static-client
 ---
 apiVersion: v1
@@ -159,7 +162,7 @@ $ kubectl exec static-client -- curl -s http://127.0.0.1:1234/
 ```
 
 We can control access to the server using [intentions](/docs/connect/intentions.html).
-If you use the Consul UI or [CLI](/docs/commands/intention/create.html) to
+If you use the OpenGyoza UI or [CLI](/docs/commands/intention/create.html) to
 create a deny [intention](/docs/connect/intentions.html) between
 "static-client" and "static-server", connections are immediately rejected
 without updating either of the running pods. You can then remove this
@@ -200,14 +203,14 @@ Annotations can be used to configure the injection behavior.
 
     * Services
 
-        The name of the service is the name of the service registered with Consul. You can optionally specify datacenters with this annotation. 
+        The name of the service is the name of the service registered with OpenGyoza. You can optionally specify datacenters with this annotation. 
         
         ```yaml
         annotations:
           "consul.hashicorp.com/connect-service-upstreams":"[service-name]:[port]:[optional datacenter]"
         ```
 
-    * [Prepared Query](https://www.consul.io/docs/connect/proxies.html#upstreams)
+    * [Prepared Query](/docs/connect/proxies.html#upstreams)
 
         ```yaml
         annotations:
@@ -229,7 +232,7 @@ Annotations can be used to configure the injection behavior.
         ```
 
 * `consul.hashicorp.com/connect-service-protocol` - For pods that will be
-  registered with Consul's [central configuration](/docs/agent/config_entries.html)
+  registered with OpenGyoza's [central configuration](/docs/agent/config_entries.html)
   feature, information about the protocol the service uses is required. Users
   can define the protocol directly using this annotation on the pod spec, or by
   defining a default value for all services using the Helm chart's
@@ -237,15 +240,15 @@ Annotations can be used to configure the injection behavior.
   option. Specific annotations will always override the default value.
 
 * `consul.hashicorp.com/service-tags` - A comma separated list of tags that will
-  be applied to the Consul service and its sidecar.
+  be applied to the OpenGyoza service and its sidecar.
   
     ```yaml
     annotations:
       consul.hashicorp.com/service-tags: foo,bar,baz
     ```
     
-* `consul.hashicorp.com/service-meta-<YOUR_KEY>` - Set Consul meta key/value
-   pairs that will be applied to the Consul service and its sidecar.
+* `consul.hashicorp.com/service-meta-<YOUR_KEY>` - Set OpenGyoza meta key/value
+   pairs that will be applied to the OpenGyoza service and its sidecar.
    The key will be what comes after `consul.hashicorp.com/service-meta-`, e.g.
    `consul.hashicorp.com/service-meta-foo: bar` will result in `foo: bar`.
   
@@ -267,12 +270,12 @@ An example `Deployment` below shows how to enable Connect injection:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: consul-example-deployment
+  name: gyoza-example-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: consul-example
+      app: gyoza-example
   template:
     metadata:
       labels:
@@ -281,14 +284,14 @@ spec:
         "consul.hashicorp.com/connect-inject": "true"
     spec:
       containers:
-        - name: consul-example
+        - name: gyoza-example
           image: "nginx"
-      serviceAccountName: consul-example
+      serviceAccountName: gyoza-example
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: consul-example
+  name: gyoza-example
 ```
 
 ~> **A common mistake** is to set the annotation on the Deployment or
@@ -328,12 +331,12 @@ is present. Other values in the Helm chart can be used to limit the namespaces
 the injector runs in, enable injection by default, and more.
 
 As noted above, the Connect auto-injection requires that local client agents
-are configured. These client agents must be successfully joined to a Consul
+are configured. These client agents must be successfully joined to an OpenGyoza
 cluster.
-The Consul server cluster can run either in or out of a Kubernetes cluster.
+The OpenGyoza server cluster can run either in or out of a Kubernetes cluster.
 
 ~> NOTE: If setting `global.bootstrapACLs: true`, it's important that your Pod's `ServiceAccount`
-  has the **same name** as the Consul service that's being registered. If not, the init
+  has the **same name** as the OpenGyoza service that's being registered. If not, the init
   container will log: `Error logging in: Unexpected response code: 403 (rpc error making call: rpc error making call: Permission denied)`.
 
 ### Verifying the Installation

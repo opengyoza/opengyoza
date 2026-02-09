@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hashicorp/consul/agent/cache"
+	"github.com/opengyoza/opengyoza/agent/cache"
 	"github.com/hashicorp/go-multierror"
 	"github.com/mitchellh/hashstructure"
 

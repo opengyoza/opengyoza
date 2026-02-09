@@ -19,19 +19,18 @@ import (
 	"time"
 
 	metrics "github.com/armon/go-metrics"
-	ca "github.com/hashicorp/consul/agent/connect/ca"
-	"github.com/hashicorp/consul/agent/consul/autopilot"
-	"github.com/hashicorp/consul/agent/consul/fsm"
-	"github.com/hashicorp/consul/agent/consul/state"
-	"github.com/hashicorp/consul/agent/metadata"
-	"github.com/hashicorp/consul/agent/pool"
-	"github.com/hashicorp/consul/agent/router"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/agent/token"
-	"github.com/hashicorp/consul/lib"
-	"github.com/hashicorp/consul/sentinel"
-	"github.com/hashicorp/consul/tlsutil"
-	"github.com/hashicorp/consul/types"
+	ca "github.com/opengyoza/opengyoza/agent/connect/ca"
+	"github.com/opengyoza/opengyoza/agent/consul/autopilot"
+	"github.com/opengyoza/opengyoza/agent/consul/fsm"
+	"github.com/opengyoza/opengyoza/agent/consul/state"
+	"github.com/opengyoza/opengyoza/agent/metadata"
+	"github.com/opengyoza/opengyoza/agent/pool"
+	"github.com/opengyoza/opengyoza/agent/router"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/token"
+	"github.com/opengyoza/opengyoza/lib"
+	"github.com/opengyoza/opengyoza/tlsutil"
+	"github.com/opengyoza/opengyoza/types"
 	connlimit "github.com/hashicorp/go-connlimit"
 	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-memdb"
@@ -96,9 +95,6 @@ var (
 // Server is Consul server which manages the service discovery,
 // health checking, DC forwarding, Raft, and multiple Serf pools.
 type Server struct {
-	// sentinel is the Sentinel code engine (can be nil).
-	sentinel sentinel.Evaluator
-
 	// acls is used to resolve tokens to effective policies
 	acls *ACLResolver
 
@@ -201,8 +197,7 @@ type Server struct {
 	// is only ever closed.
 	leaveCh chan struct{}
 
-	// router is used to map out Consul servers in the WAN and in Consul
-	// Enterprise user-defined areas.
+	// router is used to map out Consul servers in the WAN.
 	router *router.Router
 
 	// rpcLimiter is used to rate limit the total number of RPCs initiated
@@ -284,8 +279,6 @@ type Server struct {
 	actingSecondaryCA   bool
 	actingSecondaryLock sync.RWMutex
 
-	// embedded struct to hold all the enterprise specific data
-	EnterpriseServer
 }
 
 // NewServer is only used to help setting up a server for testing. Normal code
@@ -375,17 +368,11 @@ func NewServerLogger(config *Config, logger *log.Logger, tokens *token.Store, tl
 		insecureRPCServer: rpc.NewServer(),
 		tlsConfigurator:   tlsConfigurator,
 		reassertLeaderCh:  make(chan chan error),
-		segmentLAN:        make(map[string]*serf.Serf, len(config.Segments)),
+		segmentLAN:        make(map[string]*serf.Serf),
 		sessionTimers:     NewSessionTimers(),
 		tombstoneGC:       gc,
 		serverLookup:      NewServerLookup(),
 		shutdownCh:        shutdownCh,
-	}
-
-	// Initialize enterprise specific server functionality
-	if err := s.initEnterprise(); err != nil {
-		s.Shutdown()
-		return nil, err
 	}
 
 	s.rpcLimiter.Store(rate.NewLimiter(config.RPCRate, config.RPCMaxBurst))
@@ -406,7 +393,6 @@ func NewServerLogger(config *Config, logger *log.Logger, tokens *token.Store, tl
 	// Initialize the stats fetcher that autopilot will use.
 	s.statsFetcher = NewStatsFetcher(logger, s.connPool, s.config.Datacenter)
 
-	s.sentinel = sentinel.New(logger)
 	s.useNewACLs = 0
 	aclConfig := ACLResolverConfig{
 		Config:      config,
@@ -414,7 +400,6 @@ func NewServerLogger(config *Config, logger *log.Logger, tokens *token.Store, tl
 		CacheConfig: serverACLCacheConfig,
 		AutoDisable: false,
 		Logger:      logger,
-		Sentinel:    s.sentinel,
 	}
 	// Initialize the ACL resolver.
 	if s.acls, err = NewACLResolver(&aclConfig); err != nil {
@@ -426,13 +411,6 @@ func NewServerLogger(config *Config, logger *log.Logger, tokens *token.Store, tl
 	if err := s.setupRPC(); err != nil {
 		s.Shutdown()
 		return nil, fmt.Errorf("Failed to start RPC layer: %v", err)
-	}
-
-	// Initialize any extra RPC listeners for segments.
-	segmentListeners, err := s.setupSegmentRPC()
-	if err != nil {
-		s.Shutdown()
-		return nil, fmt.Errorf("Failed to start segment RPC layer: %v", err)
 	}
 
 	// Initialize the Raft server.
@@ -473,23 +451,13 @@ func NewServerLogger(config *Config, logger *log.Logger, tokens *token.Store, tl
 		}
 	}
 
-	// Initialize the LAN segments before the default LAN Serf so we have
-	// updated port information to publish there.
-	if err := s.setupSegments(config, serfBindPortWAN, segmentListeners); err != nil {
-		s.Shutdown()
-		return nil, fmt.Errorf("Failed to setup network segments: %v", err)
-	}
-
-	// Initialize the LAN Serf for the default network segment.
+	// Initialize the LAN Serf.
 	s.serfLAN, err = s.setupSerf(config.SerfLANConfig, s.eventChLAN, serfLANSnapshot, false, serfBindPortWAN, "", s.Listener)
 	if err != nil {
 		s.Shutdown()
 		return nil, fmt.Errorf("Failed to start LAN Serf: %v", err)
 	}
 	go s.lanEventHandler()
-
-	// Start the flooders after the LAN event handler is wired up.
-	s.floodSegments(config)
 
 	// Add a "static route" to the WAN Serf and hook it up to Serf events.
 	if s.serfWAN != nil {
@@ -509,12 +477,6 @@ func NewServerLogger(config *Config, logger *log.Logger, tokens *token.Store, tl
 		go s.Flood(nil, portFn, s.serfWAN)
 	}
 
-	// Start enterprise specific functionality
-	if err := s.startEnterprise(); err != nil {
-		s.Shutdown()
-		return nil, err
-	}
-
 	// Initialize Autopilot. This must happen before starting leadership monitoring
 	// as establishing leadership could attempt to use autopilot and cause a panic.
 	s.initAutopilot(config)
@@ -525,11 +487,6 @@ func NewServerLogger(config *Config, logger *log.Logger, tokens *token.Store, tl
 
 	// Start listening for RPC requests.
 	go s.listen(s.Listener)
-
-	// Start listeners for any segments with separate RPC listeners.
-	for _, listener := range segmentListeners {
-		go s.listen(listener)
-	}
 
 	// Start the metrics handlers.
 	go s.sessionStats()
@@ -913,9 +870,6 @@ func (s *Server) Leave() error {
 		}
 	}
 
-	// Leave everything enterprise related as well
-	s.handleEnterpriseLeave()
-
 	// Start refusing RPCs now that we've left the LAN pool. It's important
 	// to do this *after* we've left the LAN pool so that clients will know
 	// to shift onto another server if they perform a retry. We also wake up
@@ -1226,16 +1180,6 @@ func (s *Server) Stats() map[string]map[string]string {
 
 	if s.serfWAN != nil {
 		stats["serf_wan"] = s.serfWAN.Stats()
-	}
-
-	for outerKey, outerValue := range s.enterpriseStats() {
-		if _, ok := stats[outerKey]; ok {
-			for innerKey, innerValue := range outerValue {
-				stats[outerKey][innerKey] = innerValue
-			}
-		} else {
-			stats[outerKey] = outerValue
-		}
 	}
 
 	return stats

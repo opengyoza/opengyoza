@@ -4,11 +4,11 @@ page_title: "Commands: ACL"
 sidebar_current: "docs-commands-acl"
 ---
 
-# Consul ACLs
+# OpenGyoza ACLs
 
-Command: `consul acl`
+Command: `gyoza acl`
 
-The `acl` command is used to interact with Consul's ACLs via the command
+The `acl` command is used to interact with OpenGyoza's ACLs via the command
 line. It exposes top-level commands for bootstrapping the ACL system,
 managing tokens and policies, translating legacy rules, and setting the
 tokens for use by an agent.
@@ -16,10 +16,10 @@ tokens for use by an agent.
 ACLs are also accessible via the [HTTP API](/api/acl/acl.html).
 
 
-Bootstrap Consul's ACLs:
+Bootstrap OpenGyoza's ACLs:
 
 ```sh
-$ consul acl bootstrap
+$ gyoza acl bootstrap
 AccessorID:   4d123dff-f460-73c3-02c4-8dd64d136e01
 SecretID:     86cddfb9-2760-d947-358d-a2811156bf31
 Description:  Bootstrap Token (Global Management)
@@ -32,7 +32,7 @@ Policies:
 Create a policy:
 
 ```sh
-$ consul acl policy create -name "acl-replication" -description "Token capable of replicating ACL policies" -rules 'acl = "read"'
+$ gyoza acl policy create -name "acl-replication" -description "Token capable of replicating ACL policies" -rules 'acl = "read"'
 ID:           35b8ecb0-707c-ee18-2002-81b238b54b38
 Name:         acl-replication
 Description:  Token capable of replicating ACL policies
@@ -44,7 +44,7 @@ acl = "read"
 Create a token:
 
 ```sh
-$ consul acl token create -description "Agent Policy Replication - my-agent" -policy-name "acl-replication"
+$ gyoza acl token create -description "Agent Policy Replication - my-agent" -policy-name "acl-replication"
 AccessorID:   c24c11aa-4e08-e25c-1a67-705a2e8d75a4
 SecretID:     e7024f9c-f016-02dd-6217-daedbffb86ac
 Description:  Agent Policy Replication - my-agent
@@ -59,29 +59,29 @@ by clicking on one of the links in the sidebar.
 
 ## Usage
 
-Usage: `consul acl <subcommand>`
+Usage: `gyoza acl <subcommand>`
 
-For the exact documentation for your Consul version, run `consul acl -h` to
+For the exact documentation for your OpenGyoza version, run `gyoza acl -h` to
 view the complete list of subcommands.
 
 ```text
-Usage: consul acl <subcommand> [options] [args]
+Usage: gyoza acl <subcommand> [options] [args]
 
-  This command has subcommands for interacting with Consul's ACLs.
+  This command has subcommands for interacting with OpenGyoza's ACLs.
   Here are some simple examples, and more detailed examples are available
   in the subcommands or the documentation.
 
   Bootstrap ACLs:
 
-      $ consul acl bootstrap
+      $ gyoza acl bootstrap
 
   List all ACL tokens:
 
-      $ consul acl token list
+      $ gyoza acl token list
 
   Create a new ACL policy:
 
-      $ consul acl policy create -name "new-policy" \
+      $ gyoza acl policy create -name "new-policy" \
                                  -description "This is an example policy" \
                                  -datacenter "dc1" \
                                  -datacenter "dc2" \
@@ -89,18 +89,18 @@ Usage: consul acl <subcommand> [options] [args]
 
   Set the default agent token:
 
-      $ consul acl set-agent-token default 0bc6bc46-f25e-4262-b2d9-ffbe1d96be6f
+      $ gyoza acl set-agent-token default 0bc6bc46-f25e-4262-b2d9-ffbe1d96be6f
 
   For more examples, ask for subcommand help or view the documentation.
 
 Subcommands:
-    auth-method        Manage Consul's ACL auth methods
-    binding-rule       Manage Consul's ACL binding rules
-    bootstrap          Bootstrap Consul's ACL system
-    policy             Manage Consul's ACL policies
-    role               Manage Consul's ACL roles
-    set-agent-token    Assign tokens for the Consul Agent's usage
-    token              Manage Consul's ACL tokens
+    auth-method        Manage OpenGyoza's ACL auth methods
+    binding-rule       Manage OpenGyoza's ACL binding rules
+    bootstrap          Bootstrap OpenGyoza's ACL system
+    policy             Manage OpenGyoza's ACL policies
+    role               Manage OpenGyoza's ACL roles
+    set-agent-token    Assign tokens for the OpenGyoza Agent's usage
+    token              Manage OpenGyoza's ACL tokens
     translate-rules    Translate the legacy rule syntax into the current syntax
 
 ```

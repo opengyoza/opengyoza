@@ -3,7 +3,7 @@ package agent
 // This file contains tests for JSON unmarshaling.
 // These tests were originally written as regression tests to capture existing decoding behavior
 // when we moved from mapstructure to encoding/json as a JSON decoder.
-// See https://github.com/hashicorp/consul/pull/6624.
+// See https://github.com/opengyoza/opengyoza/pull/6624.
 //
 // Most likely, if you are adding new tests, you will only need to check your struct
 // for the special values in 'translateValueTestCases' (time.Durations, etc).
@@ -38,9 +38,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/types"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/types"
 )
 
 // =======================================================
@@ -2355,9 +2355,6 @@ func TestDecodeIntentionCreate(t *testing.T) {
 // LastContactThreshold	*api.ReadableDuration
 // MaxTrailingLogs	uint64
 // ServerStabilizationTime	*api.ReadableDuration
-// RedundancyZoneTag	string
-// DisableUpgradeMigration	bool
-// UpgradeVersionTag	string
 // CreateIndex	uint64
 // ModifyIndex	uint64
 func TestDecodeOperatorAutopilotConfiguration(t *testing.T) {

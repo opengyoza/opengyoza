@@ -1,15 +1,15 @@
 ---
 layout: "docs"
-page_title: "Consul Cluster Monitoring & Metrics"
+page_title: "OpenGyoza Cluster Monitoring & Metrics"
 sidebar_current: "docs-guides-cluster-monitoring-metrics"
 description: After setting up your first datacenter, it is an ideal time to make sure your cluster is healthy and establish a baseline.
 ---
 
-# Consul Cluster Monitoring and Metrics
+# OpenGyoza Cluster Monitoring and Metrics
 
-After setting up your first datacenter, it is an ideal time to make sure your cluster is healthy and establish a baseline. This guide will cover several types of metrics in two sections: Consul health and server health. 
+After setting up your first datacenter, it is an ideal time to make sure your cluster is healthy and establish a baseline. This guide will cover several types of metrics in two sections: OpenGyoza health and server health. 
 
-**Consul health**:
+**OpenGyoza health**:
 
 - Transaction timing
 - Leadership changes
@@ -32,18 +32,18 @@ Before starting this guide, we recommend configuring [ACLs](/docs/guides/acl.htm
 
 ## How to Collect Metrics
 
-There are three methods for collecting metrics. The first, and simplest, is to use `SIGUSR1` for a one-time dump of current telemetry values. The second method is to get a similar one-time dump using the HTTP API. The third method, and the one most commonly used for long-term monitoring, is to enable telemetry in the Consul configuration file. 
+There are three methods for collecting metrics. The first, and simplest, is to use `SIGUSR1` for a one-time dump of current telemetry values. The second method is to get a similar one-time dump using the HTTP API. The third method, and the one most commonly used for long-term monitoring, is to enable telemetry in the OpenGyoza configuration file. 
 
 ### SIGUSR1 for Local Use
 
-To get a one-time dump of current metric values, we can send the `SIGUSR1` signal to the Consul process.
+To get a one-time dump of current metric values, we can send the `SIGUSR1` signal to the OpenGyoza process.
 
 ```sh
 $ kill -USR1 <process_id>
 ```
-This will send the output to the system logs, such as `/var/log/messages` or to `journald`. If you are monitoring the Consul process in the terminal via `consul monitor`, you will see the metrics in the output.
+This will send the output to the system logs, such as `/var/log/messages` or to `journald`. If you are monitoring the OpenGyoza process in the terminal via `gyoza monitor`, you will see the metrics in the output.
 
-Although this is the easiest way to get a quick read of a single Consul agent’s health, it is much more useful to look at how the values change over time. 
+Although this is the easiest way to get a quick read of a single OpenGyoza agent’s health, it is much more useful to look at how the values change over time. 
 
 ### API GET Request
 
@@ -57,7 +57,7 @@ In production you will want to set up credentials with an ACL token and [enable 
 
 ```sh
 $ curl \
-    --header "X-Consul-Token: <YOUR_ACL_TOKEN>" \
+    --header "X-OpenGyoza-Token: <YOUR_ACL_TOKEN>" \
     https://127.0.0.1:8500/v1/agent/metrics
 ```
 
@@ -65,9 +65,9 @@ In addition to being a good way to quickly collect metrics, it can be added to a
 
 ### Enable Telemetry
 
-Finally, Consul can be configured to send telemetry data to a remote monitoring system. This allows you to monitor the health of agents over time, spot trends, and plan for future needs. You will need a monitoring agent and console for this. 
+Finally, OpenGyoza can be configured to send telemetry data to a remote monitoring system. This allows you to monitor the health of agents over time, spot trends, and plan for future needs. You will need a monitoring agent and console for this. 
 
-Consul supports the following telemetry agents:
+OpenGyoza supports the following telemetry agents:
 * Circonus 
 * DataDog (via `dogstatsd`)
 * StatsD (via `statsd`, `statsite`, `telegraf`, etc.)
@@ -85,16 +85,16 @@ An example snippet of `server.hcl` to send telemetry to DataDog looks like this:
   }
 ```
 
-When enabling telemetry on an existing cluster, the Consul process will need to be reloaded. This can be done with `consul reload` or `kill -HUP <process_id>`. It is recommended to reload the servers one at a time, starting with the non-leaders. 
+When enabling telemetry on an existing cluster, the OpenGyoza process will need to be reloaded. This can be done with `gyoza reload` or `kill -HUP <process_id>`. It is recommended to reload the servers one at a time, starting with the non-leaders. 
 
-## Consul Health
+## OpenGyoza Health
 
-The Consul health metrics reveal information about the Consul cluster. They include performance metrics for the key value store, transactions, raft, leadership changes, autopilot tuning, and garbage collection. 
+The OpenGyoza health metrics reveal information about the OpenGyoza cluster. They include performance metrics for the key value store, transactions, raft, leadership changes, autopilot tuning, and garbage collection. 
 
 ### Transaction Timing
 
 The following metrics indicate how long it takes to complete write operations
-in various parts, including Consul KV and Raft from the Consul server. Generally, these values should remain reasonably consistent and no more than a few milliseconds each. 
+in various parts, including OpenGyoza KV and Raft from the OpenGyoza server. Generally, these values should remain reasonably consistent and no more than a few milliseconds each. 
 
 | Metric Name              | Description |
 | :----------------------- | :---------- |
@@ -103,7 +103,7 @@ in various parts, including Consul KV and Raft from the Consul server. Generally
 | `consul.raft.apply`      | Counts the number of Raft transactions occurring over the interval. |
 | `consul.raft.commitTime` | Measures the time it takes to commit a new entry to the Raft log on the leader. |
 
-Sudden changes in any of the timing values could be due to unexpected load on the Consul servers or due to problems on the hosts themselves. Specifically, if any of these metrics deviate more than 50% from the baseline over the previous hour, this indicates an issue. Below are examples of healthy transaction metrics.
+Sudden changes in any of the timing values could be due to unexpected load on the OpenGyoza servers or due to problems on the hosts themselves. Specifically, if any of these metrics deviate more than 50% from the baseline over the previous hour, this indicates an issue. Below are examples of healthy transaction metrics.
 
 ```sh
 'consul.raft.apply': Count: 1 Sum: 1.000 LastUpdated: 2018-11-16 10:55:03.673805766 -0600 CST m=+97598.238246167
@@ -112,15 +112,15 @@ Sudden changes in any of the timing values could be due to unexpected load on th
 
 ### Leadership Changes
 
-In a healthy environment, your Consul cluster should have a stable leader. There shouldn’t be any leadership changes unless you manually change leadership (by taking a server out of the cluster, for example). If there are unexpected elections or leadership changes, you should investigate possible network issues between the Consul servers. Another possible cause could be that the Consul servers are unable to keep up with the transaction load. 
+In a healthy environment, your OpenGyoza cluster should have a stable leader. There shouldn’t be any leadership changes unless you manually change leadership (by taking a server out of the cluster, for example). If there are unexpected elections or leadership changes, you should investigate possible network issues between the OpenGyoza servers. Another possible cause could be that the OpenGyoza servers are unable to keep up with the transaction load. 
 
 Note: These metrics are reported by the follower nodes, not by the leader.
 
 | Metric Name | Description |
 | :---------- | :---------- |
 | `consul.raft.leader.lastContact` | Measures the time since the leader was last able to contact the follower nodes when checking its leader lease. |
-| `consul.raft.state.candidate` | Increments when a Consul server starts an election process. |
-| `consul.raft.state.leader` | Increments when a Consul server becomes a leader. |
+| `consul.raft.state.candidate` | Increments when an OpenGyoza server starts an election process. |
+| `consul.raft.state.leader` | Increments when an OpenGyoza server becomes a leader. |
 
 If the `candidate` or `leader` metrics are greater than 0 or the `lastContact` metric is greater than 200ms, you should look into one of the possible causes described above. Below are examples of healthy leadership metrics. 
 
@@ -146,11 +146,11 @@ An alert should be setup for a returned value of 0. Below is an example of a hea
 
 ### Garbage Collection
 
-Garbage collection (GC) pauses are a "stop-the-world" event, all runtime threads are blocked until GC completes. In a healthy environment these pauses should only last a few nanoseconds. If memory usage is high, the Go runtime may start the GC process so frequently that it will slow down Consul. You might observe more frequent leader elections or longer write times.
+Garbage collection (GC) pauses are a "stop-the-world" event, all runtime threads are blocked until GC completes. In a healthy environment these pauses should only last a few nanoseconds. If memory usage is high, the Go runtime may start the GC process so frequently that it will slow down OpenGyoza. You might observe more frequent leader elections or longer write times.
 
 | Metric Name | Description |
 | :---------- | :---------- |
-| `consul.runtime.total_gc_pause_ns` | Number of nanoseconds consumed by stop-the-world garbage collection (GC) pauses since Consul started. |
+| `consul.runtime.total_gc_pause_ns` | Number of nanoseconds consumed by stop-the-world garbage collection (GC) pauses since OpenGyoza started. |
 
 If the value return is more than 2 seconds/minute, you should start investigating the cause. If it exceeds 5 seconds per minute, you should consider the cluster to be in a critical state and start ensuring failure recovery procedures are up-to-date and start investigating. Below is an example of healthy GC pause.
 
@@ -166,7 +166,7 @@ The server metrics provide information about the health of your cluster includin
 
 ### File Descriptors
 
-The majority of Consul operations require a file descriptor handle, including receiving a connection from another host, sending data between servers, and writing snapshots to disk. If Consul runs out of handles, it will stop accepting connections. 
+The majority of OpenGyoza operations require a file descriptor handle, including receiving a connection from another host, sending data between servers, and writing snapshots to disk. If OpenGyoza runs out of handles, it will stop accepting connections. 
 
 | Metric Name | Description |
 | :---------- | :---------- |
@@ -181,14 +181,14 @@ linux_sysctl_fs, host=statsbox, file-nr=768i, file-max=96763i
 
 ### CPU Usage
 
-Consul should not be demanding of CPU time on either server or clients. A spike in CPU usage could indicate too many operations taking place at once.
+OpenGyoza should not be demanding of CPU time on either server or clients. A spike in CPU usage could indicate too many operations taking place at once.
 
 | Metric Name | Description |
 | :---------- | :---------- |
-| `cpu.user_cpu` | Percentage of CPU being used by user processes (such as Vault or Consul). |
+| `cpu.user_cpu` | Percentage of CPU being used by user processes (such as Vault or OpenGyoza). |
 | `cpu.iowait_cpu` | Percentage of CPU time spent waiting for I/O tasks to complete. |
 
-If `cpu.iowait_cpu` is greater than 10%, it should be considered critical as Consul is waiting for data to be written to disk. This could be a sign that Raft is writing snapshots to disk too often. Below is an example of a healthy CPU metric.
+If `cpu.iowait_cpu` is greater than 10%, it should be considered critical as OpenGyoza is waiting for data to be written to disk. This could be a sign that Raft is writing snapshots to disk too often. Below is an example of a healthy CPU metric.
 
 ```sh
 cpu, cpu=cpu-total, usage_idle=99.298, usage_user=0.400, usage_system=0.300, usage_iowait=0, usage_steal=0 
@@ -196,7 +196,7 @@ cpu, cpu=cpu-total, usage_idle=99.298, usage_user=0.400, usage_system=0.300, usa
 
 ### Network Activity
 
-Network activity should be consistent. A sudden spike in network traffic to Consul might be the result of a misconfigured client, such as Vault, that is causing too many requests.
+Network activity should be consistent. A sudden spike in network traffic to OpenGyoza might be the result of a misconfigured client, such as Vault, that is causing too many requests.
 
 Most agents will report separate metrics for each network interface, so be sure you are monitoring the right one.
 
@@ -216,7 +216,7 @@ you will need to apply a function such as [non_negative_difference](https://docs
 
 ### Disk Activity
 
-Normally, there is low disk activity, because Consul keeps everything in memory. If the Consul host is writing a large amount of data to disk, it could mean that Consul is under heavy write load and consequently is checkpointing Raft snapshots to disk frequently. It could also mean that debug/trace logging has accidentally been enabled in production, which can impact performance. 
+Normally, there is low disk activity, because OpenGyoza keeps everything in memory. If the OpenGyoza host is writing a large amount of data to disk, it could mean that OpenGyoza is under heavy write load and consequently is checkpointing Raft snapshots to disk frequently. It could also mean that debug/trace logging has accidentally been enabled in production, which can impact performance. 
 
 | Metric Name | Description |
 | :---------- | :---------- |
@@ -227,7 +227,7 @@ Normally, there is low disk activity, because Consul keeps everything in memory.
 
 
 Sudden, large changes to the `diskio` metrics, greater than 50% deviation from baseline
-or more than 3 standard deviations from baseline indicates Consul has too much disk I/O. Too much disk I/O can cause the rest of the system to slow down or become unavailable, as the kernel spends all its time waiting for I/O to complete. Below are examples of disk activity metrics.
+or more than 3 standard deviations from baseline indicates OpenGyoza has too much disk I/O. Too much disk I/O can cause the rest of the system to slow down or become unavailable, as the kernel spends all its time waiting for I/O to complete. Below are examples of disk activity metrics.
 
 ```sh
 diskio, name=sda5, read_bytes=522298368i,  write_bytes=1726865408i, read_time=7248i, write_time=133364i
@@ -237,17 +237,17 @@ Note: The `diskio` metrics are counters, so in order to calculate rates (such as
 
 ### Memory Usage
 
-As noted previously, Consul keeps all of its data -- the KV store, the catalog, etc -- in memory. If Consul consumes all available memory, it will crash. You should monitor total available RAM to make sure some RAM is available for other system processes and swap usage should remain at 0% for best performance.
+As noted previously, OpenGyoza keeps all of its data -- the KV store, the catalog, etc -- in memory. If OpenGyoza consumes all available memory, it will crash. You should monitor total available RAM to make sure some RAM is available for other system processes and swap usage should remain at 0% for best performance.
 
 | Metric Name | Description |
 | :---------- | :---------- |
-| `consul.runtime.alloc_bytes` | Measures the number of bytes allocated by the Consul process. |
+| `consul.runtime.alloc_bytes` | Measures the number of bytes allocated by the OpenGyoza process. |
 | `consul.runtime.sys_bytes`   | The total number of bytes of memory obtained from the OS.  |
 | `mem.total`                  | Total amount of physical memory (RAM) available on the server.     |
 | `mem.used_percent`           | Percentage of physical memory in use. |
 | `swap.used_percent`          | Percentage of swap space in use. |
 
-Consul servers are running low on memory if `sys_bytes` exceeds 90% of `total_bytes`, `mem.used_percent` is over 90%, or `swap.used_percent` is greater than 0. You should increase the memory available to Consul if any of these three conditions are met. Below are examples of memory usage metrics.
+OpenGyoza servers are running low on memory if `sys_bytes` exceeds 90% of `total_bytes`, `mem.used_percent` is over 90%, or `swap.used_percent` is greater than 0. You should increase the memory available to OpenGyoza if any of these three conditions are met. Below are examples of memory usage metrics.
 
 ```sh
 'consul.runtime.alloc_bytes': 11199928.000

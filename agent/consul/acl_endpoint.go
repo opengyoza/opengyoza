@@ -11,11 +11,11 @@ import (
 	"time"
 
 	metrics "github.com/armon/go-metrics"
-	"github.com/hashicorp/consul/acl"
-	"github.com/hashicorp/consul/agent/consul/authmethod"
-	"github.com/hashicorp/consul/agent/consul/state"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/lib"
+	"github.com/opengyoza/opengyoza/acl"
+	"github.com/opengyoza/opengyoza/agent/consul/authmethod"
+	"github.com/opengyoza/opengyoza/agent/consul/state"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/lib"
 	"github.com/hashicorp/go-bexpr"
 	memdb "github.com/hashicorp/go-memdb"
 	uuid "github.com/hashicorp/go-uuid"
@@ -971,7 +971,7 @@ func (a *ACL) PolicySet(args *structs.ACLPolicySetRequest, reply *structs.ACLPol
 	}
 
 	// validate the rules
-	_, err = acl.NewPolicyFromSource("", 0, policy.Rules, policy.Syntax, a.srv.sentinel)
+	_, err = acl.NewPolicyFromSource("", 0, policy.Rules, policy.Syntax)
 	if err != nil {
 		return err
 	}

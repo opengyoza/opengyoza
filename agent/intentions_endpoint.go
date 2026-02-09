@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/hashicorp/consul/agent/consul"
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/consul"
+	"github.com/opengyoza/opengyoza/agent/structs"
 )
 
 // /v1/connection/intentions

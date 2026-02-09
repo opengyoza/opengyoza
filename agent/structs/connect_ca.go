@@ -24,7 +24,7 @@ type IndexedCARoots struct {
 	// compared against the "authority" section of a URI (i.e. host:port).
 	//
 	// We need to support migrating a cluster between trust domains to support
-	// Multi-DC migration in Enterprise. In this case the current trust domain is
+	// multi-datacenter migration. In this case the current trust domain is
 	// here but entries in Roots may also have ExternalTrustDomain set to a
 	// non-empty value implying they were previous roots that are still trusted
 	// but under a different trust domain.

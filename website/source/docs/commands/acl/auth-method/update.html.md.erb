@@ -4,9 +4,9 @@ page_title: "Commands: ACL Auth Method Update"
 sidebar_current: "docs-commands-acl-auth-method-update"
 ---
 
-# Consul ACL Auth Method Update
+# OpenGyoza ACL Auth Method Update
 
-Command: `consul acl auth-method update`
+Command: `gyoza acl auth-method update`
 
 The `acl auth-method update` command is used to update an auth method. The
 default operations is to merge the current auth method with those values
@@ -15,7 +15,7 @@ the `-name` options and the option to modify must be provided.
 
 ## Usage
 
-Usage: `consul acl auth-method update [options] [args]`
+Usage: `gyoza acl auth-method update [options] [args]`
 
 #### API Options
 
@@ -52,7 +52,7 @@ Usage: `consul acl auth-method update [options] [args]`
 Update an auth method:
 
 ```sh
-$ consul acl auth-method update -name minikube \
+$ gyoza acl auth-method update -name minikube \
     -description 'dev cluster' \
     -kubernetes-host 'https://192.0.2.44:8443'
 Name:         minikube

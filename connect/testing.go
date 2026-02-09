@@ -11,9 +11,9 @@ import (
 	"os"
 	"sync/atomic"
 
-	"github.com/hashicorp/consul/agent/connect"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/sdk/freeport"
+	"github.com/opengyoza/opengyoza/agent/connect"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/sdk/freeport"
 	testing "github.com/mitchellh/go-testing-interface"
 )
 

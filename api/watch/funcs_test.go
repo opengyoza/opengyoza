@@ -17,9 +17,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/api/watch"
-	"github.com/hashicorp/consul/sdk/testutil"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/api/watch"
+	"github.com/opengyoza/opengyoza/sdk/testutil"
 	"github.com/stretchr/testify/require"
 )
 
@@ -299,6 +299,7 @@ func TestServicesWatch(t *testing.T) {
 	t.Parallel()
 	c, s := makeClient(t)
 	defer s.Stop()
+	s.WaitForSerfCheck(t) // wait for AE to sync default services
 
 	var (
 		wakeups  []map[string][]string

@@ -4,15 +4,15 @@ page_title: "Commands: ACL Binding Rule Create"
 sidebar_current: "docs-commands-acl-binding-rule-create"
 ---
 
-# Consul ACL Binding Rule Create
+# OpenGyoza ACL Binding Rule Create
 
-Command: `consul acl binding-rule create`
+Command: `gyoza acl binding-rule create`
 
 The `acl binding-rule create` command creates new binding rules.
 
 ## Usage
 
-Usage: `consul acl binding-rule create [options] [args]`
+Usage: `gyoza acl binding-rule create [options] [args]`
 
 #### API Options
 
@@ -42,7 +42,7 @@ Usage: `consul acl binding-rule create [options] [args]`
 Create a new binding rule that binds to a service identity:
 
 ```sh
-$ consul acl binding-rule create -method 'minikube' \
+$ gyoza acl binding-rule create -method 'minikube' \
     -description 'wildcard service' \
     -bind-type 'service' \
     -bind-name 'k8s-${serviceaccount.name}' \
@@ -58,7 +58,7 @@ Selector:     serviceaccount.namespace==default and serviceaccount.name!=vault
 Create a new binding rule that binds to a role:
 
 ```sh
-$ consul acl binding-rule create -method 'minikube' \
+$ gyoza acl binding-rule create -method 'minikube' \
     -description 'just vault role' \
     -bind-type 'role' \
     -bind-name 'vault' \

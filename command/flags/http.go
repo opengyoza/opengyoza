@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"github.com/hashicorp/consul/api"
+	"github.com/opengyoza/opengyoza/api"
 )
 
 type HTTPFlags struct {

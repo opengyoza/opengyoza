@@ -7,12 +7,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hashicorp/consul/agent/connect"
-	"github.com/hashicorp/consul/sdk/testutil"
+	"github.com/opengyoza/opengyoza/agent/connect"
+	"github.com/opengyoza/opengyoza/sdk/testutil"
 	"github.com/mitchellh/cli"
 	"github.com/stretchr/testify/require"
 
-	"github.com/hashicorp/consul/command/tls/ca/create"
+	"github.com/opengyoza/opengyoza/command/tls/ca/create"
 )
 
 func TestValidateCommand_noTabs(t *testing.T) {

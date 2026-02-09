@@ -4,16 +4,16 @@ page_title: "Commands: Intention Create"
 sidebar_current: "docs-commands-intention-create"
 ---
 
-# Consul Intention Create
+# OpenGyoza Intention Create
 
-Command: `consul intention create`
+Command: `gyoza intention create`
 
 The `intention create` command creates or updates an intention.
 
 ## Usage
 
-Usage: `consul intention create [options] SRC DST`
-Usage: `consul intention create [options] -f FILE...`
+Usage: `gyoza intention create [options] SRC DST`
+Usage: `gyoza intention create [options] -f FILE...`
 
 #### API Options
 
@@ -39,13 +39,13 @@ Usage: `consul intention create [options] -f FILE...`
 
 Create an intention `web => db`:
 
-    $ consul intention create web db
+    $ gyoza intention create web db
 
 Create intentions from a set of files:
 
-    $ consul intention create -file one.json two.json
+    $ gyoza intention create -file one.json two.json
 
 Create intentions from a directory using shell expansion:
 
-    $ consul intention create -file intentions/*.json
+    $ gyoza intention create -file intentions/*.json
 

@@ -9,9 +9,9 @@ import (
 
 	"golang.org/x/time/rate"
 
-	"github.com/hashicorp/consul/agent/connect"
-	"github.com/hashicorp/consul/agent/connect/ca"
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/connect"
+	"github.com/opengyoza/opengyoza/agent/connect/ca"
+	"github.com/opengyoza/opengyoza/agent/structs"
 	uuid "github.com/hashicorp/go-uuid"
 )
 

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/hashicorp/consul/api"
+	"github.com/opengyoza/opengyoza/api"
 	"github.com/stretchr/testify/require"
 )
 

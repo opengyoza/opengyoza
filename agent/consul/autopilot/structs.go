@@ -29,19 +29,6 @@ type Config struct {
 	// applicable with Raft protocol version 3 or higher.
 	ServerStabilizationTime time.Duration
 
-	// (Enterprise-only) RedundancyZoneTag is the node tag to use for separating
-	// servers into zones for redundancy. If left blank, this feature will be disabled.
-	RedundancyZoneTag string
-
-	// (Enterprise-only) DisableUpgradeMigration will disable Autopilot's upgrade migration
-	// strategy of waiting until enough newer-versioned servers have been added to the
-	// cluster before promoting them to voters.
-	DisableUpgradeMigration bool
-
-	// (Enterprise-only) UpgradeVersionTag is the node tag to use for version info when
-	// performing upgrade migrations. If left blank, the Consul version will be used.
-	UpgradeVersionTag string
-
 	// CreateIndex/ModifyIndex store the create/modify indexes of this configuration.
 	CreateIndex uint64
 	ModifyIndex uint64

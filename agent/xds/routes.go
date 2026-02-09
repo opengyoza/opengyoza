@@ -9,8 +9,8 @@ import (
 
 	envoy "github.com/envoyproxy/go-control-plane/envoy/api/v2"
 	envoyroute "github.com/envoyproxy/go-control-plane/envoy/api/v2/route"
-	"github.com/hashicorp/consul/agent/proxycfg"
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/proxycfg"
+	"github.com/opengyoza/opengyoza/agent/structs"
 )
 
 // routesFromSnapshot returns the xDS API representation of the "routes" in the

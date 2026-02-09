@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/hashicorp/consul/lib"
+	"github.com/opengyoza/opengyoza/lib"
 	"golang.org/x/time/rate"
 )
 

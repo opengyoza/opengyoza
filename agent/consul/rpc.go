@@ -10,11 +10,11 @@ import (
 	"time"
 
 	"github.com/armon/go-metrics"
-	"github.com/hashicorp/consul/agent/consul/state"
-	"github.com/hashicorp/consul/agent/metadata"
-	"github.com/hashicorp/consul/agent/pool"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/lib"
+	"github.com/opengyoza/opengyoza/agent/consul/state"
+	"github.com/opengyoza/opengyoza/agent/metadata"
+	"github.com/opengyoza/opengyoza/agent/pool"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/lib"
 	connlimit "github.com/hashicorp/go-connlimit"
 	memdb "github.com/hashicorp/go-memdb"
 	"github.com/hashicorp/go-raftchunking"
@@ -159,10 +159,8 @@ func (s *Server) handleConn(conn net.Conn, isTLS bool) {
 		s.handleInsecureConn(conn)
 
 	default:
-		if !s.handleEnterpriseRPCConn(typ, conn, isTLS) {
-			s.logger.Printf("[ERR] consul.rpc: unrecognized RPC byte: %v %s", typ, logConn(conn))
-			conn.Close()
-		}
+		s.logger.Printf("[ERR] consul.rpc: unrecognized RPC byte: %v %s", typ, logConn(conn))
+		conn.Close()
 	}
 }
 

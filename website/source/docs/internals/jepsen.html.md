@@ -49,28 +49,28 @@ INFO  jepsen.os.debian - :n5 debian set up
 INFO  jepsen.os.debian - :n3 debian set up
 INFO  jepsen.os.debian - :n1 debian set up
 INFO  jepsen.os.debian - :n2 debian set up
-INFO  jepsen.system.consul - :n1 consul nuked
-INFO  jepsen.system.consul - :n4 consul nuked
-INFO  jepsen.system.consul - :n5 consul nuked
-INFO  jepsen.system.consul - :n3 consul nuked
-INFO  jepsen.system.consul - :n2 consul nuked
+INFO  jepsen.system.consul - :n1 gyoza nuked
+INFO  jepsen.system.consul - :n4 gyoza nuked
+INFO  jepsen.system.consul - :n5 gyoza nuked
+INFO  jepsen.system.consul - :n3 gyoza nuked
+INFO  jepsen.system.consul - :n2 gyoza nuked
 INFO  jepsen.system.consul - Running nodes: {:n1 false, :n2 false, :n3 false, :n4 false, :n5 false}
-INFO  jepsen.system.consul - :n2 consul nuked
-INFO  jepsen.system.consul - :n3 consul nuked
-INFO  jepsen.system.consul - :n4 consul nuked
-INFO  jepsen.system.consul - :n5 consul nuked
-INFO  jepsen.system.consul - :n1 consul nuked
-INFO  jepsen.system.consul - :n1 starting consul
-INFO  jepsen.system.consul - :n2 starting consul
-INFO  jepsen.system.consul - :n4 starting consul
-INFO  jepsen.system.consul - :n5 starting consul
-INFO  jepsen.system.consul - :n3 starting consul
-INFO  jepsen.system.consul - :n3 consul ready
-INFO  jepsen.system.consul - :n2 consul ready
+INFO  jepsen.system.consul - :n2 gyoza nuked
+INFO  jepsen.system.consul - :n3 gyoza nuked
+INFO  jepsen.system.consul - :n4 gyoza nuked
+INFO  jepsen.system.consul - :n5 gyoza nuked
+INFO  jepsen.system.consul - :n1 gyoza nuked
+INFO  jepsen.system.consul - :n1 starting gyoza
+INFO  jepsen.system.consul - :n2 starting gyoza
+INFO  jepsen.system.consul - :n4 starting gyoza
+INFO  jepsen.system.consul - :n5 starting gyoza
+INFO  jepsen.system.consul - :n3 starting gyoza
+INFO  jepsen.system.consul - :n3 gyoza ready
+INFO  jepsen.system.consul - :n2 gyoza ready
 INFO  jepsen.system.consul - Running nodes: {:n1 true, :n2 true, :n3 true, :n4 true, :n5 true}
-INFO  jepsen.system.consul - :n5 consul ready
-INFO  jepsen.system.consul - :n1 consul ready
-INFO  jepsen.system.consul - :n4 consul ready
+INFO  jepsen.system.consul - :n5 gyoza ready
+INFO  jepsen.system.consul - :n1 gyoza ready
+INFO  jepsen.system.consul - :n4 gyoza ready
 INFO  jepsen.core - Worker 0 starting
 INFO  jepsen.core - Worker 2 starting
 INFO  jepsen.core - Worker 1 starting
@@ -4013,11 +4013,11 @@ INFO  jepsen.core - Analyzing
 :world-size 2 :degenerate 2
 :world-size 1 :degenerate 1
 INFO  jepsen.core - Analysis complete
-INFO  jepsen.system.consul - :n3 consul nuked
-INFO  jepsen.system.consul - :n2 consul nuked
-INFO  jepsen.system.consul - :n4 consul nuked
-INFO  jepsen.system.consul - :n1 consul nuked
-INFO  jepsen.system.consul - :n5 consul nuked
+INFO  jepsen.system.consul - :n3 gyoza nuked
+INFO  jepsen.system.consul - :n2 gyoza nuked
+INFO  jepsen.system.consul - :n4 gyoza nuked
+INFO  jepsen.system.consul - :n1 gyoza nuked
+INFO  jepsen.system.consul - :n5 gyoza nuked
 1964 element history linearizable. :D
 
 Ran 1 tests containing 1 assertions.

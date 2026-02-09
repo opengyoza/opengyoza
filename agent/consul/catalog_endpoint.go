@@ -6,11 +6,11 @@ import (
 	"time"
 
 	"github.com/armon/go-metrics"
-	"github.com/hashicorp/consul/acl"
-	"github.com/hashicorp/consul/agent/consul/state"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/ipaddr"
-	"github.com/hashicorp/consul/types"
+	"github.com/opengyoza/opengyoza/acl"
+	"github.com/opengyoza/opengyoza/agent/consul/state"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/ipaddr"
+	"github.com/opengyoza/opengyoza/types"
 	bexpr "github.com/hashicorp/go-bexpr"
 	"github.com/hashicorp/go-memdb"
 	"github.com/hashicorp/go-uuid"
@@ -65,14 +65,14 @@ func servicePreApply(service *structs.NodeService, rule acl.Authorizer) error {
 	// later if version 0.8 is enabled, so we can eventually just
 	// delete this and do all the ACL checks down there.
 	if service.Service != structs.ConsulServiceName {
-		if rule != nil && !rule.ServiceWrite(service.Service, nil) {
+		if rule != nil && !rule.ServiceWrite(service.Service) {
 			return acl.ErrPermissionDenied
 		}
 	}
 
 	// Proxies must have write permission on their destination
 	if service.Kind == structs.ServiceKindConnectProxy {
-		if rule != nil && !rule.ServiceWrite(service.Proxy.DestinationServiceName, nil) {
+		if rule != nil && !rule.ServiceWrite(service.Proxy.DestinationServiceName) {
 			return acl.ErrPermissionDenied
 		}
 	}

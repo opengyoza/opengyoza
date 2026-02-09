@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/hashicorp/consul/command/flags"
-	"github.com/hashicorp/consul/command/helpers"
+	"github.com/opengyoza/opengyoza/command/flags"
+	"github.com/opengyoza/opengyoza/command/helpers"
 	"github.com/mitchellh/cli"
 )
 

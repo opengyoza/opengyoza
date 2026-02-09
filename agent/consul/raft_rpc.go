@@ -6,8 +6,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/hashicorp/consul/agent/pool"
-	"github.com/hashicorp/consul/tlsutil"
+	"github.com/opengyoza/opengyoza/agent/pool"
+	"github.com/opengyoza/opengyoza/tlsutil"
 	"github.com/hashicorp/raft"
 )
 

@@ -6,11 +6,11 @@ description: >
   The connect proxy subcommand is used to run the built-in mTLS proxy for Connect.
 ---
 
-# Consul Connect Proxy
+# OpenGyoza Connect Proxy
 
-Command: `consul connect proxy`
+Command: `gyoza connect proxy`
 
-The connect proxy command is used to run Consul's built-in mTLS proxy for
+The connect proxy command is used to run OpenGyoza's built-in mTLS proxy for
 use with Connect. This can be used in production to enable a Connect-unaware
 application to accept and establish Connect-based connections. This proxy
 can also be used in development to connect to Connect-enabled services.
@@ -18,7 +18,7 @@ can also be used in development to connect to Connect-enabled services.
 
 ## Usage
 
-Usage: `consul connect proxy [options]`
+Usage: `gyoza connect proxy [options]`
 
 #### API Options
 
@@ -45,7 +45,7 @@ Usage: `consul connect proxy [options]`
   enables profiling HTTP endpoints on that address.
 
 * `-service` - Name of the service this proxy is representing. This service
-  doesn't need to actually exist in the Consul catalog, but proper ACL
+  doesn't need to actually exist in the OpenGyoza catalog, but proper ACL
   permissions (`service:write`) are required. This and the remaining options can
   be used to setup a proxy that is not registered already with local config
   [useful for development](/docs/connect/dev.html).
@@ -63,14 +63,14 @@ Usage: `consul connect proxy [options]`
 * `-service-addr` - Address of the local service to proxy. Required for
   `-listen`.
 
-* `-register` - Self-register with the local Consul agent, making this
+* `-register` - Self-register with the local OpenGyoza agent, making this
   proxy available as Connect-capable service in the catalog. This is only
   useful with `-listen`.
 
 * `-register-id` - Optional ID suffix for the service when `-register` is set to
   disambiguate the service ID. By default the service ID is "<service>-proxy"
   where `<service>` is the `-service` value. In most cases it is now preferable
-  to use [`consul services register`](/docs/commands/services/register.html) to
+  to use [`gyoza services register`](/docs/commands/services/register.html) to
   register a fully configured proxy instance rather than specify config and
   registration via this command.
 
@@ -82,14 +82,14 @@ process that creates a TCP connection to the specified port (8181) will
 establish a mutual TLS connection to "db" identified as "frontend".
 
 ```text
-$ consul connect proxy -service frontend -upstream db:8181
+$ gyoza connect proxy -service frontend -upstream db:8181
 ```
 
 The next example starts a local proxy that also accepts inbound connections
 on port 8443, authorizes the connection, then proxies it to port 8080:
 
 ```text
-$ consul connect proxy \
+$ gyoza connect proxy \
     -service frontend \
     -service-addr 127.0.0.1:8080 \
     -listen ':8443'

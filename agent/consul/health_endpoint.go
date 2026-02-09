@@ -5,8 +5,8 @@ import (
 	"sort"
 
 	"github.com/armon/go-metrics"
-	"github.com/hashicorp/consul/agent/consul/state"
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/consul/state"
+	"github.com/opengyoza/opengyoza/agent/structs"
 	bexpr "github.com/hashicorp/go-bexpr"
 	"github.com/hashicorp/go-memdb"
 )

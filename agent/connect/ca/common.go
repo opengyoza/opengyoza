@@ -5,7 +5,7 @@ import (
 	"crypto/x509"
 	"fmt"
 
-	"github.com/hashicorp/consul/agent/connect"
+	"github.com/opengyoza/opengyoza/agent/connect"
 )
 
 func validateSetIntermediate(

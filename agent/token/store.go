@@ -4,11 +4,12 @@ import (
 	"sync"
 )
 
-type TokenSource bool
+type TokenSource uint8
 
 const (
-	TokenSourceConfig TokenSource = false
-	TokenSourceAPI    TokenSource = true
+	TokenSourceUnset TokenSource = iota
+	TokenSourceConfig
+	TokenSourceAPI
 )
 
 // Store is used to hold the special ACL tokens used by Consul agents. It is

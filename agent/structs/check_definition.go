@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/types"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/types"
 )
 
 // CheckDefinition is used to JSON decode the Check definitions

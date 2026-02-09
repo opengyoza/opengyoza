@@ -20,7 +20,7 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="<%= File.join(base_url, current_page.url) %>" />
     <meta property="og:title" content="<%= title_for(current_page) %>" />
-    <meta property="og:site_name" content="Consul by HashiCorp"/>
+    <meta property="og:site_name" content="OpenGyoza"/>
     <meta property="og:image" content="<%= image_url("og-image.png") %>"/>
     <meta property="og:description" content="<%= description_for(current_page) %>" />
 
@@ -76,18 +76,17 @@
                     </ul>
                   </li>
                   <li><a href="/intro/index.html">Intro</a></li>
-                  <li><a href="https://learn.hashicorp.com/consul?utm_source=consul.io&utm_medium=docs&utm_content=top-nav">Learn</a></li>
+                  <li><a href="https://learn.hashicorp.com/consul?utm_source=consul.io&utm_medium=docs&utm_content=top-nav">Learn (Consul)</a></li>
                   <li><a href="/docs/index.html">Docs</a></li>
                   <li><a href="/api/index.html">API</a></li>
                   <li><a href="/community.html">Community</a></li>
-                  <li><a href="https://www.hashicorp.com/products/consul/?utm_source=oss&utm_medium=header-nav&utm_campaign=consul">Enterprise</a></li>
                   <li>
                     <a href="/downloads.html">
                       <%= inline_svg "download.svg" %> Download
                     </a>
                   </li>
                   <li>
-                    <a href="https://github.com/hashicorp/consul">
+                    <a href="https://github.com/opengyoza/opengyoza">
                       <%= inline_svg "github.svg" %> GitHub
                     </a>
                   </li>
@@ -132,13 +131,13 @@
       {
         "@context": "http://schema.org",
         "@type": "Product",
-        "name": "Consul",
-        "alternateName": "Consul by HashiCorp",
-        "manufacturer": "HashiCorp",
-        "url": "https://www.consul.io",
+        "name": "OpenGyoza",
+        "alternateName": "Consul fork",
+        "manufacturer": "OpenGyoza community",
+        "url": "https://github.com/opengyoza/opengyoza",
         "logo": "<%= File.join(base_url, image_path("logo-hashicorp.svg")) %>",
         "sameAs": [
-          "https://github.com/hashicorp/consul"
+          "https://github.com/opengyoza/opengyoza"
         ]
       }
     </script>

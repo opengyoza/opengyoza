@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"reflect"
+	"strconv"
 	"strings"
 	"testing"
 
-	"github.com/hashicorp/consul/agent/cache"
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/types"
+	"github.com/opengyoza/opengyoza/agent/cache"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -1185,7 +1186,7 @@ func TestStructs_ValidateMetadata(t *testing.T) {
 	// Should get error
 	meta = make(map[string]string)
 	for i := 0; i < metaMaxKeyPairs+1; i++ {
-		meta[string(i)] = "value"
+		meta[strconv.Itoa(i)] = "value"
 	}
 	if err := ValidateMetadata(meta, false); !strings.Contains(err.Error(), "cannot contain more than") {
 		t.Fatalf("should have failed")

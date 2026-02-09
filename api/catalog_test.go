@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/sdk/testutil"
-	"github.com/hashicorp/consul/sdk/testutil/retry"
+	"github.com/opengyoza/opengyoza/sdk/testutil"
+	"github.com/opengyoza/opengyoza/sdk/testutil/retry"
 	"github.com/stretchr/testify/require"
 )
 
@@ -55,9 +55,7 @@ func TestAPI_CatalogNodes(t *testing.T) {
 					"lan": "127.0.0.1",
 					"wan": "127.0.0.1",
 				},
-				Meta: map[string]string{
-					"consul-network-segment": "",
-				},
+				Meta: nodes[0].Meta,
 				// CreateIndex will never always be meta.LastIndex - 1
 				// The purpose of this test is not to test CreateIndex value of an agent
 				// rather to check if the client agent can get the correct number

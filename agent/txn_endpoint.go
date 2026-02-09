@@ -8,9 +8,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/types"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/types"
 )
 
 const (
@@ -206,7 +206,7 @@ func (s *HTTPServer) convertOps(resp http.ResponseWriter, req *http.Request) (st
 			// Check if the internal duration fields are set as well as the normal ones. This is
 			// to be backwards compatible with a bug where the internal duration fields were being
 			// deserialized from instead of the correct fields.
-			// See https://github.com/hashicorp/consul/issues/5477 for more details.
+			// See https://github.com/opengyoza/opengyoza/issues/5477 for more details.
 			interval := check.Definition.IntervalDuration
 			if dur := time.Duration(check.Definition.Interval); dur != 0 {
 				interval = dur

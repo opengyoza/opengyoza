@@ -12,17 +12,17 @@ import (
 	"github.com/hashicorp/go-memdb"
 	"github.com/mitchellh/hashstructure"
 
-	"github.com/hashicorp/consul/acl"
-	cachetype "github.com/hashicorp/consul/agent/cache-types"
-	"github.com/hashicorp/consul/agent/debug"
-	"github.com/hashicorp/consul/agent/structs"
-	token_store "github.com/hashicorp/consul/agent/token"
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/ipaddr"
-	"github.com/hashicorp/consul/lib"
-	"github.com/hashicorp/consul/lib/file"
-	"github.com/hashicorp/consul/logger"
-	"github.com/hashicorp/consul/types"
+	"github.com/opengyoza/opengyoza/acl"
+	cachetype "github.com/opengyoza/opengyoza/agent/cache-types"
+	"github.com/opengyoza/opengyoza/agent/debug"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	token_store "github.com/opengyoza/opengyoza/agent/token"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/ipaddr"
+	"github.com/opengyoza/opengyoza/lib"
+	"github.com/opengyoza/opengyoza/lib/file"
+	"github.com/opengyoza/opengyoza/logger"
+	"github.com/opengyoza/opengyoza/types"
 	"github.com/hashicorp/go-bexpr"
 	"github.com/hashicorp/logutils"
 	"github.com/hashicorp/serf/coordinate"
@@ -78,7 +78,7 @@ func (s *HTTPServer) AgentSelf(resp http.ResponseWriter, req *http.Request) (int
 	return Self{
 		Config:      config,
 		DebugConfig: s.agent.config.Sanitized(),
-		Coord:       cs[s.agent.config.SegmentName],
+		Coord:       cs[""],
 		Member:      s.agent.LocalMember(),
 		Stats:       s.agent.Stats(),
 		Meta:        s.agent.State.Metadata(),
@@ -346,33 +346,17 @@ func (s *HTTPServer) AgentMembers(resp http.ResponseWriter, req *http.Request) (
 		wan = true
 	}
 
-	segment := req.URL.Query().Get("segment")
-	if wan {
-		switch segment {
-		case "", api.AllSegments:
-			// The zero value and the special "give me all members"
-			// key are ok, otherwise the argument doesn't apply to
-			// the WAN.
-		default:
-			resp.WriteHeader(http.StatusBadRequest)
-			fmt.Fprint(resp, "Cannot provide a segment with wan=true")
-			return nil, nil
-		}
+	if segment := req.URL.Query().Get("segment"); segment != "" {
+		resp.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(resp, "Segment filtering is not supported")
+		return nil, nil
 	}
 
 	var members []serf.Member
 	if wan {
 		members = s.agent.WANMembers()
 	} else {
-		var err error
-		if segment == api.AllSegments {
-			members, err = s.agent.delegate.LANMembersAllSegments()
-		} else {
-			members, err = s.agent.delegate.LANSegmentMembers(segment)
-		}
-		if err != nil {
-			return nil, err
-		}
+		members = s.agent.LANMembers()
 	}
 	if err := s.agent.filterMembers(token, &members); err != nil {
 		return nil, err
@@ -818,7 +802,7 @@ func (s *HTTPServer) AgentRegisterService(resp http.ResponseWriter, req *http.Re
 	// the catalog endpoint so it helps ensure the sync will work properly.
 	if err := ns.Validate(); err != nil {
 		resp.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(resp, err.Error())
+		fmt.Fprint(resp, err.Error())
 		return nil, nil
 	}
 
@@ -1006,7 +990,7 @@ func (s *HTTPServer) AgentNodeMaintenance(resp http.ResponseWriter, req *http.Re
 	if err != nil {
 		return nil, err
 	}
-	if rule != nil && !rule.NodeWrite(s.agent.config.NodeName, nil) {
+	if rule != nil && !rule.NodeWrite(s.agent.config.NodeName) {
 		return nil, acl.ErrPermissionDenied
 	}
 

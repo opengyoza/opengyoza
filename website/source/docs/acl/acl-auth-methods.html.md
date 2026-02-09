@@ -42,7 +42,7 @@ using the API or command line before they can be used by applications.
 * **Authentication** - One or more **auth methods** should be configured with
   details about how to authenticate application credentials. Successful
   validation of application credentials will return a set of trusted identity
-  attributes (such as a username). These can be managed with the `consul acl
+  attributes (such as a username). These can be managed with the `gyoza acl
   auth-method` subcommands or the corresponding [API
   endpoints](/api/acl/auth-methods.html).  The specific details of
   configuration are type dependent and described in their own documentation
@@ -51,7 +51,7 @@ using the API or command line before they can be used by applications.
 * **Authorization** - One or more **binding rules** must be configured to define
   how to translate trusted identity attributes from each auth method into
   privileges assigned to the ACL token that is created. These can be managed
-  with the `consul acl binding-rule` subcommands or the corresponding [API
+  with the `gyoza acl binding-rule` subcommands or the corresponding [API
   endpoints](/api/acl/binding-rules.html).
 
 -> **Note** - To configure auth methods in any connected secondary datacenter,
@@ -99,7 +99,7 @@ bearer token for a Consul ACL token by using the login process:
 
 ![diagram of auth method login](/assets/images/auth-methods.svg)
 
-1. Applications use the `consul login` subcommand or the [login API
+1. Applications use the `gyoza login` subcommand or the [login API
    endpoint](/api/acl/acl.html#login-to-auth-method) to authenticate to a
    specific auth method using their local Consul client. Applications provide
    both the name of the auth method and a secret bearer token during login.
@@ -125,7 +125,7 @@ bearer token for a Consul ACL token by using the login process:
 
 8. The Consul client returns the token details back to the application.
 
-9. (later) Applications SHOULD use the `consul logout` subcommand or the
+9. (later) Applications SHOULD use the `gyoza logout` subcommand or the
    [logout API endpoint](/api/acl/acl.html#logout-from-auth-method) to destroy
    their token when it is no longer required.
 

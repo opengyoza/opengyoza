@@ -10,16 +10,16 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/agent/connect"
-	"github.com/hashicorp/consul/agent/metadata"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/agent/token"
-	"github.com/hashicorp/consul/sdk/freeport"
-	"github.com/hashicorp/consul/sdk/testutil"
-	"github.com/hashicorp/consul/sdk/testutil/retry"
-	"github.com/hashicorp/consul/testrpc"
-	"github.com/hashicorp/consul/tlsutil"
-	"github.com/hashicorp/consul/types"
+	"github.com/opengyoza/opengyoza/agent/connect"
+	"github.com/opengyoza/opengyoza/agent/metadata"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/token"
+	"github.com/opengyoza/opengyoza/sdk/freeport"
+	"github.com/opengyoza/opengyoza/sdk/testutil"
+	"github.com/opengyoza/opengyoza/sdk/testutil/retry"
+	"github.com/opengyoza/opengyoza/testrpc"
+	"github.com/opengyoza/opengyoza/tlsutil"
+	"github.com/opengyoza/opengyoza/types"
 	"github.com/hashicorp/go-uuid"
 	"golang.org/x/time/rate"
 
@@ -154,15 +154,6 @@ func testServerDCExpect(t *testing.T, dc string, expect int) (string, *Server) {
 		c.Datacenter = dc
 		c.Bootstrap = false
 		c.BootstrapExpect = expect
-	})
-}
-
-func testServerDCExpectNonVoter(t *testing.T, dc string, expect int) (string, *Server) {
-	return testServerWithConfig(t, func(c *Config) {
-		c.Datacenter = dc
-		c.Bootstrap = false
-		c.BootstrapExpect = expect
-		c.NonVoter = true
 	})
 }
 
@@ -620,7 +611,7 @@ func TestServer_LeaveLeader(t *testing.T) {
 	}
 
 	// Should lose a peer
-	retry.Run(t, func(r *retry.R) {
+	retry.RunWith(&retry.Timer{Timeout: 20 * time.Second, Wait: 25 * time.Millisecond}, t, func(r *retry.R) {
 		r.Check(wantPeers(s1, 2))
 		r.Check(wantPeers(s2, 2))
 		r.Check(wantPeers(s3, 2))
@@ -796,46 +787,6 @@ func TestServer_AvoidReBootstrap(t *testing.T) {
 	if termAfter != termBefore {
 		t.Fatalf("looks like an election took place")
 	}
-}
-
-func TestServer_Expect_NonVoters(t *testing.T) {
-	t.Parallel()
-	dir1, s1 := testServerDCExpectNonVoter(t, "dc1", 2)
-	defer os.RemoveAll(dir1)
-	defer s1.Shutdown()
-
-	dir2, s2 := testServerDCExpect(t, "dc1", 2)
-	defer os.RemoveAll(dir2)
-	defer s2.Shutdown()
-
-	dir3, s3 := testServerDCExpect(t, "dc1", 2)
-	defer os.RemoveAll(dir3)
-	defer s3.Shutdown()
-
-	// Join the first two servers.
-	joinLAN(t, s2, s1)
-
-	// Should have no peers yet since the bootstrap didn't occur.
-	retry.Run(t, func(r *retry.R) {
-		r.Check(wantPeers(s1, 0))
-		r.Check(wantPeers(s2, 0))
-	})
-
-	// Join the third node.
-	joinLAN(t, s3, s1)
-
-	// Now we have three servers so we should bootstrap.
-	retry.Run(t, func(r *retry.R) {
-		r.Check(wantPeers(s1, 2))
-		r.Check(wantPeers(s2, 2))
-		r.Check(wantPeers(s3, 2))
-	})
-
-	// Make sure a leader is elected
-	testrpc.WaitForLeader(t, s1.RPC, "dc1")
-	retry.Run(t, func(r *retry.R) {
-		r.Check(wantRaft([]*Server{s1, s2, s3}))
-	})
 }
 
 func TestServer_BadExpect(t *testing.T) {

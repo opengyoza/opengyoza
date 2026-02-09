@@ -8,9 +8,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/hashicorp/consul/testrpc"
+	"github.com/opengyoza/opengyoza/testrpc"
 
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/structs"
 )
 
 func TestKVSEndpoint_PUT_GET_DELETE(t *testing.T) {

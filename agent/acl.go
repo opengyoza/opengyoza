@@ -3,9 +3,9 @@ package agent
 import (
 	"fmt"
 
-	"github.com/hashicorp/consul/acl"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/types"
+	"github.com/opengyoza/opengyoza/acl"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/types"
 	"github.com/hashicorp/serf/serf"
 )
 
@@ -54,7 +54,7 @@ func (a *Agent) initializeACLs() error {
 			},
 		},
 	}
-	master, err := acl.NewPolicyAuthorizer(acl.DenyAll(), []*acl.Policy{policy}, nil)
+	master, err := acl.NewPolicyAuthorizer(acl.DenyAll(), []*acl.Policy{policy})
 	if err != nil {
 		return err
 	}
@@ -75,14 +75,14 @@ func (a *Agent) vetServiceRegister(token string, service *structs.NodeService) e
 	}
 
 	// Vet the service itself.
-	if !rule.ServiceWrite(service.Service, nil) {
+	if !rule.ServiceWrite(service.Service) {
 		return acl.ErrPermissionDenied
 	}
 
 	// Vet any service that might be getting overwritten.
 	services := a.State.Services()
 	if existing, ok := services[service.ID]; ok {
-		if !rule.ServiceWrite(existing.Service, nil) {
+		if !rule.ServiceWrite(existing.Service) {
 			return acl.ErrPermissionDenied
 		}
 	}
@@ -90,7 +90,7 @@ func (a *Agent) vetServiceRegister(token string, service *structs.NodeService) e
 	// If the service is a proxy, ensure that it has write on the destination too
 	// since it can be discovered as an instance of that service.
 	if service.Kind == structs.ServiceKindConnectProxy {
-		if !rule.ServiceWrite(service.Proxy.DestinationServiceName, nil) {
+		if !rule.ServiceWrite(service.Proxy.DestinationServiceName) {
 			return acl.ErrPermissionDenied
 		}
 	}
@@ -113,7 +113,7 @@ func (a *Agent) vetServiceUpdate(token string, serviceID string) error {
 	// Vet any changes based on the existing services's info.
 	services := a.State.Services()
 	if existing, ok := services[serviceID]; ok {
-		if !rule.ServiceWrite(existing.Service, nil) {
+		if !rule.ServiceWrite(existing.Service) {
 			return acl.ErrPermissionDenied
 		}
 	} else {
@@ -137,11 +137,11 @@ func (a *Agent) vetCheckRegister(token string, check *structs.HealthCheck) error
 
 	// Vet the check itself.
 	if len(check.ServiceName) > 0 {
-		if !rule.ServiceWrite(check.ServiceName, nil) {
+		if !rule.ServiceWrite(check.ServiceName) {
 			return acl.ErrPermissionDenied
 		}
 	} else {
-		if !rule.NodeWrite(a.config.NodeName, nil) {
+		if !rule.NodeWrite(a.config.NodeName) {
 			return acl.ErrPermissionDenied
 		}
 	}
@@ -150,11 +150,11 @@ func (a *Agent) vetCheckRegister(token string, check *structs.HealthCheck) error
 	checks := a.State.Checks()
 	if existing, ok := checks[check.CheckID]; ok {
 		if len(existing.ServiceName) > 0 {
-			if !rule.ServiceWrite(existing.ServiceName, nil) {
+			if !rule.ServiceWrite(existing.ServiceName) {
 				return acl.ErrPermissionDenied
 			}
 		} else {
-			if !rule.NodeWrite(a.config.NodeName, nil) {
+			if !rule.NodeWrite(a.config.NodeName) {
 				return acl.ErrPermissionDenied
 			}
 		}
@@ -178,11 +178,11 @@ func (a *Agent) vetCheckUpdate(token string, checkID types.CheckID) error {
 	checks := a.State.Checks()
 	if existing, ok := checks[checkID]; ok {
 		if len(existing.ServiceName) > 0 {
-			if !rule.ServiceWrite(existing.ServiceName, nil) {
+			if !rule.ServiceWrite(existing.ServiceName) {
 				return acl.ErrPermissionDenied
 			}
 		} else {
-			if !rule.NodeWrite(a.config.NodeName, nil) {
+			if !rule.NodeWrite(a.config.NodeName) {
 				return acl.ErrPermissionDenied
 			}
 		}

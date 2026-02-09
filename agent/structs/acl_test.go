@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hashicorp/consul/acl"
+	"github.com/opengyoza/opengyoza/acl"
 
 	"github.com/stretchr/testify/require"
 )
@@ -568,7 +568,7 @@ func TestStructs_ACLPolicies_resolveWithCache(t *testing.T) {
 	}
 
 	t.Run("Cache Misses", func(t *testing.T) {
-		policies, err := testPolicies.resolveWithCache(cache, nil)
+		policies, err := testPolicies.resolveWithCache(cache)
 		require.NoError(t, err)
 		require.Len(t, policies, 4)
 		for i := range testPolicies {
@@ -590,7 +590,7 @@ func TestStructs_ACLPolicies_resolveWithCache(t *testing.T) {
 	})
 
 	t.Run("Cache Hits", func(t *testing.T) {
-		policies, err := testPolicies.resolveWithCache(cache, nil)
+		policies, err := testPolicies.resolveWithCache(cache)
 		require.NoError(t, err)
 		require.Len(t, policies, 4)
 		for i := range testPolicies {
@@ -661,7 +661,7 @@ func TestStructs_ACLPolicies_Compile(t *testing.T) {
 	}
 
 	t.Run("Cache Miss", func(t *testing.T) {
-		authz, err := testPolicies.Compile(acl.DenyAll(), cache, nil)
+		authz, err := testPolicies.Compile(acl.DenyAll(), cache)
 		require.NoError(t, err)
 		require.NotNil(t, authz)
 
@@ -689,7 +689,7 @@ func TestStructs_ACLPolicies_Compile(t *testing.T) {
 	})
 
 	t.Run("Cache Hit", func(t *testing.T) {
-		authz, err := testPolicies.Compile(acl.DenyAll(), cache, nil)
+		authz, err := testPolicies.Compile(acl.DenyAll(), cache)
 		require.NoError(t, err)
 		require.NotNil(t, authz)
 

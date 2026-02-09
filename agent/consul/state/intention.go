@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/structs"
 	"github.com/hashicorp/go-memdb"
 )
 

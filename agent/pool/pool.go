@@ -11,8 +11,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/hashicorp/consul/lib"
-	"github.com/hashicorp/consul/tlsutil"
+	"github.com/opengyoza/opengyoza/lib"
+	"github.com/opengyoza/opengyoza/tlsutil"
 	"github.com/hashicorp/net-rpc-msgpackrpc"
 	"github.com/hashicorp/yamux"
 )

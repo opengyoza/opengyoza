@@ -12,9 +12,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/hashicorp/consul/agent/exec"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/api"
+	"github.com/opengyoza/opengyoza/agent/exec"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/api"
 )
 
 const (

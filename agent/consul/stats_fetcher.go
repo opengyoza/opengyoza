@@ -5,9 +5,9 @@ import (
 	"log"
 	"sync"
 
-	"github.com/hashicorp/consul/agent/consul/autopilot"
-	"github.com/hashicorp/consul/agent/metadata"
-	"github.com/hashicorp/consul/agent/pool"
+	"github.com/opengyoza/opengyoza/agent/consul/autopilot"
+	"github.com/opengyoza/opengyoza/agent/metadata"
+	"github.com/opengyoza/opengyoza/agent/pool"
 	"github.com/hashicorp/serf/serf"
 )
 

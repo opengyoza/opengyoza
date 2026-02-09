@@ -18,19 +18,19 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/testrpc"
+	"github.com/opengyoza/opengyoza/testrpc"
 
-	"github.com/hashicorp/consul/agent/cache"
-	cachetype "github.com/hashicorp/consul/agent/cache-types"
-	"github.com/hashicorp/consul/agent/checks"
-	"github.com/hashicorp/consul/agent/config"
-	"github.com/hashicorp/consul/agent/connect"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/sdk/freeport"
-	"github.com/hashicorp/consul/sdk/testutil"
-	"github.com/hashicorp/consul/sdk/testutil/retry"
-	"github.com/hashicorp/consul/types"
+	"github.com/opengyoza/opengyoza/agent/cache"
+	cachetype "github.com/opengyoza/opengyoza/agent/cache-types"
+	"github.com/opengyoza/opengyoza/agent/checks"
+	"github.com/opengyoza/opengyoza/agent/config"
+	"github.com/opengyoza/opengyoza/agent/connect"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/sdk/freeport"
+	"github.com/opengyoza/opengyoza/sdk/testutil"
+	"github.com/opengyoza/opengyoza/sdk/testutil/retry"
+	"github.com/opengyoza/opengyoza/types"
 	"github.com/hashicorp/go-uuid"
 	"github.com/pascaldekloe/goe/verify"
 	"github.com/stretchr/testify/assert"
@@ -2689,8 +2689,8 @@ func TestAgent_Service_Reap(t *testing.T) {
 	chkTypes := []*structs.CheckType{
 		&structs.CheckType{
 			Status:                         api.HealthPassing,
-			TTL:                            25 * time.Millisecond,
-			DeregisterCriticalServiceAfter: 200 * time.Millisecond,
+			TTL:                            200 * time.Millisecond,
+			DeregisterCriticalServiceAfter: 600 * time.Millisecond,
 		},
 	}
 
@@ -2708,42 +2708,47 @@ func TestAgent_Service_Reap(t *testing.T) {
 	}
 
 	// Wait for the check TTL to fail but before the check is reaped.
-	time.Sleep(100 * time.Millisecond)
-	if _, ok := a.State.Services()["redis"]; !ok {
-		t.Fatalf("should have redis service")
-	}
-	if checks := a.State.CriticalCheckStates(); len(checks) != 1 {
-		t.Fatalf("should have a critical check")
-	}
+	retry.Run(t, func(r *retry.R) {
+		if _, ok := a.State.Services()["redis"]; !ok {
+			r.Fatalf("should have redis service")
+		}
+		if checks := a.State.CriticalCheckStates(); len(checks) != 1 {
+			r.Fatalf("should have a critical check")
+		}
+	})
 
 	// Pass the TTL.
 	if err := a.updateTTLCheck("service:redis", api.HealthPassing, "foo"); err != nil {
 		t.Fatalf("err: %v", err)
 	}
-	if _, ok := a.State.Services()["redis"]; !ok {
-		t.Fatalf("should have redis service")
-	}
-	if checks := a.State.CriticalCheckStates(); len(checks) > 0 {
-		t.Fatalf("should not have critical checks")
-	}
+	retry.Run(t, func(r *retry.R) {
+		if _, ok := a.State.Services()["redis"]; !ok {
+			r.Fatalf("should have redis service")
+		}
+		if checks := a.State.CriticalCheckStates(); len(checks) > 0 {
+			r.Fatalf("should not have critical checks")
+		}
+	})
 
 	// Wait for the check TTL to fail again.
-	time.Sleep(100 * time.Millisecond)
-	if _, ok := a.State.Services()["redis"]; !ok {
-		t.Fatalf("should have redis service")
-	}
-	if checks := a.State.CriticalCheckStates(); len(checks) != 1 {
-		t.Fatalf("should have a critical check")
-	}
+	retry.Run(t, func(r *retry.R) {
+		if _, ok := a.State.Services()["redis"]; !ok {
+			r.Fatalf("should have redis service")
+		}
+		if checks := a.State.CriticalCheckStates(); len(checks) != 1 {
+			r.Fatalf("should have a critical check")
+		}
+	})
 
 	// Wait for the reap.
-	time.Sleep(400 * time.Millisecond)
-	if _, ok := a.State.Services()["redis"]; ok {
-		t.Fatalf("redis service should have been reaped")
-	}
-	if checks := a.State.CriticalCheckStates(); len(checks) > 0 {
-		t.Fatalf("should not have critical checks")
-	}
+	retry.Run(t, func(r *retry.R) {
+		if _, ok := a.State.Services()["redis"]; ok {
+			r.Fatalf("redis service should have been reaped")
+		}
+		if checks := a.State.CriticalCheckStates(); len(checks) > 0 {
+			r.Fatalf("should not have critical checks")
+		}
+	})
 }
 
 func TestAgent_Service_NoReap(t *testing.T) {

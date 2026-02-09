@@ -22,7 +22,7 @@ import (
 	"time"
 
 	"github.com/armon/go-metrics"
-	"github.com/hashicorp/consul/lib"
+	"github.com/opengyoza/opengyoza/lib"
 )
 
 //go:generate mockery -all -inpkg
@@ -342,7 +342,7 @@ RETRY_GET:
 	// error, we return. Note that the invariant is that if both entry.Value AND
 	// entry.Error are non-nil, the error _must_ be more recent than the Value. In
 	// other words valid fetches should reset the error. See
-	// https://github.com/hashicorp/consul/issues/4480.
+	// https://github.com/opengyoza/opengyoza/issues/4480.
 	if !first && entry.Error != nil {
 		return entry.Value, ResultMeta{Index: entry.Index}, entry.Error
 	}
@@ -506,7 +506,7 @@ func (c *Cache) fetch(t, key string, r Request, allowNew bool, attempt uint, min
 		// is _newer_ than the last good value. So if the err is nil then we need to
 		// reset to replace any _older_ errors and avoid them bubbling up. If the
 		// error is non-nil then we need to set it anyway and used to do it in the
-		// code below. See https://github.com/hashicorp/consul/issues/4480.
+		// code below. See https://github.com/opengyoza/opengyoza/issues/4480.
 		newEntry.Error = err
 
 		if result.Value != nil {

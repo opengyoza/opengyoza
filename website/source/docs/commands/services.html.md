@@ -4,11 +4,11 @@ page_title: "Commands: Services"
 sidebar_current: "docs-commands-services"
 ---
 
-# Consul Agent Services
+# OpenGyoza Agent Services
 
-Command: `consul services`
+Command: `gyoza services`
 
-The `services` command has subcommands for interacting with Consul services
+The `services` command has subcommands for interacting with OpenGyoza services
 registered with the [local agent](/docs/agent/basics.html). These provide
 useful commands such as `register` and `deregister` for easily registering
 services in scripts, dev mode, etc.
@@ -17,13 +17,13 @@ see the [`catalog services`](/docs/commands/catalog/services.html) command.
 
 ## Usage
 
-Usage: `consul services <subcommand>`
+Usage: `gyoza services <subcommand>`
 
-For the exact documentation for your Consul version, run `consul services -h` to
+For the exact documentation for your OpenGyoza version, run `gyoza services -h` to
 view the complete list of subcommands.
 
 ```text
-Usage: consul services <subcommand> [options] [args]
+Usage: gyoza services <subcommand> [options] [args]
 
   ...
 
@@ -40,7 +40,7 @@ of the subcommand in the sidebar.
 To create a simple service:
 
 ```text
-$ consul services register -name=web
+$ gyoza services register -name=web
 ```
 
 To create a service from a configuration file:
@@ -53,14 +53,14 @@ $ cat web.json
   }
 }
 
-$ consul services register web.json
+$ gyoza services register web.json
 ```
 
 To deregister a service:
 
 ```sh
 # Either style works:
-$ consul services deregister web.json
+$ gyoza services deregister web.json
 
-$ consul services deregister -id web
+$ gyoza services deregister -id web
 ```

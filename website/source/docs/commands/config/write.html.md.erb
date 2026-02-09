@@ -4,9 +4,9 @@ page_title: "Commands: Config Write"
 sidebar_current: "docs-commands-config-write"
 ---
 
-# Consul Config Write
+# OpenGyoza Config Write
 
-Command: `consul config write`
+Command: `gyoza config write`
 
 The `config write` command creates or updates a centralized config entry.
 See the [configuration entries docs](/docs/agent/config_entries.html) for more
@@ -14,7 +14,7 @@ details about configuration entries.
 
 ## Usage
 
-Usage: `consul config write [options] FILE`
+Usage: `gyoza config write [options] FILE`
 
 #### API Options
 
@@ -23,7 +23,7 @@ Usage: `consul config write [options] FILE`
 #### Config Write Options
 
 * `-cas` - Specifies to use a Check-And-Set operation. If the index is
-  0, Consul will only store the entry if it does not already exist. If the index is
+  0, OpenGyoza will only store the entry if it does not already exist. If the index is
   non-zero, the entry is only set if the current index matches the `ModifyIndex`
   of that entry.
 
@@ -31,11 +31,11 @@ Usage: `consul config write [options] FILE`
 
 From file:
 
-    $ consul config write web-defaults.json
+    $ gyoza config write web-defaults.json
 
 From stdin:
 
-    $ consul config write -
+    $ gyoza config write -
 
 
 ### Config Entry examples

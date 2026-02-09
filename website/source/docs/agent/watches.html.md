@@ -134,7 +134,7 @@ Here is an example configuration:
 
 Or, using the watch command:
 
-    $ consul watch -type=key -key=foo/bar/baz /usr/bin/my-key-handler.sh
+    $ gyoza watch -type=key -key=foo/bar/baz /usr/bin/my-key-handler.sh
 
 An example of the output of this command:
 
@@ -171,7 +171,7 @@ Here is an example configuration:
 
 Or, using the watch command:
 
-    $ consul watch -type=keyprefix -prefix=foo/ /usr/bin/my-prefix-handler.sh
+    $ gyoza watch -type=keyprefix -prefix=foo/ /usr/bin/my-prefix-handler.sh
 
 An example of the output of this command:
 
@@ -300,11 +300,11 @@ Or, using the watch command:
 
 Single tag:
 
-    $ consul watch -type=service -service=redis -tag=bar /usr/bin/my-service-handler.sh
+    $ gyoza watch -type=service -service=redis -tag=bar /usr/bin/my-service-handler.sh
 
 Multiple tag:
 
-    $ consul watch -type=service -service=redis -tag=bar -tag=foo /usr/bin/my-service-handler.sh
+    $ gyoza watch -type=service -service=redis -tag=bar -tag=foo /usr/bin/my-service-handler.sh
 
 An example of the output of this command:
 
@@ -384,11 +384,11 @@ Or, using the watch command:
 
 State:
 
-    $ consul watch -type=checks -state=passing /usr/bin/my-check-handler.sh -passing
+    $ gyoza watch -type=checks -state=passing /usr/bin/my-check-handler.sh -passing
 
 Service:
 
-    $ consul watch -type=checks -service=redis /usr/bin/my-check-handler.sh -redis
+    $ gyoza watch -type=checks -service=redis /usr/bin/my-check-handler.sh -redis
 
 An example of the output of this command:
 
@@ -410,7 +410,7 @@ An example of the output of this command:
 ### <a name="event"></a>Type: event
 
 The "event" watch type is used to monitor for custom user
-events. These are fired using the [consul event](/docs/commands/event.html) command.
+events. These are fired using the [gyoza event](/docs/commands/event.html) command.
 It takes only a single optional "name" parameter which restricts
 the watch to only events with the given name.
 
@@ -428,7 +428,7 @@ Here is an example configuration:
 
 Or, using the watch command:
 
-    $ consul watch -type=event -name=web-deploy /usr/bin/my-event-handler.sh -web-deploy
+    $ gyoza watch -type=event -name=web-deploy /usr/bin/my-event-handler.sh -web-deploy
 
 An example of the output of this command:
 
@@ -450,4 +450,4 @@ An example of the output of this command:
 
 To fire a new `web-deploy` event the following could be used:
 
-    $ consul event -name=web-deploy 1609030
+    $ gyoza event -name=web-deploy 1609030

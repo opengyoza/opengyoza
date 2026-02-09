@@ -7,13 +7,13 @@ import (
 	"os"
 	"time"
 
-	"github.com/hashicorp/consul/agent/checks"
-	"github.com/hashicorp/consul/agent/consul/autopilot"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/lib"
-	"github.com/hashicorp/consul/tlsutil"
-	"github.com/hashicorp/consul/types"
-	"github.com/hashicorp/consul/version"
+	"github.com/opengyoza/opengyoza/agent/checks"
+	"github.com/opengyoza/opengyoza/agent/consul/autopilot"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/lib"
+	"github.com/opengyoza/opengyoza/tlsutil"
+	"github.com/opengyoza/opengyoza/types"
+	"github.com/opengyoza/opengyoza/version"
 	"github.com/hashicorp/memberlist"
 	"github.com/hashicorp/raft"
 	"github.com/hashicorp/serf/serf"
@@ -53,17 +53,6 @@ func init() {
 	}
 }
 
-// (Enterprise-only) NetworkSegment is the address and port configuration
-// for a network segment.
-type NetworkSegment struct {
-	Name       string
-	Bind       string
-	Port       int
-	Advertise  string
-	RPCAddr    *net.TCPAddr
-	SerfConfig *serf.Config
-}
-
 // Config is used to configure the server
 type Config struct {
 	// Bootstrap mode is used to bring up the first Consul server.
@@ -101,10 +90,6 @@ type Config struct {
 	// RaftConfig is the configuration used for Raft in the local DC
 	RaftConfig *raft.Config
 
-	// (Enterprise-only) NonVoter is used to prevent this server from being added
-	// as a voting member of the Raft cluster.
-	NonVoter bool
-
 	// NotifyListen is called after the RPC listener has been configured.
 	// RPCAdvertise will be set to the listener address if it hasn't been
 	// configured at this point.
@@ -127,13 +112,6 @@ type Config struct {
 	// RPCSrcAddr is the source address for outgoing RPC connections.
 	RPCSrcAddr *net.TCPAddr
 
-	// (Enterprise-only) The network segment this agent is part of.
-	Segment string
-
-	// (Enterprise-only) Segments is a list of network segments for a server to
-	// bind on.
-	Segments []NetworkSegment
-
 	// SerfLANConfig is the configuration for the intra-dc serf
 	SerfLANConfig *serf.Config
 
@@ -141,8 +119,7 @@ type Config struct {
 	SerfWANConfig *serf.Config
 
 	// SerfFloodInterval controls how often we attempt to flood local Serf
-	// Consul servers into the global areas (WAN and user-defined areas in
-	// Consul Enterprise).
+	// Consul servers into the WAN pool.
 	SerfFloodInterval time.Duration
 
 	// ReconcileInterval controls how often we reconcile the strongly

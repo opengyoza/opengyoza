@@ -8,8 +8,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/hashicorp/consul/connect"
-	"github.com/hashicorp/consul/sdk/freeport"
+	"github.com/opengyoza/opengyoza/connect"
+	"github.com/opengyoza/opengyoza/sdk/freeport"
 	"github.com/mitchellh/go-testing-interface"
 	"github.com/stretchr/testify/require"
 )

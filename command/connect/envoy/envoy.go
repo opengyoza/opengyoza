@@ -13,11 +13,11 @@ import (
 
 	"github.com/mitchellh/mapstructure"
 
-	"github.com/hashicorp/consul/agent/xds"
-	"github.com/hashicorp/consul/api"
-	proxyCmd "github.com/hashicorp/consul/command/connect/proxy"
-	"github.com/hashicorp/consul/command/flags"
-	"github.com/hashicorp/consul/ipaddr"
+	"github.com/opengyoza/opengyoza/agent/xds"
+	"github.com/opengyoza/opengyoza/api"
+	proxyCmd "github.com/opengyoza/opengyoza/command/connect/proxy"
+	"github.com/opengyoza/opengyoza/command/flags"
+	"github.com/opengyoza/opengyoza/ipaddr"
 	"github.com/hashicorp/go-sockaddr/template"
 
 	"github.com/mitchellh/cli"

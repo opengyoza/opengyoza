@@ -4,9 +4,9 @@ page_title: "Commands: Catalog List Services"
 sidebar_current: "docs-commands-catalog-services"
 ---
 
-# Consul Catalog List Services
+# OpenGyoza Catalog List Services
 
-Command: `consul catalog services`
+Command: `gyoza catalog services`
 
 The `catalog services` command prints all known services. It can also query
 for services that match particular metadata or list the services that a
@@ -17,8 +17,8 @@ particular node provides.
 List all services:
 
 ```text
-$ consul catalog services
-consul
+$ gyoza catalog services
+gyoza
 postgresql
 redis
 ```
@@ -26,8 +26,8 @@ redis
 Show all services with their tags:
 
 ```text
-$ consul catalog services -tags
-consul
+$ gyoza catalog services -tags
+gyoza
 postgresql  leader
 redis       primary,v1
 ```
@@ -35,15 +35,15 @@ redis       primary,v1
 List services for the node "worker-01":
 
 ```text
-$ consul catalog services -node=worker-01
-consul
+$ gyoza catalog services -node=worker-01
+gyoza
 redis
 ```
 
 
 ## Usage
 
-Usage: `consul catalog services [options]`
+Usage: `gyoza catalog services [options]`
 
 #### API Options
 

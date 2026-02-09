@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hashicorp/consul/types"
+	"github.com/opengyoza/opengyoza/types"
 	"github.com/hashicorp/go-msgpack/codec"
 )
 

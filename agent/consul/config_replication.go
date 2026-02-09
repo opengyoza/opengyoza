@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/armon/go-metrics"
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/structs"
 )
 
 func cmpConfigLess(first structs.ConfigEntry, second structs.ConfigEntry) bool {

@@ -8,7 +8,7 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/structs"
 	"github.com/stretchr/testify/require"
 )
 

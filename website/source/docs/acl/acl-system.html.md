@@ -255,7 +255,7 @@ The [`acl.tokens.agent`](/docs/agent/options.html#acl_tokens_agent) is a special
 
 1. Updating the agent's node entry using the [Catalog API](/api/catalog.html), including updating its node metadata, tagged addresses, and network coordinates
 2. Performing [anti-entropy](/docs/internals/anti-entropy.html) syncing, in particular reading the node metadata and services registered with the catalog
-3. Reading and writing the special `_rexec` section of the KV store when executing [`consul exec`](/docs/commands/exec.html) commands
+3. Reading and writing the special `_rexec` section of the KV store when executing [`gyoza exec`](/docs/commands/exec.html) commands
 
 Here's an example policy sufficient to accomplish the above for a node called `mynode`:
 

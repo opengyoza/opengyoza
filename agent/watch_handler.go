@@ -13,8 +13,8 @@ import (
 	"strconv"
 
 	"github.com/armon/circbuf"
-	"github.com/hashicorp/consul/agent/exec"
-	"github.com/hashicorp/consul/api/watch"
+	"github.com/opengyoza/opengyoza/agent/exec"
+	"github.com/opengyoza/opengyoza/api/watch"
 	"github.com/hashicorp/go-cleanhttp"
 	"golang.org/x/net/context"
 )

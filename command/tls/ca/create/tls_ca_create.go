@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/hashicorp/consul/command/flags"
-	"github.com/hashicorp/consul/command/tls"
-	"github.com/hashicorp/consul/tlsutil"
+	"github.com/opengyoza/opengyoza/command/flags"
+	"github.com/opengyoza/opengyoza/command/tls"
+	"github.com/opengyoza/opengyoza/tlsutil"
 	"github.com/mitchellh/cli"
 )
 

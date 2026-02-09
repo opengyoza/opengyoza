@@ -82,7 +82,7 @@ func TestCacheGet_initError(t *testing.T) {
 }
 
 // Test a cached error is replaced by a successful result. See
-// https://github.com/hashicorp/consul/issues/4480
+// https://github.com/opengyoza/opengyoza/issues/4480
 func TestCacheGet_cachedErrorsDontStick(t *testing.T) {
 	t.Parallel()
 

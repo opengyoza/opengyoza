@@ -7,7 +7,7 @@ import (
 
 	"sort"
 
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/structs"
 )
 
 func TestWalk_ServiceQuery(t *testing.T) {

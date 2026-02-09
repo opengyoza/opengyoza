@@ -3,7 +3,7 @@ package connect
 import (
 	"fmt"
 
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/structs"
 )
 
 func UpstreamSNI(u *structs.Upstream, subset string, dc string, trustDomain string) string {

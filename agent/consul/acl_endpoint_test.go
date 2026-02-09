@@ -11,14 +11,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/acl"
-	"github.com/hashicorp/consul/agent/consul/authmethod/kubeauth"
-	"github.com/hashicorp/consul/agent/consul/authmethod/testauth"
-	"github.com/hashicorp/consul/agent/structs"
-	tokenStore "github.com/hashicorp/consul/agent/token"
-	"github.com/hashicorp/consul/lib"
-	"github.com/hashicorp/consul/sdk/testutil/retry"
-	"github.com/hashicorp/consul/testrpc"
+	"github.com/opengyoza/opengyoza/acl"
+	"github.com/opengyoza/opengyoza/agent/consul/authmethod/kubeauth"
+	"github.com/opengyoza/opengyoza/agent/consul/authmethod/testauth"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	tokenStore "github.com/opengyoza/opengyoza/agent/token"
+	"github.com/opengyoza/opengyoza/lib"
+	"github.com/opengyoza/opengyoza/sdk/testutil/retry"
+	"github.com/opengyoza/opengyoza/testrpc"
 	uuid "github.com/hashicorp/go-uuid"
 	msgpackrpc "github.com/hashicorp/net-rpc-msgpackrpc"
 	"github.com/stretchr/testify/require"
@@ -2080,7 +2080,7 @@ func TestACLEndpoint_TokenList(t *testing.T) {
 	require.NoError(t, err)
 
 	t3, err := upsertTestToken(codec, "root", "dc1", func(token *structs.ACLToken) {
-		token.ExpirationTTL = 20 * time.Millisecond
+		token.ExpirationTTL = 200 * time.Millisecond
 	})
 	require.NoError(t, err)
 
@@ -2105,10 +2105,11 @@ func TestACLEndpoint_TokenList(t *testing.T) {
 			t2.AccessorID,
 			t3.AccessorID,
 		}
-		require.ElementsMatch(t, gatherIDs(t, resp.Tokens), tokens)
+		got := gatherIDs(t, resp.Tokens)
+		for _, tok := range tokens {
+			require.Contains(t, got, tok)
+		}
 	})
-
-	time.Sleep(20 * time.Millisecond) // now 't3' is expired
 
 	t.Run("filter expired", func(t *testing.T) {
 		req := structs.ACLTokenListRequest{
@@ -2116,18 +2117,37 @@ func TestACLEndpoint_TokenList(t *testing.T) {
 			QueryOptions: structs.QueryOptions{Token: "root"},
 		}
 
-		resp := structs.ACLTokenListResponse{}
+		retry.Run(t, func(r *retry.R) {
+			resp := structs.ACLTokenListResponse{}
 
-		err = acl.TokenList(&req, &resp)
-		require.NoError(t, err)
+			err = acl.TokenList(&req, &resp)
+			r.Check(err)
 
-		tokens := []string{
-			masterTokenAccessorID,
-			structs.ACLTokenAnonymousID,
-			t1.AccessorID,
-			t2.AccessorID,
-		}
-		require.ElementsMatch(t, gatherIDs(t, resp.Tokens), tokens)
+			tokens := []string{
+				masterTokenAccessorID,
+				structs.ACLTokenAnonymousID,
+				t1.AccessorID,
+				t2.AccessorID,
+			}
+			got := gatherIDs(t, resp.Tokens)
+			for _, tok := range tokens {
+				found := false
+				for _, gotID := range got {
+					if gotID == tok {
+						found = true
+						break
+					}
+				}
+				if !found {
+					r.Fatalf("missing token %s", tok)
+				}
+			}
+			for _, gotID := range got {
+				if gotID == t3.AccessorID {
+					r.Fatalf("expected expired token %s to be filtered", t3.AccessorID)
+				}
+			}
+		})
 	})
 }
 

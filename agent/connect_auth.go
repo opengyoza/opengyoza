@@ -3,11 +3,11 @@ package agent
 import (
 	"fmt"
 
-	"github.com/hashicorp/consul/acl"
-	"github.com/hashicorp/consul/agent/cache"
-	cachetype "github.com/hashicorp/consul/agent/cache-types"
-	"github.com/hashicorp/consul/agent/connect"
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/acl"
+	"github.com/opengyoza/opengyoza/agent/cache"
+	cachetype "github.com/opengyoza/opengyoza/agent/cache-types"
+	"github.com/opengyoza/opengyoza/agent/connect"
+	"github.com/opengyoza/opengyoza/agent/structs"
 )
 
 // ConnectAuthorize implements the core authorization logic for Connect. It's in
@@ -57,7 +57,7 @@ func (a *Agent) ConnectAuthorize(token string,
 	if err != nil {
 		return returnErr(err)
 	}
-	if rule != nil && !rule.ServiceWrite(req.Target, nil) {
+	if rule != nil && !rule.ServiceWrite(req.Target) {
 		return returnErr(acl.ErrPermissionDenied)
 	}
 

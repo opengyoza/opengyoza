@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/hashicorp/consul/agent/token"
+	"github.com/opengyoza/opengyoza/agent/token"
 	"github.com/mitchellh/go-testing-interface"
 )
 

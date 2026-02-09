@@ -4,16 +4,16 @@ page_title: "Commands: Keyring"
 sidebar_current: "docs-commands-keyring"
 ---
 
-# Consul Keyring
+# OpenGyoza Keyring
 
-Command: `consul keyring`
+Command: `gyoza keyring`
 
 The `keyring` command is used to examine and modify the encryption keys used in
-Consul's [Gossip Pools](/docs/internals/gossip.html). It is capable of
+OpenGyoza's [Gossip Pools](/docs/internals/gossip.html). It is capable of
 distributing new encryption keys to the cluster, retiring old encryption keys,
 and changing the keys used by the cluster to encrypt messages.
 
-Consul allows multiple encryption keys to be in use simultaneously. This is
+OpenGyoza allows multiple encryption keys to be in use simultaneously. This is
 intended to provide a transition state while the cluster converges. It is the
 responsibility of the operator to ensure that only the required encryption keys
 are installed on the cluster. You can review the installed keys using the
@@ -30,7 +30,7 @@ will be 1.
 
 ## Usage
 
-Usage: `consul keyring [options]`
+Usage: `gyoza keyring [options]`
 
 Only one actionable argument may be specified per run, including `-list`,
 `-install`, `-remove`, and `-use`.
@@ -52,7 +52,7 @@ Only one actionable argument may be specified per run, including `-list`,
 * `-remove` - Remove the given key from the cluster. This operation may only be
   performed on keys which are not currently the primary key.
 
-* `-relay-factor` - Added in Consul 0.7.4, setting this to a non-zero value will
+* `-relay-factor` - Added in OpenGyoza 0.7.4, setting this to a non-zero value will
   cause nodes to relay their response to the operation through this many
   randomly-chosen other nodes in the cluster. The maximum allowed value is 5.
 
@@ -62,7 +62,7 @@ Only one actionable argument may be specified per run, including `-list`,
 
 ## Output
 
-The output of the `consul keyring -list` command consolidates information from
+The output of the `gyoza keyring -list` command consolidates information from
 all nodes and all datacenters to provide a simple and easy to understand view of
 the cluster. The following is some example output from a cluster with two
 datacenters, each which consist of one server and one client:

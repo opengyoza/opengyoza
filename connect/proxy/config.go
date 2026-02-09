@@ -7,11 +7,11 @@ import (
 
 	"github.com/mitchellh/mapstructure"
 
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/api/watch"
-	"github.com/hashicorp/consul/connect"
-	"github.com/hashicorp/consul/ipaddr"
-	"github.com/hashicorp/consul/lib"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/api/watch"
+	"github.com/opengyoza/opengyoza/connect"
+	"github.com/opengyoza/opengyoza/ipaddr"
+	"github.com/opengyoza/opengyoza/lib"
 )
 
 // Config is the publicly configurable state for an entire proxy instance. It's

@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/hashicorp/consul/acl"
-	"github.com/hashicorp/consul/agent/metadata"
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/acl"
+	"github.com/opengyoza/opengyoza/agent/metadata"
+	"github.com/opengyoza/opengyoza/agent/structs"
 	"github.com/hashicorp/raft"
 	"github.com/hashicorp/serf/serf"
 )

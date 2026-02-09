@@ -1,33 +1,33 @@
 ---
 layout: "docs"
-page_title: "Consul Architecture"
+page_title: "OpenGyoza Architecture"
 sidebar_current: "docs-internals-architecture"
 description: |-
-  Consul is a complex system that has many different moving parts. To help users and developers of Consul form a mental model of how it works, this page documents the system architecture.
+  OpenGyoza is a complex system that has many different moving parts. To help users and developers of OpenGyoza form a mental model of how it works, this page documents the system architecture.
 ---
 
-# Consul Architecture
+# OpenGyoza Architecture
 
-Consul is a complex system that has many different moving parts. To help
-users and developers of Consul form a mental model of how it works, this
+OpenGyoza is a complex system that has many different moving parts. To help
+users and developers of OpenGyoza form a mental model of how it works, this
 page documents the system architecture.
 
 -> Before describing the architecture, we recommend reading the 
 [glossary](/docs/glossary.html) of terms to help
 clarify what is being discussed.
 
-The architecture concepts in this document can be used with the [Reference Architecture guide](https://learn.hashicorp.com/consul/datacenter-deploy/reference-architecture?utm_source=consul.io&utm_medium=docs) when deploying Consul in production.
+The architecture concepts in this document can be used with the [Reference Architecture guide](https://learn.hashicorp.com/consul/datacenter-deploy/reference-architecture?utm_source=consul.io&utm_medium=docs) when deploying OpenGyoza in production.
 
 ## 10,000 foot view
 
-From a 10,000 foot altitude the architecture of Consul looks like this:
+From a 10,000 foot altitude the architecture of OpenGyoza looks like this:
 
 <div class="center">
-[![Consul Architecture](/assets/images/consul-arch.png)](/assets/images/consul-arch.png)
+[![OpenGyoza Architecture](/assets/images/consul-arch.png)](/assets/images/consul-arch.png)
 </div>
 
 Let's break down this image and describe each piece. First of all, we can see
-that there are two datacenters, labeled "one" and "two". Consul has first
+that there are two datacenters, labeled "one" and "two". OpenGyoza has first
 class support for [multiple datacenters](https://learn.hashicorp.com/consul/security-networking/datacenters) and
 expects this to be the common case.
 
@@ -53,7 +53,7 @@ requirement, when a non-leader server receives an RPC request, it forwards it to
 
 The server agents also operate as part of a WAN gossip pool. This pool is different from the LAN pool
 as it is optimized for the higher latency of the internet and is expected to contain only
-other Consul server agents. The purpose of this pool is to allow datacenters to discover each
+other OpenGyoza server agents. The purpose of this pool is to allow datacenters to discover each
 other in a low-touch manner. Bringing a new datacenter online is as easy as joining the existing
 WAN gossip pool. Because the servers are all operating in this pool, it also enables cross-datacenter
 requests. When a server receives a request for a different datacenter, it forwards it to a random
@@ -62,12 +62,12 @@ server in the correct datacenter. That server may then forward to the local lead
 This results in a very low coupling between datacenters, but because of failure detection,
 connection caching and multiplexing, cross-datacenter requests are relatively fast and reliable.
 
-In general, data is not replicated between different Consul datacenters. When a
-request is made for a resource in another datacenter, the local Consul servers forward
-an RPC request to the remote Consul servers for that resource and return the results.
+In general, data is not replicated between different OpenGyoza datacenters. When a
+request is made for a resource in another datacenter, the local OpenGyoza servers forward
+an RPC request to the remote OpenGyoza servers for that resource and return the results.
 If the remote datacenter is not available, then those resources will also not be
 available, but that won't otherwise affect the local datacenter. There are some special
-situations where a limited subset of data can be replicated, such as with Consul's built-in
+situations where a limited subset of data can be replicated, such as with OpenGyoza's built-in
 [ACL replication](https://learn.hashicorp.com/consul/day-2-operations/acl-replication) capability, or
 external tools like [consul-replicate](https://github.com/hashicorp/consul-replicate).
 
@@ -82,7 +82,7 @@ disrupted or the servers are temporarily unavailable.
 
 ## Getting in depth
 
-At this point we've covered the high level architecture of Consul, but there are many
+At this point we've covered the high level architecture of OpenGyoza, but there are many
 more details for each of the subsystems. The [consensus protocol](/docs/internals/consensus.html) is
 documented in detail as is the [gossip protocol](/docs/internals/gossip.html). The [documentation](/docs/internals/security.html)
 for the security model and protocols used are also available.

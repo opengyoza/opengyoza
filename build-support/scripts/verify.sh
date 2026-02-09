@@ -18,7 +18,7 @@ Usage: ${SCRIPT_NAME}  [<options ...>]
 
 Description:
 
-   This script will verify a Consul release build. It will check for prebuilt
+   This script will verify an OpenGyoza release build. It will check for prebuilt
    files, verify shasums and gpg signatures as well as run some commands
    and prompt for manual verification where required.
 
@@ -85,7 +85,7 @@ function main {
       vers=$(parse_version "${sdir}" true false)
    fi
    
-   status_stage "=> Starting release verification for version: ${version}"
+   status_stage "=> Starting release verification for version: ${vers}"
    verify_release_build "${sdir}" "${vers}" || return 1
    
    return 0

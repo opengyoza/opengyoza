@@ -4,13 +4,13 @@ page_title: "Commands: KV"
 sidebar_current: "docs-commands-kv"
 ---
 
-# Consul KV
+# OpenGyoza KV
 
-Command: `consul kv`
+Command: `gyoza kv`
 
-The `kv` command is used to interact with Consul's KV store via the
+The `kv` command is used to interact with OpenGyoza's KV store via the
 command line. It exposes top-level commands for inserting, updating, reading,
-and deleting from the store. This command is available in Consul 0.7.1 and
+and deleting from the store. This command is available in OpenGyoza 0.7.1 and
 later.
 
 The KV store is also accessible via the
@@ -18,13 +18,13 @@ The KV store is also accessible via the
 
 ## Usage
 
-Usage: `consul kv <subcommand>`
+Usage: `gyoza kv <subcommand>`
 
-For the exact documentation for your Consul version, run `consul kv -h` to view
+For the exact documentation for your OpenGyoza version, run `gyoza kv -h` to view
 the complete list of subcommands.
 
 ```text
-Usage: consul kv <subcommand> [options] [args]
+Usage: gyoza kv <subcommand> [options] [args]
 
   # ...
 
@@ -49,24 +49,24 @@ of the subcommand in the sidebar or one of the links below:
 ## Basic Examples
 
 To create or update the key named "redis/config/connections" to the value "5" in
-Consul's KV store:
+OpenGyoza's KV store:
 
 ```text
-$ consul kv put redis/config/connections 5
+$ gyoza kv put redis/config/connections 5
 Success! Data written to: redis/config/connections
 ```
 
-To read a value back from Consul:
+To read a value back from OpenGyoza:
 
 ```text
-$ consul kv get redis/config/connections
+$ gyoza kv get redis/config/connections
 5
 ```
 
 Or you can query for detailed information:
 
 ```text
-$ consul kv get -detailed redis/config/connections
+$ gyoza kv get -detailed redis/config/connections
 CreateIndex      336
 Flags            0
 Key              redis/config/connections
@@ -79,7 +79,7 @@ Value            5
 Finally, deleting a key is just as easy:
 
 ```text
-$ consul kv delete redis/config/connections
+$ gyoza kv delete redis/config/connections
 Success! Data deleted at key: redis/config/connections
 ```
 

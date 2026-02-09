@@ -2,12 +2,12 @@ package cachetype
 
 import (
 	"fmt"
-	"github.com/hashicorp/consul/agent/cache"
-	"github.com/hashicorp/consul/agent/checks"
-	"github.com/hashicorp/consul/agent/local"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/agent/token"
-	"github.com/hashicorp/consul/types"
+	"github.com/opengyoza/opengyoza/agent/cache"
+	"github.com/opengyoza/opengyoza/agent/checks"
+	"github.com/opengyoza/opengyoza/agent/local"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/token"
+	"github.com/opengyoza/opengyoza/types"
 	"github.com/hashicorp/go-memdb"
 	"github.com/stretchr/testify/require"
 	"testing"

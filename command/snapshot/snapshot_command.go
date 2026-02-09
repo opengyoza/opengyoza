@@ -1,7 +1,7 @@
 package snapshot
 
 import (
-	"github.com/hashicorp/consul/command/flags"
+	"github.com/opengyoza/opengyoza/command/flags"
 	"github.com/mitchellh/cli"
 )
 
@@ -46,11 +46,6 @@ Usage: consul snapshot <subcommand> [options] [args]
   Inspect a snapshot:
 
       $ consul snapshot inspect backup.snap
-
-  Run a daemon process that locally saves a snapshot every hour (available only in
-  Consul Enterprise) :
-
-      $ consul snapshot agent
 
   For more examples, ask for subcommand help or view the documentation.
 `

@@ -3,20 +3,23 @@ layout: "docs"
 page_title: "DNS Caching"
 sidebar_current: "docs-guides-dns-cache"
 description: |-
-  One of the main interfaces to Consul is DNS. Using DNS is a simple way to integrate Consul into an existing infrastructure without any high-touch integration.
+  One of the main interfaces to OpenGyoza is DNS. Using DNS is a simple way to integrate OpenGyoza into an existing infrastructure without any high-touch integration.
 ---
 
 # DNS Caching
 
-One of the main interfaces to Consul is DNS. Using DNS is a simple way to
-integrate Consul into an existing infrastructure without any high-touch
+One of the main interfaces to OpenGyoza is DNS. Using DNS is a simple way to
+integrate OpenGyoza into an existing infrastructure without any high-touch
 integration.
 
-By default, Consul serves all DNS results with a 0 TTL value. This prevents
+~> **Note:** The DNS domain remains `.consul`, and telemetry keeps the `consul.*`
+prefixes for compatibility.
+
+By default, OpenGyoza serves all DNS results with a 0 TTL value. This prevents
 any caching. The advantage is that each DNS lookup is always re-evaluated,
 so the most timely information is served. However, this adds a latency hit
 for each lookup and can potentially exhaust the query throughput of a cluster.
-For this reason, Consul provides a number of tuning parameters that can
+For this reason, OpenGyoza provides a number of tuning parameters that can
 customize how DNS queries are handled.
 
 In this guide, we will review important parameters for tuning
@@ -40,7 +43,7 @@ the advanatages and disadvatages of both.
 
 ### Allow Stale Reads
 
-Since Consul 0.7.1, `allow_stale` is enabled by default and uses a `max_stale`
+Since Consul 0.7.1 (OpenGyoza base), `allow_stale` is enabled by default and uses a `max_stale`
 value that defaults to a near-indefinite threshold (10 years).
 This allows DNS queries to continue to be served in the event
 of a long outage with no leader. A new telemetry counter has also been added at
@@ -56,10 +59,10 @@ by more than 5 seconds.
 
 ~> NOTE: The above example is the default setting. You do not need to set it explicitly.
 
-Doing a stale read allows any Consul server to
+Doing a stale read allows any OpenGyoza server to
 service a query, but non-leader nodes may return data that is
 out-of-date. By allowing data to be slightly stale, we get horizontal
-read scalability. Now any Consul server can service the request, so we
+read scalability. Now any OpenGyoza server can service the request, so we
 increase throughput by the number of servers in a cluster.
 
 ### Prevent Stale Reads
@@ -78,7 +81,7 @@ of a single node.
 
 ## Negative Response Caching
 
-Some DNS clients cache negative responses - that is, Consul returning a "not
+Some DNS clients cache negative responses - that is, OpenGyoza returning a "not
 found" style response because a service exists but there are no healthy
 endpoints. In practice, this could mean that the cached negative responses may
 cause that service to appear "down" for longer than they are actually unavailable
@@ -86,7 +89,7 @@ when using DNS for service discovery.
 
 ### Configure SOA
 
-In Consul 1.3.0 and newer, it is now possible to tune SOA
+In Consul 1.3.0 and newer (OpenGyoza base), it is now possible to tune SOA
 responses and modify the negative TTL cache for some resolvers. It can
 be achieved using the [`soa.min_ttl`](/docs/agent/options.html#soa_min_ttl)
 configuration within the [`soa`](/docs/agent/options.html#soa) configuration.
@@ -103,15 +106,15 @@ One common example is that Windows will default to caching negative responses
 for 15 minutes. DNS forwarders may also cache negative responses, with the same
 effect. To avoid this problem, check the negative response cache defaults for
 your client operating system and any DNS forwarder on the path between the
-client and Consul and set the cache values appropriately. In many cases
+client and OpenGyoza and set the cache values appropriately. In many cases
 "appropriately" simply is turning negative response caching off to get the best
 recovery time when a service becomes available again.
 
 <a name="ttl"></a>
 ## TTL Values
 
-TTL values can be set to allow DNS results to be cached downstream of Consul. Higher
-TTL values reduce the number of lookups on the Consul servers and speed lookups for
+TTL values can be set to allow DNS results to be cached downstream of OpenGyoza. Higher
+TTL values reduce the number of lookups on the OpenGyoza servers and speed lookups for
 clients, at the cost of increasingly stale results. By default, all TTLs are zero,
 preventing any caching.
 
@@ -166,8 +169,8 @@ that would have a 3 seconds TTL.
 level of control over TTL. They allow for the TTL to be defined along with
 the query, and they can be changed on the fly by updating the query definition.
 If a TTL is not configured for a prepared query, then it will fall back to the
-service-specific configuration defined in the Consul agent as described above,
-and ultimately to 0 if no TTL is configured for the service in the Consul agent.
+service-specific configuration defined in the OpenGyoza agent as described above,
+and ultimately to 0 if no TTL is configured for the service in the OpenGyoza agent.
 
 ## Summary
 

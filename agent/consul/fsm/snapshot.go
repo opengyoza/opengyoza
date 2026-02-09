@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/armon/go-metrics"
-	"github.com/hashicorp/consul/agent/consul/state"
-	"github.com/hashicorp/consul/agent/structs"
+	"github.com/opengyoza/opengyoza/agent/consul/state"
+	"github.com/opengyoza/opengyoza/agent/structs"
 	"github.com/hashicorp/go-msgpack/codec"
 	"github.com/hashicorp/go-raftchunking"
 	"github.com/hashicorp/raft"

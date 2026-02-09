@@ -3,24 +3,24 @@ layout: "docs"
 page_title: "Connect in Production"
 sidebar_current: "docs-guides-connect-production"
 description: |-
-  This guide describes best practices for running Consul Connect in production.
+  This guide describes best practices for running OpenGyoza Connect in production.
 ---
 
 # Running Connect in Production
 
-Consul Connect can secure all inter-service communication with mutual TLS. It's
+OpenGyoza Connect can secure all inter-service communication with mutual TLS. It's
 designed to work with [minimal configuration out of the
 box](https://learn.hashicorp.com/consul/getting-started/connect), however, completing the [security
-checklist](/docs/connect/security.html) and understanding the [Consul security
+checklist](/docs/connect/security.html) and understanding the [OpenGyoza security
 model](/docs/internals/security.html) are prerequisites for production
 deployments.
 
 After completing this guide, you will be able to configure Connect to 
-secure services. First, you will secure your Consul cluster with ACLs and
+secure services. First, you will secure your OpenGyoza cluster with ACLs and
 TLS encryption. Next, you will configure Connect on the servers and host. 
 Finally, you will configure your services to use Connect.
 
-~> Note: To complete this guide you should already have a Consul cluster
+~> Note: To complete this guide you should already have an OpenGyoza cluster
  with an appropriate number of servers and
 clients deployed according to the other reference material including the
 [deployment](/docs/guides/deployment.html) and
@@ -34,13 +34,13 @@ The steps we need to get to a secure Connect cluster are:
  1. [Setup Host Firewall](#setup-host-firewall)
  1. [Configure Service Instances](#configure-service-instances)
 
-For existing Consul deployments, it may be necessary to incrementally adopt Connect
+For existing OpenGyoza deployments, it may be necessary to incrementally adopt Connect
 service-by-service. In this case, step one and two should already be complete. 
 However, we recommend reviewing all steps since the final deployment goal is to be compliant with all the security recommendations in this guide.
 
 ## Configure ACLs
 
-Consul Connect's security is based on service identity. In practice, the identity
+OpenGyoza Connect's security is based on service identity. In practice, the identity
 of the service is only enforcible with sufficiently restrictive ACLs.
 
 This section will not replace reading the full [ACL
@@ -64,7 +64,7 @@ A secure ACL setup must meet the following criteria.
     necessary in this case. It is assumed for the remainder of this guide that
     ACL policy defaults to `deny`.
  2. **Each service must have a unique ACL token** that is restricted to
-    `service:write` only for the named service. You can review the [Securing Consul with ACLs](https://learn.hashicorp.com/consul/advanced/day-1-operations/production-acls#apply-individual-tokens-to-the-services) guide for a 
+    `service:write` only for the named service. You can review the [Securing OpenGyoza with ACLs](/docs/guides/production-acls.html) guide for a 
     service token example. Note, it is best practices for each instance to get a unique token as described below.
 
 ~> Individual Service Tokens: It is best practice to create a unique ACL token per service _instance_ because
@@ -78,7 +78,7 @@ Vault](https://www.vaultproject.io/docs/secrets/consul/index.html).
 
 ## Configure Agent Transport Encryption
 
-Consul's gossip (UDP) and RPC (TCP) communications need to be encrypted
+OpenGyoza's gossip (UDP) and RPC (TCP) communications need to be encrypted
 otherwise attackers may be able to see ACL tokens while in flight
 between the server and client agents (RPC) or between client agent and
 application (HTTP). Certificate private keys never leave the host they
@@ -86,13 +86,13 @@ are used on but are delivered to the application or proxy over local
 HTTP so local agent traffic should be encrypted where potentially
 untrusted parties might be able to observe localhost agent API traffic.
 
-Follow the [encryption guide](https://learn.hashicorp.com/consul/advanced/day-1-operations/agent-encryption) to ensure
+Follow the [encryption guide](/docs/guides/agent-encryption.html) to ensure
 both gossip encryption and RPC/HTTP TLS are configured securely.
 
 ## Bootstrap Connect's Certificate Authority
 
-Consul Connect comes with a built-in Certificate Authority (CA) that will
-bootstrap by default when you first [enable](https://www.consul.io/docs/agent/options.html#connect_enabled) Connect on your servers.
+OpenGyoza Connect comes with a built-in Certificate Authority (CA) that will
+bootstrap by default when you first [enable](/docs/agent/options.html#connect_enabled) Connect on your servers.
 
 To use the built-in CA, enable it in the server's configuration.
 
@@ -102,7 +102,7 @@ connect {
 }
 ```
 
-This configuration change requires a Consul server restart, which you can perform one server at a time
+This configuration change requires an OpenGyoza server restart, which you can perform one server at a time
 to maintain availability in an existing cluster.
 
 As soon as a server that has Connect enabled becomes the leader, it will
@@ -115,7 +115,7 @@ configuration](/docs/connect/ca.html#specifying-a-private-key-and-root-certifica
 ~> External CAs: Connect has been designed with a pluggable CA component so external CAs can be
 integrated. For production workloads we recommend using [Vault or another external
 CA](/docs/connect/ca.html#external-ca-certificate-authority-providers) once
-available such that the root key is not stored within Consul state at all.
+available such that the root key is not stored within OpenGyoza state at all.
 
 ## Setup Host Firewall
 
@@ -123,13 +123,13 @@ In order to enable inbound connections to connect proxies, you may need to
 configure host or network firewalls to allow incoming connections to proxy
 ports.
 
-In addition to Consul agent's [communication
+In addition to OpenGyoza agent's [communication
 ports](/docs/agent/options.html#ports) any
 [proxies](/docs/connect/proxies.html) will need to have
 ports open to accept incoming connections.
 
 If using [sidecar service
-registration](/docs/connect/proxies/sidecar-service.html) Consul will by default
+registration](/docs/connect/proxies/sidecar-service.html) OpenGyoza will by default
 assign ports from [a configurable
 range](/docs/agent/options.html#sidecar_min_port) the default range is 21000 -
 21255. If this feature is used, the agent assumes all ports in that range are
@@ -164,7 +164,7 @@ be set.
 
 For registration via the API the token is passed in the [request
 header](/api/index.html#authentication), `X-Consul-Token`, or by using the [Go
-client configuration](https://godoc.org/github.com/hashicorp/consul/api#Config).
+client configuration](https://godoc.org/github.com/opengyoza/opengyoza/api#Config).
 
 To avoid the overhead of a proxy, applications may [natively
 integrate](/docs/connect/native.html) with connect.
@@ -179,9 +179,7 @@ documentation](/docs/connect/proxies.html).
 
 ## Summary
 
-After securing your Consul cluster with ACLs and TLS encryption, you 
+After securing your OpenGyoza cluster with ACLs and TLS encryption, you 
 can use Connect to secure service-to-service communication. If you
-encounter any issues while setting up Consul Connect, there are 
-many [community](https://www.consul.io/community.html) resources where you can find help.
-
-
+encounter any issues while setting up OpenGyoza Connect, there are 
+many [community](https://github.com/opengyoza/opengyoza) resources where you can find help.

@@ -13,8 +13,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/sdk/testutil"
-	"github.com/hashicorp/consul/sdk/testutil/retry"
+	"github.com/opengyoza/opengyoza/sdk/testutil"
+	"github.com/opengyoza/opengyoza/sdk/testutil/retry"
 	"github.com/hashicorp/serf/serf"
 	"github.com/stretchr/testify/require"
 )
@@ -1389,6 +1389,7 @@ func TestAPI_AgentConnectCALeaf(t *testing.T) {
 	defer s.Stop()
 
 	agent := c.Agent()
+	s.WaitForSerfCheck(t)
 	// Setup service
 	reg := &AgentServiceRegistration{
 		Name: "foo",
@@ -1397,8 +1398,29 @@ func TestAPI_AgentConnectCALeaf(t *testing.T) {
 	}
 	require.NoError(agent.ServiceRegister(reg))
 
-	leaf, meta, err := agent.ConnectCALeaf("foo", nil)
-	require.NoError(err)
+	timer := &retry.Timer{Timeout: 15 * time.Second, Wait: 200 * time.Millisecond}
+	retry.RunWith(timer, t, func(r *retry.R) {
+		roots, _, err := agent.ConnectCARoots(nil)
+		if err != nil {
+			r.Fatalf("err: %v", err)
+		}
+		if roots == nil || len(roots.Roots) == 0 {
+			r.Fatalf("no connect CA roots yet")
+		}
+	})
+
+	var (
+		leaf *LeafCert
+		meta *QueryMeta
+	)
+	retry.RunWith(timer, t, func(r *retry.R) {
+		var err error
+		leaf, meta, err = agent.ConnectCALeaf("foo", nil)
+		if err != nil {
+			r.Fatalf("err: %v", err)
+		}
+	})
+	require.NotNil(meta)
 	require.True(meta.LastIndex > 0)
 	// Sanity checks here as we have actual certificate validation checks at many
 	// other levels.

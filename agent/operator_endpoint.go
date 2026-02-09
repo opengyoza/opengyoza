@@ -6,9 +6,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/hashicorp/consul/agent/consul/autopilot"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/api"
+	"github.com/opengyoza/opengyoza/agent/consul/autopilot"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/api"
 	multierror "github.com/hashicorp/go-multierror"
 	"github.com/hashicorp/raft"
 )
@@ -203,9 +203,6 @@ func (s *HTTPServer) OperatorAutopilotConfiguration(resp http.ResponseWriter, re
 			MaxTrailingLogs:         reply.MaxTrailingLogs,
 			MinQuorum:               reply.MinQuorum,
 			ServerStabilizationTime: api.NewReadableDuration(reply.ServerStabilizationTime),
-			RedundancyZoneTag:       reply.RedundancyZoneTag,
-			DisableUpgradeMigration: reply.DisableUpgradeMigration,
-			UpgradeVersionTag:       reply.UpgradeVersionTag,
 			CreateIndex:             reply.CreateIndex,
 			ModifyIndex:             reply.ModifyIndex,
 		}
@@ -228,9 +225,6 @@ func (s *HTTPServer) OperatorAutopilotConfiguration(resp http.ResponseWriter, re
 			MaxTrailingLogs:         conf.MaxTrailingLogs,
 			MinQuorum:               conf.MinQuorum,
 			ServerStabilizationTime: conf.ServerStabilizationTime.Duration(),
-			RedundancyZoneTag:       conf.RedundancyZoneTag,
-			DisableUpgradeMigration: conf.DisableUpgradeMigration,
-			UpgradeVersionTag:       conf.UpgradeVersionTag,
 		}
 
 		// Check for cas value

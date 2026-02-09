@@ -9,14 +9,14 @@ import (
 	"time"
 
 	"github.com/armon/go-metrics"
-	"github.com/hashicorp/consul/acl"
-	"github.com/hashicorp/consul/agent/config"
-	"github.com/hashicorp/consul/agent/consul"
-	"github.com/hashicorp/consul/agent/local"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/lib"
-	"github.com/hashicorp/consul/logger"
-	"github.com/hashicorp/consul/types"
+	"github.com/opengyoza/opengyoza/acl"
+	"github.com/opengyoza/opengyoza/agent/config"
+	"github.com/opengyoza/opengyoza/agent/consul"
+	"github.com/opengyoza/opengyoza/agent/local"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/lib"
+	"github.com/opengyoza/opengyoza/logger"
+	"github.com/opengyoza/opengyoza/types"
 	"github.com/hashicorp/serf/serf"
 
 	"github.com/stretchr/testify/require"
@@ -198,7 +198,7 @@ func TestACL_AgentMasterToken(t *testing.T) {
 	require.True(t, authz.AgentRead(a.config.NodeName))
 	require.True(t, authz.AgentWrite(a.config.NodeName))
 	require.True(t, authz.NodeRead("foobarbaz"))
-	require.False(t, authz.NodeWrite("foobarbaz", nil))
+	require.False(t, authz.NodeWrite("foobarbaz"))
 }
 
 func TestACL_RootAuthorizersDenied(t *testing.T) {
@@ -225,7 +225,7 @@ func TestACL_RootAuthorizersDenied(t *testing.T) {
 }
 
 func authzFromPolicy(policy *acl.Policy) (acl.Authorizer, error) {
-	return acl.NewPolicyAuthorizer(acl.DenyAll(), []*acl.Policy{policy}, nil)
+	return acl.NewPolicyAuthorizer(acl.DenyAll(), []*acl.Policy{policy})
 }
 
 // catalogPolicy supplies some standard policies to help with testing the

@@ -87,7 +87,7 @@ func checkAllowKeyringWrite(t *testing.T, authz Authorizer, prefix string) {
 }
 
 func checkAllowKeyWrite(t *testing.T, authz Authorizer, prefix string) {
-	require.True(t, authz.KeyWrite(prefix, nil))
+	require.True(t, authz.KeyWrite(prefix))
 }
 
 func checkAllowKeyWritePrefix(t *testing.T, authz Authorizer, prefix string) {
@@ -99,7 +99,7 @@ func checkAllowNodeRead(t *testing.T, authz Authorizer, prefix string) {
 }
 
 func checkAllowNodeWrite(t *testing.T, authz Authorizer, prefix string) {
-	require.True(t, authz.NodeWrite(prefix, nil))
+	require.True(t, authz.NodeWrite(prefix))
 }
 
 func checkAllowOperatorRead(t *testing.T, authz Authorizer, prefix string) {
@@ -123,7 +123,7 @@ func checkAllowServiceRead(t *testing.T, authz Authorizer, prefix string) {
 }
 
 func checkAllowServiceWrite(t *testing.T, authz Authorizer, prefix string) {
-	require.True(t, authz.ServiceWrite(prefix, nil))
+	require.True(t, authz.ServiceWrite(prefix))
 }
 
 func checkAllowSessionRead(t *testing.T, authz Authorizer, prefix string) {
@@ -191,7 +191,7 @@ func checkDenyKeyringWrite(t *testing.T, authz Authorizer, prefix string) {
 }
 
 func checkDenyKeyWrite(t *testing.T, authz Authorizer, prefix string) {
-	require.False(t, authz.KeyWrite(prefix, nil))
+	require.False(t, authz.KeyWrite(prefix))
 }
 
 func checkDenyKeyWritePrefix(t *testing.T, authz Authorizer, prefix string) {
@@ -203,7 +203,7 @@ func checkDenyNodeRead(t *testing.T, authz Authorizer, prefix string) {
 }
 
 func checkDenyNodeWrite(t *testing.T, authz Authorizer, prefix string) {
-	require.False(t, authz.NodeWrite(prefix, nil))
+	require.False(t, authz.NodeWrite(prefix))
 }
 
 func checkDenyOperatorRead(t *testing.T, authz Authorizer, prefix string) {
@@ -227,7 +227,7 @@ func checkDenyServiceRead(t *testing.T, authz Authorizer, prefix string) {
 }
 
 func checkDenyServiceWrite(t *testing.T, authz Authorizer, prefix string) {
-	require.False(t, authz.ServiceWrite(prefix, nil))
+	require.False(t, authz.ServiceWrite(prefix))
 }
 
 func checkDenySessionRead(t *testing.T, authz Authorizer, prefix string) {
@@ -1793,7 +1793,7 @@ func TestACL(t *testing.T) {
 		t.Run(tcase.name, func(t *testing.T) {
 			acl := tcase.defaultPolicy
 			for _, policy := range tcase.policyStack {
-				newACL, err := NewPolicyAuthorizer(acl, []*Policy{policy}, nil)
+				newACL, err := NewPolicyAuthorizer(acl, []*Policy{policy})
 				require.NoError(t, err)
 				acl = newACL
 			}

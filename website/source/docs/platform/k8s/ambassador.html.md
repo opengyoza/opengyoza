@@ -4,17 +4,21 @@ page_title: "Ambassador Integration - Kubernetes"
 sidebar_current: "docs-platform-k8s-ambassador"
 description: |-
     Ambassador is a Kubernetes-native API gateway and ingress controller that 
-    integrates well with Consul Connect.
+    integrates well with OpenGyoza Connect.
 ---
 
-# Ambassador Integration with Consul Connect
+# Ambassador Integration with OpenGyoza Connect
+
+~> **Note:** This guide relies on upstream Ambassador integration resources that
+use Consul naming. Replace `consul` with `gyoza` for CLI commands, and keep
+upstream resource names where they appear.
 
 In addition to enabling Kubernetes services to discover and securely connect to each other,
 Connect also can help route traffic into a Kubernetes cluster from outside, when paired with 
 an [ingress controller] like DataWire's Ambassador.
  
 [Ambassador] is a popular Kubernetes-native service that acts as an ingress controller
-or API gateway. It supports an optional integration with Consul that allows it to
+or API gateway. It supports an optional integration with OpenGyoza that allows it to
 route incoming traffic to the [proxies] for your Connect-enabled services. 
 
 This means you can have **end-to-end encryption** from the browser, to Ambassador,
@@ -23,9 +27,9 @@ to your Kubernetes services.
 
 ## Installation 
 
-Before you start, [install Consul] and [enable Connect] on the agents inside the cluster. Decide
+Before you start, [install OpenGyoza][install consul] and [enable Connect] on the agents inside the cluster. Decide
 whether you will enable [service sync] or manually register your services with
-Consul.
+OpenGyoza.
 
 Once you have tested and verified that everything is working, you can proceed with
 the Ambassador installation. Full instructions are available on the [Ambassador
@@ -47,7 +51,7 @@ kubectl apply -f https://www.getambassador.io/yaml/ambassador/ambassador-rbac.ya
 kubectl apply -f https://www.getambassador.io/yaml/ambassador/ambassador-service.yaml 
 ```
 
-Install the Ambassador Consul Connector:
+Install the Ambassador Consul Connector (upstream integration):
 
 ```bash
 kubectl apply -f https://www.getambassador.io/yaml/consul/ambassador-consul-connector.yaml
@@ -68,7 +72,7 @@ metadata:
         ---
         apiVersion: ambassador/v1
         kind: TLSContext
-        name: ambassador-consul
+        name: ambassador-gyoza
         hosts: []
         secret: ambassador-consul-connect
         ---
@@ -76,7 +80,7 @@ metadata:
         kind:  Mapping
         name:  static-service_mapping
         prefix: /echo/
-        tls: ambassador-consul
+        tls: ambassador-gyoza
         service: https://static-server:443
 spec:
     type: NodePort
@@ -165,11 +169,11 @@ This error can have a number of different causes. Here are some things to check 
 
 ### Check intentions between Ambassador and your upstream service
 
-If you followed the above installation guide, Consul should have registered a service called "ambassador". Make sure you create an intention to allow it to connect to your own services.
+If you followed the above installation guide, OpenGyoza should have registered a service called "ambassador". Make sure you create an intention to allow it to connect to your own services.
 
 To check whether Ambassador is allowed to connect, use the [`intention check`][intention-check] subcommand.
 
-    $ consul intention check ambassador http-echo
+    $ gyoza intention check ambassador http-echo
     Allowed
 
 ### Confirm upstream proxy sidecar is running
@@ -192,13 +196,13 @@ Then describe the pod to make sure that the sidecar is present and running.
 
 ### Start up a downstream proxy and try connecting to it
 
-Log into one of your Consul server pods (or any pod that has a Consul binary in it).
+Log into one of your OpenGyoza server pods (or any pod that has a Consul-compatible binary in it).
 
     $ kubectl exec -ti consul-server-0 -- /bin/sh
 
 Once inside the pod, try starting a test proxy. Use the name of your service in place of `http-echo`.
 
-    # consul connect proxy -service=ambassador -upstream http-echo:1234
+    # gyoza connect proxy -service=ambassador -upstream http-echo:1234
     ==> Consul Connect proxy starting...
     Configuration mode: Flags
                Service: http-echo-client
@@ -263,13 +267,12 @@ If you have tried the above troubleshooting steps and are still stuck, DataWire 
 
 [ambassador]: https://www.getambassador.io/
 [ingress controller]: https://blog.getambassador.io/kubernetes-ingress-nodeport-load-balancers-and-ingress-controllers-6e29f1c44f2d
-[proxies]: https://www.consul.io/docs/connect/proxies.html
-[service sync]: https://www.consul.io/docs/platform/k8s/service-sync.html
-[connect sidecar]: https://www.consul.io/docs/platform/k8s/connect.html
+[proxies]: /docs/connect/proxies.html
+[service sync]: /docs/platform/k8s/service-sync.html
+[connect sidecar]: /docs/platform/k8s/connect.html
 [install]: https://www.getambassador.io/user-guide/consul-connect-ambassador/
 [ambassador-service.yaml]: https://www.getambassador.io/yaml/ambassador/ambassador-service.yaml
 [request access]: https://d6e.co/slack
-[intention-check]: https://www.consul.io/docs/commands/intention/check.html
-[install consul]: https://www.consul.io/docs/install/index.html
-[enable connect]: https://www.consul.io/docs/connect/index.html#getting-started-with-connect
-
+[intention-check]: /docs/commands/intention/check.html
+[install consul]: /docs/install/index.html
+[enable connect]: /docs/connect/index.html#getting-started-with-connect

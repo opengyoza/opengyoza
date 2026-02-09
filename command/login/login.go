@@ -6,9 +6,9 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/command/flags"
-	"github.com/hashicorp/consul/lib/file"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/command/flags"
+	"github.com/opengyoza/opengyoza/lib/file"
 	"github.com/mitchellh/cli"
 )
 

@@ -207,12 +207,13 @@ function build_consul_post {
    rm -r pkg.bin.new
 
    DEV_PLATFORM="./pkg/bin/${extra_dir}$(go env GOOS)_$(go env GOARCH)"
+   # recreate the bin dir
+   rm -r bin/* 2> /dev/null
+   mkdir -p bin 2> /dev/null
+   mkdir -p "${MAIN_GOPATH}/bin" 2> /dev/null
+
    for F in $(find ${DEV_PLATFORM} -mindepth 1 -maxdepth 1 -type f 2>/dev/null)
    do
-      # recreate the bin dir
-      rm -r bin/* 2> /dev/null
-      mkdir -p bin 2> /dev/null
-
       cp ${F} bin/
       cp ${F} ${MAIN_GOPATH}/bin
    done
@@ -295,17 +296,12 @@ function build_consul {
    fi
 
    status "Creating the Go Build Container with image: ${image_name}"
+   local gox_base="gox -os=\"${XC_OS}\" -arch=\"${XC_ARCH}\" -osarch=\"!darwin/arm !freebsd/arm !darwin/arm64\" -ldflags \"${GOLDFLAGS}\" -tags=\"${GOTAGS}\""
    local container_id=$(docker create -it \
       ${volume_mount} \
       -e CGO_ENABLED=0 \
       ${image_name} \
-      gox \
-         -os="${XC_OS}" \
-         -arch="${XC_ARCH}" \
-         -osarch="!darwin/arm !freebsd/arm !darwin/arm64" \
-         -ldflags "${GOLDFLAGS}" \
-         -output "pkg/bin/${extra_dir}{{.OS}}_{{.Arch}}/consul" \
-         -tags="${GOTAGS}")
+      /bin/sh -c "${gox_base} -output \"pkg/bin/${extra_dir}{{.OS}}_{{.Arch}}/gyoza\" ./cmd/gyoza && ${gox_base} -output \"pkg/bin/${extra_dir}{{.OS}}_{{.Arch}}/consul\" ./cmd/consul")
    ret=$?
 
    if test $ret -eq 0
@@ -364,6 +360,8 @@ function build_consul_local {
    local build_arch="$3"
    local extra_dir_name="$4"
    local extra_dir=""
+   local host_osarch
+   local built_any=0
 
    if test -n "${extra_dir_name}"
    then
@@ -400,8 +398,10 @@ function build_consul_local {
    is_set "${NOGOX}" && use_gox=0
    which gox > /dev/null || use_gox=0
 
-   status_stage "==> Building Consul - OSes: ${build_os}, Architectures: ${build_arch}"
+   status_stage "==> Building Gyoza + Consul shim - OSes: ${build_os}, Architectures: ${build_arch}"
    mkdir pkg.bin.new 2> /dev/null
+   host_osarch="$(go env GOOS)/$(go env GOARCH)"
+
    if is_set "${use_gox}"
    then
       status "Using gox for concurrent compilation"
@@ -412,13 +412,30 @@ function build_consul_local {
          -osarch="!darwin/arm !darwin/arm64 !freebsd/arm"  \
          -ldflags="${GOLDFLAGS}" \
          -parallel="${GOXPARALLEL:-"-1"}" \
-         -output "pkg.bin.new/${extra_dir}{{.OS}}_{{.Arch}}/consul" \
+         -output "pkg.bin.new/${extra_dir}{{.OS}}_{{.Arch}}/gyoza" \
          -tags="${GOTAGS}" \
-         .
+         ./cmd/gyoza
 
       if test $? -ne 0
       then
-         err "ERROR: Failed to build Consul"
+         err "ERROR: Failed to build Gyoza"
+         rm -r pkg.bin.new
+         return 1
+      fi
+
+      CGO_ENABLED=0 gox \
+         -os="${build_os}" \
+         -arch="${build_arch}" \
+         -osarch="!darwin/arm !darwin/arm64 !freebsd/arm"  \
+         -ldflags="${GOLDFLAGS}" \
+         -parallel="${GOXPARALLEL:-"-1"}" \
+         -output "pkg.bin.new/${extra_dir}{{.OS}}_{{.Arch}}/consul" \
+         -tags="${GOTAGS}" \
+         ./cmd/consul
+
+      if test $? -ne 0
+      then
+         err "ERROR: Failed to build Consul shim"
          rm -r pkg.bin.new
          return 1
       fi
@@ -432,7 +449,10 @@ function build_consul_local {
             osarch="${os}/${arch}"
             if test "${osarch}" == "darwin/arm" -o "${osarch}" == "darwin/arm64" -o "${osarch}" == "freebsd/arm64" -o "${osarch}" == "windows/arm" -o "${osarch}" == "windows/arm64" -o "${osarch}" == "freebsd/arm"
             then
-               continue
+               if test "${osarch}" != "${host_osarch}"
+               then
+                  continue
+               fi
             fi
 
             if test "${os}" == "solaris" -a "${arch}" != "amd64"
@@ -444,24 +464,39 @@ function build_consul_local {
 
 
             mkdir -p "${outdir}"
-            GOBIN_EXTRA=""
-            if test "${os}" != "$(go env GOHOSTOS)" -o "${arch}" != "$(go env GOHOSTARCH)"
-            then
-               GOBIN_EXTRA="${os}_${arch}/"
-            fi
-            binname="consul"
+            gyoza_bin="gyoza"
+            consul_bin="consul"
             if [ $os == "windows" ];then
-                binname="consul.exe"
+                gyoza_bin="gyoza.exe"
+                consul_bin="consul.exe"
             fi
-            CGO_ENABLED=0 GOOS=${os} GOARCH=${arch} go install -ldflags "${GOLDFLAGS}" -tags "${GOTAGS}" && cp "${MAIN_GOPATH}/bin/${GOBIN_EXTRA}${binname}" "${outdir}/${binname}"
+
+            CGO_ENABLED=0 GOOS=${os} GOARCH=${arch} go build -ldflags "${GOLDFLAGS}" -tags "${GOTAGS}" -o "${outdir}/${gyoza_bin}" ./cmd/gyoza
             if test $? -ne 0
             then
-               err "ERROR: Failed to build Consul for ${osarch}"
+               err "ERROR: Failed to build Gyoza for ${osarch}"
                rm -r pkg.bin.new
                return 1
             fi
+
+            CGO_ENABLED=0 GOOS=${os} GOARCH=${arch} go build -ldflags "${GOLDFLAGS}" -tags "${GOTAGS}" -o "${outdir}/${consul_bin}" ./cmd/consul
+            if test $? -ne 0
+            then
+               err "ERROR: Failed to build Consul shim for ${osarch}"
+               rm -r pkg.bin.new
+               return 1
+            fi
+
+            built_any=1
          done
       done
+   fi
+
+   if test ${built_any} -eq 0 -a ! -e pkg.bin.new/${extra_dir}*
+   then
+      err "ERROR: No build artifacts were produced"
+      rm -r pkg.bin.new
+      return 1
    fi
 
    build_consul_post "${sdir}" "${extra_dir_name}"

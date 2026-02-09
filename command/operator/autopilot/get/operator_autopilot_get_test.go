@@ -4,9 +4,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hashicorp/consul/testrpc"
+	"github.com/opengyoza/opengyoza/testrpc"
 
-	"github.com/hashicorp/consul/agent"
+	"github.com/opengyoza/opengyoza/agent"
 	"github.com/mitchellh/cli"
 )
 

@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/types"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/types"
 )
 
 // sessionCreateResponse is used to wrap the session ID

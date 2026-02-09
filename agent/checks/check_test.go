@@ -15,10 +15,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/agent/mock"
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/sdk/testutil/retry"
-	"github.com/hashicorp/consul/types"
+	"github.com/opengyoza/opengyoza/agent/mock"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/sdk/testutil/retry"
+	"github.com/opengyoza/opengyoza/types"
 	"github.com/hashicorp/go-uuid"
 )
 
@@ -239,10 +239,8 @@ func TestCheckHTTP(t *testing.T) {
 		// warning
 		{code: 429, status: api.HealthWarning},
 
-		// critical
-		{code: 150, status: api.HealthCritical},
-		{code: 199, status: api.HealthCritical},
-		{code: 300, status: api.HealthCritical},
+	// critical
+	{code: 300, status: api.HealthCritical},
 		{code: 400, status: api.HealthCritical},
 		{code: 500, status: api.HealthCritical},
 

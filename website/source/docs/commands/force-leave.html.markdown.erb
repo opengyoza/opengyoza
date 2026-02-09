@@ -3,22 +3,22 @@ layout: "docs"
 page_title: "Commands: Force Leave"
 sidebar_current: "docs-commands-forceleave"
 description: |-
-  The `force-leave` command forces a member of a Consul cluster to enter the left state. If the member is still actually alive, it will eventually rejoin the cluster. The true purpose of this method is to force remove failed nodes.
+  The `force-leave` command forces a member of an OpenGyoza cluster to enter the left state. If the member is still actually alive, it will eventually rejoin the cluster. The true purpose of this method is to force remove failed nodes.
 ---
 
-# Consul Force Leave
+# OpenGyoza Force Leave
 
-Command: `consul force-leave`
+Command: `gyoza force-leave`
 
-The `force-leave` command forces a member of a Consul cluster to enter the
+The `force-leave` command forces a member of an OpenGyoza cluster to enter the
 "left" state. The purpose of this method is to force-remove a node that has failed or 
-was shutdown without a [graceful leave](https://www.consul.io/docs/commands/leave.html).
+was shutdown without a [graceful leave](/docs/commands/leave.html).
 
-Consul periodically tries to reconnect to "failed" nodes in case failure was due
+OpenGyoza periodically tries to reconnect to "failed" nodes in case failure was due
 to a network partition. After some configured amount of time (by default 72 hours),
-Consul will reap "failed" nodes and stop trying to reconnect. The `force-leave`
+OpenGyoza will reap "failed" nodes and stop trying to reconnect. The `force-leave`
 command can be used to transition the "failed" nodes to a "left" state more
-quickly, as reported by [`consul memebers`](https://www.consul.io/docs/commands/members.html).
+quickly, as reported by [`gyoza members`](/docs/commands/members.html).
 
 This can be particularly useful for a node that was running as a server,
 as it will eventually be removed from the Raft configuration by the leader.
@@ -31,7 +31,7 @@ from the member list, then it will rejoin the cluster.
 
 ## Usage
 
-Usage: `consul force-leave [options] node`
+Usage: `gyoza force-leave [options] node`
 
 #### API Options
 
@@ -42,7 +42,7 @@ Usage: `consul force-leave [options] node`
 Remove a node named `ec2-001-staging` from the local agent's datacenter:
 
 ```
-consul force-leave ec2-001-staging
+gyoza force-leave ec2-001-staging
 ```
 
 When run on a server that is part of a
@@ -54,7 +54,7 @@ Therefore, to remove a failed server node named `server1` from
 datacenter `us-east1`, run: 
 
 ```
-consul force-leave server1.us-east1
+gyoza force-leave server1.us-east1
 ```
 #### Command Options
 

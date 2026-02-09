@@ -148,7 +148,7 @@ func TestClient_LANReap(t *testing.T) {
 	// shutdown the second dc
 	s1.Shutdown()
 
-	retry.Run(t, func(r *retry.R) {
+	retry.RunWith(&retry.Timer{Timeout: 20 * time.Second, Wait: 25 * time.Millisecond}, t, func(r *retry.R) {
 		require.Len(r, c1.LANMembers(), 1)
 		server := c1.routers.FindServer()
 		require.Nil(t, server)

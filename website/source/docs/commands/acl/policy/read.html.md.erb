@@ -4,15 +4,15 @@ page_title: "Commands: ACL Policy Read"
 sidebar_current: "docs-commands-acl-policy-read"
 ---
 
-# Consul ACL Policy Read
+# OpenGyoza ACL Policy Read
 
-Command: `consul acl policy read`
+Command: `gyoza acl policy read`
 
 The `acl policy read` command reads and displays a policies details.
 
 ## Usage
 
-Usage: `consul acl policy read [options] [args]`
+Usage: `gyoza acl policy read [options] [args]`
 
 #### API Options
 
@@ -34,7 +34,7 @@ Usage: `consul acl policy read [options] [args]`
 Get policy details:
 
 ```sh
-$ consul acl policy read -id 00000000-0000-0000-0000-000000000001
+$ gyoza acl policy read -id 00000000-0000-0000-0000-000000000001
 ID:           00000000-0000-0000-0000-000000000001
 Name:         global-management
 Description:  Builtin Policy that grants unlimited access
@@ -71,7 +71,7 @@ session_prefix "" {
 Get policy details by name:
 
 ```sh
-$ consul acl policy read -name "acl-replication"
+$ gyoza acl policy read -name "acl-replication"
 ID:           35b8ecb0-707c-ee18-2002-81b238b54b38
 Name:         acl-replication
 Description:  Token capable of replicating ACL policies
@@ -85,7 +85,7 @@ Get policy details (Builtin Policies):
 Builtin policies can be accessed by specifying their original name as the value to the `-id` parameter.
 
 ```sh
-$ consul acl policy read -id global-management
+$ gyoza acl policy read -id global-management
 ID:           00000000-0000-0000-0000-000000000001
 Name:         global-management
 Description:  Builtin Policy that grants unlimited access

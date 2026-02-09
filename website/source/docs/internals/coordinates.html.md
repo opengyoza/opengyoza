@@ -24,7 +24,7 @@ with some enhancements based on other research. There are more details about
 
 Network coordinates manifest in several ways inside Consul:
 
-* The [`consul rtt`](/docs/commands/rtt.html) command can be used to query for the
+* The [`gyoza rtt`](/docs/commands/rtt.html) command can be used to query for the
   network round trip time between any two nodes.
 
 * The [Catalog endpoints](/api/catalog.html) and

@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/google/gofuzz"
-	"github.com/hashicorp/consul/api"
+	"github.com/opengyoza/opengyoza/api"
 	"github.com/mitchellh/reflectwalk"
 	"github.com/pascaldekloe/goe/verify"
 )

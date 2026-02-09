@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hashicorp/consul/agent"
-	"github.com/hashicorp/consul/sdk/testutil/retry"
+	"github.com/opengyoza/opengyoza/agent"
+	"github.com/opengyoza/opengyoza/sdk/testutil/retry"
 	"github.com/hashicorp/serf/serf"
 	"github.com/mitchellh/cli"
 )

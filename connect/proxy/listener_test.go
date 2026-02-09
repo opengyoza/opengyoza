@@ -10,15 +10,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/connect"
+	"github.com/opengyoza/opengyoza/connect"
 
 	metrics "github.com/armon/go-metrics"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	agConnect "github.com/hashicorp/consul/agent/connect"
-	"github.com/hashicorp/consul/ipaddr"
-	"github.com/hashicorp/consul/sdk/freeport"
+	agConnect "github.com/opengyoza/opengyoza/agent/connect"
+	"github.com/opengyoza/opengyoza/ipaddr"
+	"github.com/opengyoza/opengyoza/sdk/freeport"
 )
 
 func testSetupMetrics(t *testing.T) *metrics.InmemSink {

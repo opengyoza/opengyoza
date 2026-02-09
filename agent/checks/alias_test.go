@@ -7,11 +7,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/consul/agent/mock"
-	"github.com/hashicorp/consul/agent/structs"
-	"github.com/hashicorp/consul/api"
-	"github.com/hashicorp/consul/sdk/testutil/retry"
-	"github.com/hashicorp/consul/types"
+	"github.com/opengyoza/opengyoza/agent/mock"
+	"github.com/opengyoza/opengyoza/agent/structs"
+	"github.com/opengyoza/opengyoza/api"
+	"github.com/opengyoza/opengyoza/sdk/testutil/retry"
+	"github.com/opengyoza/opengyoza/types"
 	//"github.com/stretchr/testify/require"
 )
 

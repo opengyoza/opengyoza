@@ -4,6 +4,5 @@ package types
 // which is a relationship between Consul servers.
 type AreaID string
 
-// This represents the existing WAN area that's built in to Consul. Consul
-// Enterprise generalizes areas, which are represented with UUIDs.
+// This represents the existing WAN area that's built in to Consul.
 const AreaWAN AreaID = "wan"
