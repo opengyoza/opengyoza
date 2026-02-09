@@ -223,14 +223,14 @@ if '"os"' in text:
 block_match = re.search(r'(?m)^import \(\n', text)
 if block_match:
     insert_at = block_match.end()
-    text = text[:insert_at] + '\t"os"\\n' + text[insert_at:]
+    text = text[:insert_at] + '\t"os"\n' + text[insert_at:]
     open(path, "w", encoding="utf-8").write(text)
     sys.exit(0)
 
 single_match = re.search(r'(?m)^import\\s+"([^"]+)"\\s*$', text)
 if single_match:
     imp = single_match.group(1)
-    replacement = 'import (\\n\\t"%s"\\n\\t"os"\\n)\\n' % imp
+    replacement = 'import (\n\t"%s"\n\t"os"\n)\n' % imp
     text = text[:single_match.start()] + replacement + text[single_match.end():]
     open(path, "w", encoding="utf-8").write(text)
     sys.exit(0)
