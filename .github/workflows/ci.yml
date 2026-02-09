@@ -38,6 +38,8 @@ jobs:
           echo "/tmp" >> $GITHUB_PATH
       - name: Go test
         working-directory: ${{ matrix.module }}
+        env:
+          GYOZA_CONSUL_SHIM_SILENT: "1"
         run: go test ./...
 
   build-artifacts:
