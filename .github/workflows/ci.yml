@@ -31,8 +31,9 @@ jobs:
             go.sum
             api/go.sum
             sdk/go.sum
-      - name: Build consul shim for tests
+      - name: Build gyoza + consul shims for tests
         run: |
+          go build -o /tmp/gyoza ./cmd/gyoza
           go build -o /tmp/consul ./cmd/consul
           echo "/tmp" >> $GITHUB_PATH
       - name: Go test
