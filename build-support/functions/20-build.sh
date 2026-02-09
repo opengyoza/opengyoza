@@ -82,7 +82,7 @@ function build_ui {
       status "Copying the source from '${ui_dir}' to /consul-src within the container"
       (
          tar -c $(ls -A | grep -v "^(node_modules\|dist\|tmp)") | docker cp - ${container_id}:/consul-src &&
-         status "Running build in container" && docker start -a ${container_id} | tee "${ui_log}" &&
+         status "Running build in container" && docker start -a ${container_id} 2>&1 | tee "${ui_log}" &&
          rm -rf ${1}/ui-v2/dist &&
          status "Copying back artifacts" && docker cp ${container_id}:/consul-src/dist ${1}/ui-v2/dist
       )
