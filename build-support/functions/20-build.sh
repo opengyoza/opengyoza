@@ -179,17 +179,42 @@ function build_assetfs {
 
    pushd ${sdir} > /dev/null
    status "Creating the Go Build Container with image: ${image_name}"
-   local container_id=$(docker create -it -e GIT_COMMIT=${GIT_COMMIT} -e GIT_DIRTY=${GIT_DIRTY} -e GIT_DESCRIBE=${GIT_DESCRIBE} ${image_name} make static-assets ASSETFS_PATH=bindata_assetfs.go)
+   local container_id=$(docker create -i -e GIT_COMMIT=${GIT_COMMIT} -e GIT_DIRTY=${GIT_DIRTY} -e GIT_DESCRIBE=${GIT_DESCRIBE} ${image_name} make static-assets ASSETFS_PATH=bindata_assetfs.go)
    local ret=$?
    if test $ret -eq 0
    then
+      local asset_log
+      local asset_step="copy-source"
+      asset_log=$(mktemp -t opengyoza-assetfs.XXXXXX) || return 1
       status "Copying the sources from '${sdir}/(pkg/web_ui|GNUmakefile)' to /consul/pkg"
       (
-         tar -c pkg/web_ui GNUmakefile | docker cp - ${container_id}:/consul &&
-         status "Running build in container" && docker start -i ${container_id} &&
-         status "Copying back artifacts" && docker cp ${container_id}:/consul/bindata_assetfs.go ${sdir}/agent/bindata_assetfs.go
+         tar -c pkg/web_ui GNUmakefile 2>>"${asset_log}" | docker cp - ${container_id}:/consul 2>>"${asset_log}"
       )
       ret=$?
+      if test ${ret} -eq 0
+      then
+         asset_step="build"
+         status "Running build in container"
+         docker start -a ${container_id} 2>&1 | tee "${asset_log}"
+         ret=$?
+      fi
+      if test ${ret} -eq 0
+      then
+         asset_step="copy-assetfs"
+         status "Copying back artifacts"
+         docker cp ${container_id}:/consul/bindata_assetfs.go ${sdir}/agent/bindata_assetfs.go 2>>"${asset_log}"
+         ret=$?
+      fi
+      if test ${ret} -ne 0
+      then
+         err "Static assets step failed: ${asset_step}"
+         err "Static assets output (last 200 lines):"
+         tail -n 200 "${asset_log}" 2>/dev/null || true
+         err "Static assets container status:"
+         docker inspect --format 'exit={{.State.ExitCode}} error={{.State.Error}} oom={{.State.OOMKilled}}' ${container_id} 2>/dev/null || true
+         err "Static assets container logs (last 200 lines):"
+         docker logs --tail 200 ${container_id} 2>/dev/null || true
+      fi
       docker rm ${container_id} > /dev/null
    fi
    popd >/dev/null
