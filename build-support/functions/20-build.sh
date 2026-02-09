@@ -91,6 +91,10 @@ function build_ui {
       then
          err "UI build output (last 200 lines):"
          tail -n 200 "${ui_log}" 2>/dev/null || true
+         err "UI container status:"
+         docker inspect --format 'exit={{.State.ExitCode}} error={{.State.Error}} oom={{.State.OOMKilled}}' ${container_id} 2>/dev/null || true
+         err "UI container logs (last 200 lines):"
+         docker logs --tail 200 ${container_id} 2>/dev/null || true
       fi
       docker rm ${container_id} > /dev/null
    fi
