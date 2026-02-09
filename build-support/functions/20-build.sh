@@ -352,7 +352,7 @@ function build_consul {
 
    status "Creating the Go Build Container with image: ${image_name}"
    local gox_base="gox -os=\"${XC_OS}\" -arch=\"${XC_ARCH}\" -osarch=\"!darwin/arm !freebsd/arm !darwin/arm64\" -ldflags \"${GOLDFLAGS}\" -tags=\"${GOTAGS}\""
-   local container_id=$(docker create -it \
+   local container_id=$(docker create -i \
       ${volume_mount} \
       -e CGO_ENABLED=0 \
       ${image_name} \
@@ -361,15 +361,38 @@ function build_consul {
 
    if test $ret -eq 0
    then
+      local consul_log
+      local consul_step="copy-source"
+      consul_log=$(mktemp -t opengyoza-consul-build.XXXXXX) || return 1
       status "Copying the source from '${sdir}' to /consul"
       (
-         tar -c $(ls | grep -v "^(ui\|ui-v2\|website\|bin\|pkg\|.git)") | docker cp - ${container_id}:/consul &&
-         status "Running build in container" &&
-         docker start -i ${container_id} &&
-         status "Copying back artifacts" &&
-         docker cp ${container_id}:/consul/pkg/bin pkg.bin.new
+         tar -c $(ls | grep -v "^(ui\|ui-v2\|website\|bin\|pkg\|.git)") 2>>"${consul_log}" | docker cp - ${container_id}:/consul 2>>"${consul_log}"
       )
       ret=$?
+      if test ${ret} -eq 0
+      then
+         consul_step="build"
+         status "Running build in container"
+         docker start -a ${container_id} 2>&1 | tee "${consul_log}"
+         ret=$?
+      fi
+      if test ${ret} -eq 0
+      then
+         consul_step="copy-binaries"
+         status "Copying back artifacts"
+         docker cp ${container_id}:/consul/pkg/bin pkg.bin.new 2>>"${consul_log}"
+         ret=$?
+      fi
+      if test ${ret} -ne 0
+      then
+         err "Consul build step failed: ${consul_step}"
+         err "Consul build output (last 200 lines):"
+         tail -n 200 "${consul_log}" 2>/dev/null || true
+         err "Consul container status:"
+         docker inspect --format 'exit={{.State.ExitCode}} error={{.State.Error}} oom={{.State.OOMKilled}}' ${container_id} 2>/dev/null || true
+         err "Consul container logs (last 200 lines):"
+         docker logs --tail 200 ${container_id} 2>/dev/null || true
+      fi
       docker rm ${container_id} > /dev/null
 
       if test $ret -eq 0
