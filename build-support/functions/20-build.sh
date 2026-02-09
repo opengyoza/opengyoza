@@ -205,6 +205,45 @@ function build_assetfs {
          docker cp ${container_id}:/consul/bindata_assetfs.go ${sdir}/agent/bindata_assetfs.go 2>>"${asset_log}"
          ret=$?
       fi
+      if test ${ret} -eq 0
+      then
+         if ! grep -q '"os"' "${sdir}/agent/bindata_assetfs.go"
+         then
+            status "Patching bindata_assetfs.go to include os import"
+            local patch_ret=0
+            python - "${sdir}/agent/bindata_assetfs.go" <<'PY' || patch_ret=$?
+import re
+import sys
+
+path = sys.argv[1]
+text = open(path, "r", encoding="utf-8").read()
+if '"os"' in text:
+    sys.exit(0)
+
+block_match = re.search(r'(?m)^import \\(\\n', text)
+if block_match:
+    insert_at = block_match.end()
+    text = text[:insert_at] + '\t"os"\\n' + text[insert_at:]
+    open(path, "w", encoding="utf-8").write(text)
+    sys.exit(0)
+
+single_match = re.search(r'(?m)^import\\s+"([^"]+)"\\s*$', text)
+if single_match:
+    imp = single_match.group(1)
+    replacement = 'import (\\n\\t"%s"\\n\\t"os"\\n)\\n' % imp
+    text = text[:single_match.start()] + replacement + text[single_match.end():]
+    open(path, "w", encoding="utf-8").write(text)
+    sys.exit(0)
+
+raise SystemExit("bindata_assetfs.go missing import block")
+PY
+            if test ${patch_ret} -ne 0
+            then
+               err "ERROR: Failed to patch bindata_assetfs.go"
+               ret=${patch_ret}
+            fi
+         fi
+      fi
       if test ${ret} -ne 0
       then
          err "Static assets step failed: ${asset_step}"
@@ -351,7 +390,7 @@ function build_consul {
    fi
 
    status "Creating the Go Build Container with image: ${image_name}"
-   local gox_base="gox -os=\"${XC_OS}\" -arch=\"${XC_ARCH}\" -osarch=\"!darwin/arm !freebsd/arm !darwin/arm64\" -ldflags \"${GOLDFLAGS}\" -tags=\"${GOTAGS}\""
+   local gox_base="gox -os=\"${XC_OS}\" -arch=\"${XC_ARCH}\" -osarch=\"!darwin/arm !darwin/arm64 !darwin/386 !freebsd/arm\" -ldflags \"${GOLDFLAGS}\" -tags=\"${GOTAGS}\""
    local container_id=$(docker create -i \
       ${volume_mount} \
       -e CGO_ENABLED=0 \
@@ -487,7 +526,7 @@ function build_consul_local {
       CGO_ENABLED=0 gox \
          -os="${build_os}" \
          -arch="${build_arch}" \
-         -osarch="!darwin/arm !darwin/arm64 !freebsd/arm"  \
+         -osarch="!darwin/arm !darwin/arm64 !darwin/386 !freebsd/arm"  \
          -ldflags="${GOLDFLAGS}" \
          -parallel="${GOXPARALLEL:-"-1"}" \
          -output "pkg.bin.new/${extra_dir}{{.OS}}_{{.Arch}}/gyoza" \
@@ -504,7 +543,7 @@ function build_consul_local {
       CGO_ENABLED=0 gox \
          -os="${build_os}" \
          -arch="${build_arch}" \
-         -osarch="!darwin/arm !darwin/arm64 !freebsd/arm"  \
+         -osarch="!darwin/arm !darwin/arm64 !darwin/386 !freebsd/arm"  \
          -ldflags="${GOLDFLAGS}" \
          -parallel="${GOXPARALLEL:-"-1"}" \
          -output "pkg.bin.new/${extra_dir}{{.OS}}_{{.Arch}}/consul" \
