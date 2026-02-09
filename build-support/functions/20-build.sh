@@ -220,7 +220,7 @@ text = open(path, "r", encoding="utf-8").read()
 if '"os"' in text:
     sys.exit(0)
 
-block_match = re.search(r'(?m)^import \\(\\n', text)
+block_match = re.search(r'(?m)^import \(\n', text)
 if block_match:
     insert_at = block_match.end()
     text = text[:insert_at] + '\t"os"\\n' + text[insert_at:]
