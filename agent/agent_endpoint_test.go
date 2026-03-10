@@ -1212,11 +1212,19 @@ func TestAgent_Self(t *testing.T) {
 	if !reflect.DeepEqual(a.config.NodeMeta, val.Meta) {
 		t.Fatalf("meta fields are not equal: %v != %v", a.config.NodeMeta, val.Meta)
 	}
-	if val.XDS == nil {
-		t.Fatalf("expected xDS data in agent self response")
-	}
 	if got := val.XDS.SupportedProxies["envoy"]; !reflect.DeepEqual(got, supportedEnvoyVersions) {
 		t.Fatalf("unexpected supported envoy versions: %v != %v", got, supportedEnvoyVersions)
+	}
+
+	raw, err := json.Marshal(val)
+	if err != nil {
+		t.Fatalf("marshal agent self: %v", err)
+	}
+	if !bytes.Contains(raw, []byte(`"xDS"`)) {
+		t.Fatalf("expected marshaled agent self JSON to contain xDS: %s", raw)
+	}
+	if !bytes.Contains(raw, []byte(`"SupportedProxies"`)) {
+		t.Fatalf("expected marshaled agent self JSON to contain SupportedProxies: %s", raw)
 	}
 }
 

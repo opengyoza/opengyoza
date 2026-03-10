@@ -38,7 +38,7 @@ type Self struct {
 	Member      serf.Member
 	Stats       map[string]map[string]string
 	Meta        map[string]string
-	XDS         *SelfXDS `json:"xDS,omitempty"`
+	XDS         SelfXDS `json:"xDS"`
 }
 
 type SelfXDS struct {
@@ -88,15 +88,6 @@ func (s *HTTPServer) AgentSelf(resp http.ResponseWriter, req *http.Request) (int
 		Version:    s.agent.config.Version,
 	}
 
-	var xds *SelfXDS
-	if s.agent.config.ConnectEnabled && s.agent.config.GRPCPort > 0 {
-		xds = &SelfXDS{
-			SupportedProxies: map[string][]string{
-				"envoy": supportedEnvoyVersions,
-			},
-		}
-	}
-
 	return Self{
 		Config:      config,
 		DebugConfig: s.agent.config.Sanitized(),
@@ -104,7 +95,11 @@ func (s *HTTPServer) AgentSelf(resp http.ResponseWriter, req *http.Request) (int
 		Member:      s.agent.LocalMember(),
 		Stats:       s.agent.Stats(),
 		Meta:        s.agent.State.Metadata(),
-		XDS:         xds,
+		XDS: SelfXDS{
+			SupportedProxies: map[string][]string{
+				"envoy": supportedEnvoyVersions,
+			},
+		},
 	}, nil
 }
 
