@@ -1,0 +1,109 @@
+{
+  "admin": {
+    "access_log_path": "/dev/null",
+    "address": {
+      "socket_address": {
+        "address": "127.0.0.1",
+        "port_value": 19000
+      }
+    }
+  },
+  "node": {
+    "cluster": "test-proxy",
+    "id": "test-proxy"
+  },
+  "static_resources": {
+    "clusters": [
+      {
+        "name": "local_agent",
+        "connect_timeout": "1s",
+        "type": "STATIC",
+        "tls_context": {
+          "common_tls_context": {
+            "validation_context": {
+              "trusted_ca": {
+                "inline_string": "-----BEGIN CERTIFICATE-----\nMIIEFTCCAv2gAwIBAgIUO0IF8htPrpzDF1SkfEKwGJG2p2cwDQYJKoZIhvcNAQEL\nBQAwgZgxCzAJBgNVBAYTAlVTMQswCQYDVQQIDAJDQTEWMBQGA1UEBwwNU2FuIEZy\nYW5jaXNjbzEcMBoGA1UECgwTSGFzaGlDb3JwIFRlc3QgQ2VydDEMMAoGA1UECwwD\nRGV2MRYwFAYDVQQDDA10ZXN0LmludGVybmFsMSAwHgYJKoZIhvcNAQkBFhF0ZXN0\nQGludGVybmFsLmNvbTAgFw0yNjAxMjkyMTM4MDJaGA8yMTI2MDEwNTIxMzgwMlow\ngZgxCzAJBgNVBAYTAlVTMQswCQYDVQQIDAJDQTEWMBQGA1UEBwwNU2FuIEZyYW5j\naXNjbzEcMBoGA1UECgwTSGFzaGlDb3JwIFRlc3QgQ2VydDEMMAoGA1UECwwDRGV2\nMRYwFAYDVQQDDA10ZXN0LmludGVybmFsMSAwHgYJKoZIhvcNAQkBFhF0ZXN0QGlu\ndGVybmFsLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALorIrTY\nLeikeTjgG2bJh0KwcUJC+DoAJBiqXYd3D/GbG4c4cckOZyORVq3bnIW3OxbKWE4B\nfP9yaULxPT1YGF3S0MnekGaKRhWHcsam4IU/nNNPyghi8NtHaC+1D8R7xhLl3jVD\ntI/tu7bwRHafBk3Ry+MadbVYYvA+Bo40e39LsnMGdYXLM557W8mwiyJ/kelvgKwo\nIZM0okSRbAq97kPcYJ9WFxn3A3d3x9I56QFzpTnU4d9c2fcIrp/7du2esZKu6op5\nHOI8RlDq6R/TxlZ52ppyn/l9iYdQntVYIOgQmttL/MOInRhbOHZvJOVPNGYCtxlQ\nK2SnNOlW9uiHwQUCAwEAAaNTMFEwHQYDVR0OBBYEFH4FL32+eqnPICcSXldQGC4i\n3Y1nMB8GA1UdIwQYMBaAFH4FL32+eqnPICcSXldQGC4i3Y1nMA8GA1UdEwEB/wQF\nMAMBAf8wDQYJKoZIhvcNAQELBQADggEBADPSnLlTPZBYFCow0nLWPyZ1qgldxwOv\n7MPpiZz7RC1dAq4cxle9hC7pyXrZpQraNJNEF37J+es60OFW1P7yKv7i/vOK+SRP\n6chAvcDw8PhGxuvokwPVKxb24aG+EHr9G2UpgusTeA5D2JnubgCzL6r7/gqz+MeX\nbz5F+pvw/xpchX0hH2cQ66Pf6or/OrVjd/wPS6pk4zNdcxa2vXryRGre/HpBUrcx\nQv1+9h7bVjGsW9O2bip8UG9917qttDYWpjxotXUEQvtE0WMlKwg0N6m4GA83/+2z\nTre1siOeokYMoTC86v9MGPpHyXgtx+PAGKdiGX51ZoQCci9npRbvqFM=\n-----END CERTIFICATE-----\n"
+              }
+            }
+          }
+        },
+        "http2_protocol_options": {},
+        "hosts": [
+          {
+            "socket_address": {
+              "address": "127.0.0.1",
+              "port_value": 8502
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "stats_config": {
+    "stats_tags": [
+      {
+        "regex": "^cluster\\.((?:([^.]+)~)?(?:[^.]+\\.)?[^.]+\\.[^.]+\\.[^.]+\\.[^.]+\\.[^.]+\\.consul\\.)",
+        "tag_name": "consul.custom_hash"
+      },
+      {
+        "regex": "^cluster\\.((?:[^.]+~)?(?:([^.]+)\\.)?[^.]+\\.[^.]+\\.[^.]+\\.[^.]+\\.[^.]+\\.consul\\.)",
+        "tag_name": "consul.service_subset"
+      },
+      {
+        "regex": "^cluster\\.((?:[^.]+~)?(?:[^.]+\\.)?([^.]+)\\.[^.]+\\.[^.]+\\.[^.]+\\.[^.]+\\.consul\\.)",
+        "tag_name": "consul.service"
+      },
+      {
+        "regex": "^cluster\\.((?:[^.]+~)?(?:[^.]+\\.)?[^.]+\\.([^.]+)\\.[^.]+\\.[^.]+\\.[^.]+\\.consul\\.)",
+        "tag_name": "consul.namespace"
+      },
+      {
+        "regex": "^cluster\\.((?:[^.]+~)?(?:[^.]+\\.)?[^.]+\\.[^.]+\\.([^.]+)\\.[^.]+\\.[^.]+\\.consul\\.)",
+        "tag_name": "consul.datacenter"
+      },
+      {
+        "regex": "^cluster\\.((?:[^.]+~)?(?:[^.]+\\.)?[^.]+\\.[^.]+\\.[^.]+\\.([^.]+)\\.[^.]+\\.consul\\.)",
+        "tag_name": "consul.routing_type"
+      },
+      {
+        "regex": "^cluster\\.((?:[^.]+~)?(?:[^.]+\\.)?[^.]+\\.[^.]+\\.[^.]+\\.[^.]+\\.([^.]+)\\.consul\\.)",
+        "tag_name": "consul.trust_domain"
+      },
+      {
+        "regex": "^cluster\\.(((?:[^.]+~)?(?:[^.]+\\.)?[^.]+\\.[^.]+\\.[^.]+)\\.[^.]+\\.[^.]+\\.consul\\.)",
+        "tag_name": "consul.target"
+      },
+      {
+        "regex": "^cluster\\.(((?:[^.]+~)?(?:[^.]+\\.)?[^.]+\\.[^.]+\\.[^.]+\\.[^.]+\\.[^.]+)\\.consul\\.)",
+        "tag_name": "consul.full_target"
+      },
+      {
+        "tag_name": "local_cluster",
+        "fixed_value": "test-proxy"
+      }
+    ],
+    "use_all_default_tags": true
+  },
+  "dynamic_resources": {
+    "lds_config": {
+      "ads": {}
+    },
+    "cds_config": {
+      "ads": {}
+    },
+    "ads_config": {
+      "api_type": "GRPC",
+      "grpc_services": {
+        "initial_metadata": [
+          {
+            "key": "x-consul-token",
+            "value": ""
+          }
+        ],
+        "envoy_grpc": {
+          "cluster_name": "local_agent"
+        }
+      }
+    }
+  }
+}

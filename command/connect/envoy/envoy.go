@@ -13,12 +13,12 @@ import (
 
 	"github.com/mitchellh/mapstructure"
 
+	"github.com/hashicorp/go-sockaddr/template"
 	"github.com/opengyoza/opengyoza/agent/xds"
 	"github.com/opengyoza/opengyoza/api"
 	proxyCmd "github.com/opengyoza/opengyoza/command/connect/proxy"
 	"github.com/opengyoza/opengyoza/command/flags"
 	"github.com/opengyoza/opengyoza/ipaddr"
-	"github.com/hashicorp/go-sockaddr/template"
 
 	"github.com/mitchellh/cli"
 )
@@ -55,6 +55,7 @@ type cmd struct {
 	bootstrap            bool
 	disableCentralConfig bool
 	grpcAddr             string
+	grpcCAFile           string
 
 	// mesh gateway registration information
 	register           bool
@@ -108,6 +109,10 @@ func (c *cmd) init() {
 	c.flags.StringVar(&c.grpcAddr, "grpc-addr", "",
 		"Set the agent's gRPC address and port (in http(s)://host:port format). "+
 			"Alternatively, you can specify CONSUL_GRPC_ADDR in ENV.")
+
+	c.flags.StringVar(&c.grpcCAFile, "grpc-ca-file", "",
+		"Compatibility flag for the agent's gRPC CA certificate. "+
+			"If -ca-file is unset, this value is reused for agent TLS bootstrap.")
 
 	c.flags.BoolVar(&c.register, "register", false,
 		"Register a new Mesh Gateway service before configuring and starting Envoy")
@@ -495,8 +500,12 @@ func (c *cmd) templateArgs() (*BootstrapTplArgs, error) {
 	}
 
 	var caPEM string
-	if httpCfg.TLSConfig.CAFile != "" {
-		content, err := ioutil.ReadFile(httpCfg.TLSConfig.CAFile)
+	caFile := httpCfg.TLSConfig.CAFile
+	if caFile == "" {
+		caFile = c.grpcCAFile
+	}
+	if caFile != "" {
+		content, err := ioutil.ReadFile(caFile)
 		if err != nil {
 			return nil, fmt.Errorf("Failed to read CA file: %s", err)
 		}
