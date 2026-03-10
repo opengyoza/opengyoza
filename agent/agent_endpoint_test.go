@@ -19,6 +19,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/hashicorp/go-uuid"
+	"github.com/hashicorp/serf/serf"
 	"github.com/opengyoza/opengyoza/acl"
 	"github.com/opengyoza/opengyoza/agent/config"
 	"github.com/opengyoza/opengyoza/agent/connect"
@@ -33,8 +35,6 @@ import (
 	"github.com/opengyoza/opengyoza/sdk/testutil/retry"
 	"github.com/opengyoza/opengyoza/testrpc"
 	"github.com/opengyoza/opengyoza/types"
-	"github.com/hashicorp/go-uuid"
-	"github.com/hashicorp/serf/serf"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -1176,6 +1176,12 @@ func TestAgent_Self(t *testing.T) {
 		node_meta {
 			somekey = "somevalue"
 		}
+		connect {
+			enabled = true
+		}
+		ports {
+			grpc = 8502
+		}
 	`)
 	defer a.Shutdown()
 
@@ -1205,6 +1211,12 @@ func TestAgent_Self(t *testing.T) {
 	delete(val.Meta, structs.MetaSegmentKey) // Added later, not in config.
 	if !reflect.DeepEqual(a.config.NodeMeta, val.Meta) {
 		t.Fatalf("meta fields are not equal: %v != %v", a.config.NodeMeta, val.Meta)
+	}
+	if val.XDS == nil {
+		t.Fatalf("expected xDS data in agent self response")
+	}
+	if got := val.XDS.SupportedProxies["envoy"]; !reflect.DeepEqual(got, supportedEnvoyVersions) {
+		t.Fatalf("unexpected supported envoy versions: %v != %v", got, supportedEnvoyVersions)
 	}
 }
 
@@ -4209,19 +4221,19 @@ func TestAgent_Monitor(t *testing.T) {
 	}
 
 	// Try to stream logs until we see the expected log line
-		retry.Run(t, func(r *retry.R) {
-			req, _ = http.NewRequest("GET", "/v1/agent/monitor?loglevel=debug", nil)
-			resp = newClosableRecorder()
-			errCh := make(chan error, 1)
-			go func() {
-				_, err := a.srv.AgentMonitor(resp, req)
-				errCh <- err
-			}()
+	retry.Run(t, func(r *retry.R) {
+		req, _ = http.NewRequest("GET", "/v1/agent/monitor?loglevel=debug", nil)
+		resp = newClosableRecorder()
+		errCh := make(chan error, 1)
+		go func() {
+			_, err := a.srv.AgentMonitor(resp, req)
+			errCh <- err
+		}()
 
-			resp.Close()
-			if err := <-errCh; err != nil {
-				r.Fatalf("err: %s", err)
-			}
+		resp.Close()
+		if err := <-errCh; err != nil {
+			r.Fatalf("err: %s", err)
+		}
 
 		got := resp.Body.Bytes()
 		want := []byte(`[WARN] agent: Node name "invalid!" will not be discoverable via DNS`)

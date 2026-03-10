@@ -12,6 +12,10 @@ import (
 	"github.com/hashicorp/go-memdb"
 	"github.com/mitchellh/hashstructure"
 
+	"github.com/hashicorp/go-bexpr"
+	"github.com/hashicorp/logutils"
+	"github.com/hashicorp/serf/coordinate"
+	"github.com/hashicorp/serf/serf"
 	"github.com/opengyoza/opengyoza/acl"
 	cachetype "github.com/opengyoza/opengyoza/agent/cache-types"
 	"github.com/opengyoza/opengyoza/agent/debug"
@@ -23,10 +27,6 @@ import (
 	"github.com/opengyoza/opengyoza/lib/file"
 	"github.com/opengyoza/opengyoza/logger"
 	"github.com/opengyoza/opengyoza/types"
-	"github.com/hashicorp/go-bexpr"
-	"github.com/hashicorp/logutils"
-	"github.com/hashicorp/serf/coordinate"
-	"github.com/hashicorp/serf/serf"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -38,6 +38,18 @@ type Self struct {
 	Member      serf.Member
 	Stats       map[string]map[string]string
 	Meta        map[string]string
+	XDS         *SelfXDS `json:"xDS,omitempty"`
+}
+
+type SelfXDS struct {
+	SupportedProxies map[string][]string
+}
+
+var supportedEnvoyVersions = []string{
+	"1.11.1",
+	"1.10.0",
+	"1.9.1",
+	"1.8.0",
 }
 
 func (s *HTTPServer) AgentSelf(resp http.ResponseWriter, req *http.Request) (interface{}, error) {
@@ -75,6 +87,16 @@ func (s *HTTPServer) AgentSelf(resp http.ResponseWriter, req *http.Request) (int
 		Server:     s.agent.config.ServerMode,
 		Version:    s.agent.config.Version,
 	}
+
+	var xds *SelfXDS
+	if s.agent.config.ConnectEnabled && s.agent.config.GRPCPort > 0 {
+		xds = &SelfXDS{
+			SupportedProxies: map[string][]string{
+				"envoy": supportedEnvoyVersions,
+			},
+		}
+	}
+
 	return Self{
 		Config:      config,
 		DebugConfig: s.agent.config.Sanitized(),
@@ -82,6 +104,7 @@ func (s *HTTPServer) AgentSelf(resp http.ResponseWriter, req *http.Request) (int
 		Member:      s.agent.LocalMember(),
 		Stats:       s.agent.Stats(),
 		Meta:        s.agent.State.Metadata(),
+		XDS:         xds,
 	}, nil
 }
 
